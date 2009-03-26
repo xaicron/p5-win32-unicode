@@ -1,0 +1,33 @@
+Revision history for Perl extension Win32::Unicode
+
+0.06    
+        - Win32::Unicode::Console
+            warnW change @_ -> Carp::shortmess(@_).
+            Added a sayW function.
+        - Win32::Unicode::FileUtil
+            Added file_size, file_type functions.
+        - All
+            use base Exporter -> use Exporter 'import'
+            use Carp qw(...)  -> use Carp ();
+        - make Win32::Unicode::Util
+        - Win32::Unicode::Dir
+            Added mkdirW, rmdirW functions;
+
+0.05    Wed Feb 25 03:53:12 2009 (+900)
+        - Win32::Unicode::Console buffer overload bug fix.
+        - make Win32::Unicode::FileUtil.
+            Win32::Unicode::Dir and Win32::Unicode::File use.
+        
+0.04    forget :P
+        - make Win32::Unicode::Console.
+            Win32::Unicode feature of the Win32::Unicode::Console yielded.
+        
+0.03    forget :P
+        - make Win32::Unicode::Encode.
+            Encoding feature of the Win32::Unicode::Encode yielded.
+        
+0.02    forget :P
+        - make Win32::Unicode::Dir.
+
+0.01    Sat Feb  7 15:37:40 2009 (+900)
+        - original version
