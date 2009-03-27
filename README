@@ -10,11 +10,11 @@ you should just be able to do
 Download it, unpack it, then build it as per the usual:
 
     % perl Makefile.PL
-    % make && make test
+    % make && make test (or nmake && nmake test)
 
 Then install it:
 
-    % make install
+    % make install (or nmake install)
 
 DOCUMENTATION
 
