@@ -37,8 +37,7 @@ my $ConsoleOut = sub {
 	my $handle = $GetStdHandle->Call(shift);
 	return 0 unless @_;
 	
-	# 1968 prove only?
-	return print @_ if $handle != shift and $handle != 1968;
+	return print @_ if $handle != shift;
 	
 	my $str = join '', @_;
 	
@@ -98,13 +97,12 @@ sub warnW {
 
 # die Unicode to Console
 sub dieW {
-	local $SIG{__DIE__} = sub { &warnW(@_) };
-	die @_;
+	&_row_warn(@_);
+	Carp::croak '';
 }
 
 sub _row_warn {
 	$ConsoleOut->(STD_ERROR_HANDLE, CONSOLE_ERROR_HANDLE, @_);
-	return 1;
 }
 
 1;
@@ -119,45 +117,50 @@ Win32::Unicode::Console.pm - Unicode string to console out
   
   my $flaged_utf8_str = "I \x{2665} Perl";
   
-  # stdout unicode string
   printW $flaged_utf8_str;
-  
-  # stderr unicode string
+  printfW "[ %s ] :P", $flaged_utf8_str;
+  sayW $flaged_utf8_str;
   warnW $flaged_utf8_str;
+  dieW $flaged_utf8_str;
+  
+  # write file
+  printW $fh, $str;
+  printfW $fh, $str;
+  sayW $fh, $str;
 
 =head1 DESCRIPTION
 
-Wn32::Unicode::Console provides Unicode String to console out.
+Win32::Unicode::Console provides Unicode String to console out.
 This module is by default C<printW> and C<warnW> export functions.
 
-C<printW> and C<warnW> PerlIO has not passed.
+This module PerlIO-proof.
 However, when the file is redirected to the C<CORE:: print> and C<CORE:: warn> switches.
 
 =head1 METHODS
 
 =over
 
-=item printW
+=item B<printW([$fh ,] @str)>
 
 Unicode string to console out.
 Like print.
 
-=item printfW
+=item B<printfW([$fh ,] @str)>
 
 Unicode string to console out.
 Like printf.
 
-=item sayW
+=item B<sayW([$fh ,] @str)>
 
 Unicode string to console out.
 Like Perl6 say.
 
-=item warnW
+=item B<warnW(@str)>
 
 Unicode string to console out.
 Like warn.
 
-=item dieW
+=item B<dieW(@str)>
 
 Unicode string to console out.
 Like die.
@@ -170,7 +173,6 @@ Yuji Shimada E<lt>xaicron@gmail.comE<gt>
 
 =head1 SEE ALSO
 
-L<Win32::Unicode>
 L<Win32::API>
 
 =cut

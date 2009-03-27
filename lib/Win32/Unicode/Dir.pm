@@ -432,77 +432,114 @@ Win32::Unicode::Dir.pm - Unicode string directory utility.
 
 =head1 DESCRIPTION
 
-Wn32::Unicode provides Unicode String to console out.
-This module is by default C<printW> and C<warnW> export functions.
-
-C<printW> and C<warnW> PerlIO has not passed.
-However, when the file is redirected to the C<CORE:: print> and C<CORE:: warn> switches.
+Win32::Unicode::Dir is Unicode string directory utility.
+It was a great help to the core module.
 
 =head1 METHODS
 
 =over
 
-=item new
+=item B<new>
 
 constractor.
 
-=item open
+  my $wdir = Win32::Unicode::Dir->new;
+
+=item B<$wdir->open($dir)>
 
 Like opendir.
 
-=item fetch
+  $wdir->open($dir) or dieW $wdir->error;
+
+=item B<$wdir->fetch()>
 
 Like readdir.
 
-=item close
+  while (my $file = $wdir->fetch) {
+     # hogehoge
+  }
+  
+or
+
+  for my $file ($wdir->fetch) {
+     $ hogehoge
+  }
+
+=item B<$wdir->close()>
 
 Like closedir.
 
-=item getcwdW
+  $wdir->close or dieW $wdir->error
+
+=item B<getcwdW>
 
 Like Cwd::getcwd.
 
-=item chdirW
+  my $cwd = getcwdW;
+
+=item B<chdirW($dir)>
 
 Like chdir.
 
-=item mkdirW
+  chdirW or dieW errroW;
+
+=item B<mkdirW($new_dir)>
 
 Like mkdir.
 
-=item rmdirW
+  mkdirW($new_dir) or dieW errorW;
+
+=item B<rmdirW($del_dir)>
 
 Like rmdir.
 
-=item rmtreeW
+  rmdirW($del_dir) or dieW errorW;
+
+=item B<rmtreeW($del_dir)>
 
 Like File::Path::rmtree.
 
-=item mkpathW
+  rmtreeW($del_dir) or dieW errorW;
+
+=item B<mkpathW($make_long_dir_name)>
 
 Like File::Path::mkpath.
 
-=item cptreeW
+  mkpathW($make_long_dir_name) or dieW errorW
+
+=item B<cptreeW($from, $to [, $over])>
 
 copy directory tree.
 
-=item mvtreeW
+  cptreeW $from, $to or dieW errorW;
+
+=item B<mvtreeW($from, $to [, $over]))>
 
 move directory tree.
 
-=item findW
+  mvtreeW $from, $to or dieW errorW;
+
+=item B<findW($code, $dir)>
 
 like File::Find::find.
 
-=item finddepthW
+  findW(sub {
+    my $file = $_;
+    my $full_path = $Win32::Unicode::Dir::name;
+    my $cwd = $Win32::Unicode::Dir::cwd;
+  }, $dir) or dieW errorW;
+
+=item B<finddepthW($code, $dir)>
 
 like File::Find::finddepth.
 
-=item dir_size
+=item B<dir_size($dir)>
 
 get directory size.
 
-=item error
+  my $dir_size = dir_size($dir) or dieW errorW
+
+=item B<error()>
 
 get error message.
 

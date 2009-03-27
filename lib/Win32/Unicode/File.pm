@@ -64,40 +64,38 @@ my $MoveFile = Win32::API->new('kernel32.dll',
 	'I'
 );
 
-=pod
-sub open {
-	my $class =shift;
-	&_croakW("Usage: $class->open('attrebute', 'filename')") unless @_ == 2;
-	my $attr = shift;
-	my $file = utf8_to_utf16(catfile shift ) . NULL;
-	
-	bless { }, $class;
-}
-
-sub close {
-
-}
-
-sub seek {
-
-}
-
-sub flock {
-
-}
-
-sub read {
-
-}
-
-sub read_line {
-
-}
-
-sub slurp {
-
-}
-=cut
+#sub open {
+#	my $class =shift;
+#	&_croakW("Usage: $class->open('attrebute', 'filename')") unless @_ == 2;
+#	my $attr = shift;
+#	my $file = utf8_to_utf16(catfile shift ) . NULL;
+#	
+#	bless { }, $class;
+#}
+#
+#sub close {
+#
+#}
+#
+#sub seek {
+#
+#}
+#
+#sub flock {
+#
+#}
+#
+#sub read {
+#
+#}
+#
+#sub read_line {
+#
+#}
+#
+#sub slurp {
+#
+#}
 
 sub file_type {
 	&_croakW('Usage: type(attribute, file_or_dir_name)') unless @_ == 2;
@@ -182,7 +180,7 @@ sub copyW {
 
 # move file
 sub moveW {
-	&_croakW('Usage: moveW(from, to [, over])') unless @_ < 2;
+	&_croakW('Usage: moveW(from, to [, over])') if @_ < 2;
 	my $from = catfile shift;
 	my $to = &_file_name_validete($from, shift);
 	my $over = shift || 0;
@@ -249,3 +247,116 @@ sub _croakW {
 
 1;
 __END__
+=head1 NAME
+
+Win32::Unicode::File.pm - Unicode string file utility.
+
+=head1 SYNOPSIS
+
+  use Win32::Unicode::File;
+  
+  my $file = "I \x{2665} Perl";
+  
+  unlinkW $file or dieW errorW;
+  copyW $from, $to or dieW errorW;
+  moveW $from, $to or dieW errorW;
+  file_type f => $file ? 'ok' : 'no file';
+  my $size = file_size $file;
+  touchW $new_file;
+
+=head1 DESCRIPTION
+
+Win32::Unicode::Dir is Unicode string file utility.
+It was a great help to the core module.
+
+=head1 METHODS
+
+=over
+
+=item B<unlinkW($file)>
+
+Like unlink.
+
+  unlinkW $file or dieW errorW;
+
+=item B<copyW($from, $to)>
+
+Like File::Copy::copy.
+
+  copyW $from, $to or dieW errorW;
+
+=item B<moveW($from, $to)>
+
+Like File::Copy::move.
+
+  moveW $from, $to or dieW errorW;
+
+=item B<renameW($from, $to)>
+
+Alias of moveW.
+
+=item B<touchW($file)>
+
+Like shell command touch.
+
+  touchW $file or dieW errorW;
+
+=item B<file_type('attribute', $file_or_dir)>
+
+Get windows file type
+
+  # attributes
+  f => file
+  d => directory
+  s => system
+  r => readonly
+  h => hidden
+  a => archive
+  n => normal
+  t => temporary
+  c => compressed
+  o => offline
+  i => not content indexed
+  e => encrypted
+  
+  if (file_type d => $file_ro_dir) {
+     # hogehoge
+  }
+  
+  elsif (file_type fr => $file_or_dir) { # file type 'file' and 'readonly'
+     # fugagufa
+  }
+
+=item B<file_size($file)>
+
+Get file size.
+near C<-s $file>
+
+  my $size = file_size $file or dieW errorW;
+
+=item B<error()>
+
+get error message.
+
+=back
+
+=head1 AUTHOR
+
+Yuji Shimada E<lt>xaicron@gmail.comE<gt>
+
+=head1 SEE ALSO
+
+L<Win32>
+L<Win32::API>
+L<Win32API::File>
+L<Win32::Unicode>
+L<Win32::Unicode::File>
+L<Win32::Unicode::Encode>
+L<Win32::Unicode::Error>
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

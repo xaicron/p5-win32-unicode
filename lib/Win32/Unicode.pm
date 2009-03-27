@@ -43,38 +43,55 @@ Win32::Unicode.pm - Unicode string to console out
 =head1 SYNOPSIS
 
   use Win32::Unicode;
+  use utf8;
   
-  my $flaged_utf8_str = "I \x{2665} Perl";
+  # unicode console out
+  printW "I \x{2665} Perl";
   
-  # stdout unicode string
-  printW $flaged_utf8_str;
+  # unicode file util
+  unlinkW $file or dieW errorW;
+  copyW $from, $to or dieW errorW;
+  moveW $from, $to or dieW errorW;
+  file_type f => $file ? 'ok' : 'no file';
+  my $size = file_size $file;
+  touchW $new_file;
   
-  # stderr unicode string
-  warnW $flaged_utf8_str;
+  # unicode directory util
+  mkdirW $dir or dieW errorW;
+  rmdirW $dir or dieW errorW;
+  my $cwd = getcwdW;
+  chdirW $change_dir;
+  findW sub { sayW $_ }, $dir;
+  finddepthW sub { sayW $_ }, $dir;
+  mkpathW $long_path_dir_name;
+  rmtreeW $tree;
+  cptreeW $from, $to
+  mvtreeW $from, $to;
+  my $dir_size = dir_size $dir;
+  
+  # opendir
+  my $wdir = Win32::Unicode::Dir->new;
+  $wdir->open($dir) || die $wdir->error;
+  for ($wdir->fetch) {
+      next if /^\.{1,2}$/;
+      
+      my $full_path = "$dir/$_";
+      if (file_type('f', $full_path)) {
+          # $_ is file
+      }
+      
+      elsif (file_type('d', $full_path))
+          # $_ is directory
+      }
+  }
+  $wdir->close || die $wdir->error;
 
 =head1 DESCRIPTION
 
-Wn32::Unicode provides Unicode String to console out.
-This module is by default C<printW> and C<warnW> export functions.
+Wn32::Unicode is a perl unicode-friendly wrapper for win32api.
+This module many functions import :P.
 
-C<printW> and C<warnW> PerlIO has not passed.
-However, when the file is redirected to the C<CORE:: print> and C<CORE:: warn> switches.
-
-=head1 METHODS
-
-=over
-
-=item printW
-
-Unicode string to console out.
-Like print.
-
-=item warnW
-
-Unicode string to console out.
-Like warn.
-
-=back
+Many features easy to use Perl because I think it looks identical to the standard function.
 
 =head1 AUTHOR
 
@@ -82,12 +99,12 @@ Yuji Shimada E<lt>xaicron@gmail.comE<gt>
 
 =head1 SEE ALSO
 
-L<Win32>
-L<Win32::API>
+L<Win32::Unicode::Console>
 L<Win32::Unicode::Dir>
 L<Win32::Unicode::File>
-L<Win32::Unicode::Encode>
 L<Win32::Unicode::Error>
+L<Win32>
+L<Win32::API>
 
 =head1 LICENSE
 
