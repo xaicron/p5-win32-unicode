@@ -168,8 +168,7 @@ sub unlinkW {
 # like File::Copy::copy
 sub copyW {
 	&_croakW('Usage: copyW(from, to [, over])') if @_ < 2;
-	my $from = catfile shift;
-	my $to = &_file_name_validete($from, shift);
+	my ($from, $to) = &_file_name_validete(shift, shift);
 	my $over = shift || 0;
 	
 	$from = utf8_to_utf16($from) . NULL;
@@ -181,8 +180,7 @@ sub copyW {
 # move file
 sub moveW {
 	&_croakW('Usage: moveW(from, to [, over])') if @_ < 2;
-	my $from = catfile shift;
-	my $to = &_file_name_validete($from, shift);
+	my ($from, $to) = &_file_name_validete(shift, shift);
 	my $over = shift || 0;
 	
 	unless ($MoveFile->Call(utf8_to_utf16($from) . NULL, utf8_to_utf16($to) . NULL)) {
@@ -198,8 +196,10 @@ my $back_to_dir = qr/^\.\.$/;
 my $in_dir      = qr#[\\/]$#;
 
 sub _file_name_validete {
-	&_croakW('Usage: _file_name_validete(from, to)') unless @_ == 2;
-	my $from = shift;
+	&_croakW("from is a undefined values") unless defined $_[0];
+	&_croakW("to is a undefined values")   unless defined $_[1];
+	
+	my $from = catfile shift;
 	my $to = shift;
 	
 	if ($to =~ $back_to_dir or $to =~ $in_dir or &file_type(d => $to)) {
@@ -207,7 +207,7 @@ sub _file_name_validete {
 	}
 	$to = catfile $to;
 	
-	return $to;
+	return $from, $to;
 }
 
 sub error {
