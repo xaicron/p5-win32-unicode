@@ -8,6 +8,7 @@ tests 't/*.t';
 author_tests 'xt';
 
 build_requires 'Test::More';
+test_requires  'Test::Output';
 use_test_base;
 auto_include;
 WriteAll;
