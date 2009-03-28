@@ -6,6 +6,8 @@ use 5.008_001;
 use Win32::API ();
 use Exporter 'import';
 
+our $VERSION = '0.07';
+
 use Win32::Unicode::Console ':all';
 use Win32::Unicode::File ':all';
 use Win32::Unicode::Dir ':all';
@@ -32,7 +34,6 @@ our %EXPORT_TAGS = (
 	$Win32::Unicode::Dir::EXPORT_TAGS{all},
 	$Win32::Unicode::Error::EXPORT_TAGS{all},
 );
-our $VERSION = '0.05';
 
 1;
 __END__

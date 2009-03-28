@@ -18,7 +18,7 @@ our @EXPORT = qw/file_type file_size copyW moveW unlinkW touchW renameW/;
 our @EXPORT_OK = qw//;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
-our $VERSION = '0.04';
+our $VERSION = '0.06';
 
 my %ATTRIBUTES = (
 	s => FILE_ATTRIBUTE_SYSTEM,

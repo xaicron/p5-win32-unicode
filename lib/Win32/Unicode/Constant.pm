@@ -6,6 +6,7 @@ use Win32 ();
 use Carp ();
 use Exporter 'import';
 
+our $VERISON = '0.02';
 our @EXPORT = grep { !/import|BEGIN|EXPORT/ } keys %Win32::Unicode::Constant::;
 
 sub NULL     () { "\x00" }

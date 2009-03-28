@@ -6,6 +6,8 @@ use Win32::API;
 use Carp ();
 use Exporter 'import';
 
+our $VERISON = '0.02';
+
 use Win32::Unicode::Console;
 use Win32::Unicode::Constant;
 use Win32::Unicode::Encode;
