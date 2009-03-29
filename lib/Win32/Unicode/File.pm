@@ -15,7 +15,7 @@ use Win32::Unicode::Encode;
 use Win32::Unicode::Constant;
 
 our @EXPORT = qw/file_type file_size copyW moveW unlinkW touchW renameW/;
-our @EXPORT_OK = qw//;
+our @EXPORT_OK = qw/filename_nomalize/;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
 our $VERSION = '0.06';
@@ -196,8 +196,8 @@ my $back_to_dir = qr/^\.\.$/;
 my $in_dir      = qr#[\\/]$#;
 
 sub _file_name_validete {
-	&_croakW("from is a undefined values") unless defined $_[0];
-	&_croakW("to is a undefined values")   unless defined $_[1];
+	&_croakW('from is a undefined values') unless defined $_[0];
+	&_croakW('to is a undefined values')   unless defined $_[1];
 	
 	my $from = catfile shift;
 	my $to = shift;
@@ -208,6 +208,25 @@ sub _file_name_validete {
 	$to = catfile $to;
 	
 	return $from, $to;
+}
+
+my %win32_taboo = (
+	'\\' => '￥',
+	'/'  => '／',
+	':'  => '：',
+	'*'  => '＊',
+	'?'  => '？',
+	'"'  => '″',
+	'<'  => '＜',
+	'>'  => '＞',
+	'|'  => '｜',
+);
+
+sub filename_normalize {
+	my $file_name = shift;
+	&_croakW('Usage: filename_nomalize($file_name)') unless defined $file_name;
+	$file_name =~ s#([\\\/\:\*\?\"\<\>|])#$win32_taboo{$1}#ge;
+	return $file_name;
 }
 
 sub error {
@@ -333,6 +352,12 @@ Get file size.
 near C<-s $file>
 
   my $size = file_size $file or dieW errorW;
+
+=item B<filename_normalize($filename)>
+
+Normalize the characters are not allowed in the file name.
+
+  my $nomalized_file_name = filename_normalize($filename);
 
 =item B<error()>
 
