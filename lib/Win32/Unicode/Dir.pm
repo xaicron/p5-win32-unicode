@@ -21,7 +21,7 @@ our @EXPORT    = qw/file_type file_size mkdirW rmdirW getcwdW chdirW findW findd
 our @EXPORT_OK = qw//;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 # global vars
 our $cwd;
@@ -86,7 +86,11 @@ my $FindClose = Win32::API->new('kernel32.dll',
 # GetcFileName
 my $GetcFileName = sub {
 	my $self = shift;
-	my $cFileName = unpack "x44A520", $self->{FileInfo}->{buffer};
+	my $cFileName = do {
+		use bytes;
+		unpack "x44A520", $self->{FileInfo}->{buffer};
+	};
+	delete $self->{FileInfo}->{cFileName};
 	return utf16_to_utf8($cFileName . NULL);
 };
 
