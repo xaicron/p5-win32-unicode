@@ -124,7 +124,10 @@ sub file_size {
 	&_croakW('Usage: file_size(filename)') unless defined $file;
 	$file = catfile $file;
 	
-	return 0 unless &file_type(f => $file);
+	unless (&file_type(f => $file)) {
+		warn "$file is not the file";
+		return;
+	}
 	
 	my $handle = Win32API::File::CreateFileW(
 		utf8_to_utf16($file) . NULL,
@@ -136,16 +139,15 @@ sub file_size {
 		[],
 	);
 	
-	return 0 if $handle == INVALID_VALUE;
+	return if $handle == INVALID_VALUE;
 	
 	my $size = Win32API::File::getFileSize($handle);
+	Win32API::File::CloseHandle($handle);
 	
 	if ($size == INVALID_VALUE) {
 		warn 'Could not get file size - ' . errorW;
-		return 0;
+		return;
 	}
-	
-	Win32API::File::CloseHandle($handle);
 	
 	return $size;
 }
