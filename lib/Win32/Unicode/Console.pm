@@ -2,7 +2,7 @@ package Win32::Unicode::Console;
 
 use strict;
 use warnings;
-use 5.008_001;
+use 5.008001;
 use utf8;
 use Carp ();
 use Win32::API ();
@@ -23,7 +23,7 @@ my $GetStdHandle = Win32::API->new('kernel32.dll',
 	'GetStdHandle',
 	'N',
 	'N',
-) or die ": $^E";
+) or die "GetStdHandle: $^E";
 
 # WriteConsole
 my $WriteConsole = Win32::API->new('kernel32.dll',
