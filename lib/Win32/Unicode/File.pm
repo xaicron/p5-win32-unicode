@@ -21,7 +21,7 @@ our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
 our $VERSION = '0.06';
 
-my %ATTRIBUTES = (
+my %FILE_TYPE_ATTRIBUTES = (
 	s => FILE_ATTRIBUTE_SYSTEM,
 	r => FILE_ATTRIBUTE_READONLY,
 	h => FILE_ATTRIBUTE_HIDDEN,
@@ -110,11 +110,11 @@ sub file_type {
 			next;
 		}
 		
-		unless (defined $ATTRIBUTES{$_}) {
+		unless (defined $FILE_TYPE_ATTRIBUTES{$_}) {
 			Carp::carp "unkown attribute '$_'";
 			next;
 		}
-		return 0 unless $get_attr & $ATTRIBUTES{$_};
+		return 0 unless $get_attr & $FILE_TYPE_ATTRIBUTES{$_};
 	}
 	return 1;
 }
