@@ -239,12 +239,12 @@ sub mkpathW {
 
 # like File::Copy::copy
 sub cptreeW {
-	&_croakW('Usage: cptreeW(from, to [, over])') if @_ < 2;
+	&_croakW('Usage: cptreeW(from, to [, over])') unless defined $_[0] and defined $_[1];
 	_cptree($_[0], $_[1], $_[2], 0);
 }
 
 sub mvtreeW {
-	&_croakW('Usage: mvtreeW(from, to [, over])') if @_ < 2;
+	&_croakW('Usage: mvtreeW(from, to [, over])') unless defined $_[0] and defined $_[1];
 	_cptree($_[0], $_[1], $_[2], 1);
 }
 
@@ -273,11 +273,12 @@ sub _cptree {
 		mkpathW $to or &_croakW("$to " . errorW);
 	}
 	
+	(my $replace_from = $from) =~ s/\\/\\\\/g;
 	my $code = sub {
 		my $from_file = $_;
 		my $from_full_path = $Win32::Unicode::Dir::name;
 		
-		(my $to_file = $from_full_path) =~ s/$from\\?//;
+		(my $to_file = $from_full_path) =~ s/$replace_from\\?//;
 		$to_file = catfile $to, $to_file;
 		
 		if (file_type d => $from_file) {
