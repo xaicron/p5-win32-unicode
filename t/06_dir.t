@@ -2,17 +2,20 @@ use strict;
 use warnings;
 use Test::More tests => 51;
 use Test::Exception;
+use Win32::Unicode::Console;
 
-binmode Test::More->builder->output, ":encoding(cp932)";
-binmode Test::More->builder->failure_output, ":encoding(cp932)";
-binmode Test::More->builder->todo_output, ":encoding(cp932)";
+my $wuct = 'Win32::Unicode::Console::Tie';
+tie *{Test::More->builder->output}, $wuct;
+tie *{Test::More->builder->failure_output}, $wuct;
+tie *{Test::More->builder->todo_output}, $wuct;
 
 unless ($^O eq 'MSWin32') {
 	plan skip_all => 'MSWin32 Only';
 	exit;
 }
 
-use Win32::Unicode;
+use Win32::Unicode::Dir;
+use Win32::Unicode::File;
 use utf8;
 use File::Temp qw/tempdir tempfile/;
 use File::Basename qw/fileparse/;
