@@ -24,8 +24,5 @@ stdout_is { printW($str) }  $str;
 stdout_is { printfW("[%s]", $str) } "[$str]" ;
 stdout_is { sayW($str) } "$str\n";
 
-#ok printW($str), "printW";
-#ok printfW($str), "printfW";
-#ok sayW($str), "sayW";
 ok warnW($str), "warnW";
 dies_ok { dieW($str) } "dieW";
