@@ -43,7 +43,10 @@ sub GENERIC_READ    () { 0x80000000 }
 sub GENERIC_WRITE   () { 0x40000000 }
 sub GENERIC_EXECUTE () { 0x20000000 }
 
-sub FILE_SHARE_READ () { 0x00000001 }
+# share mode
+sub FILE_SHARE_READ   () { 0x00000001 }
+sub FILE_SHARE_WRITE  () { 0x00000002 }
+sub FILE_SHARE_DELETE () { 0x00000004 }
 
 # file open type
 sub CREATE_NEW        () { 1 }
