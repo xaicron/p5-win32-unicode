@@ -10,6 +10,8 @@ use Carp ();
 use File::Spec::Functions qw/catfile/;
 use File::Basename qw/basename/;
 use Exporter 'import';
+use IO::Handle;
+use base qw/Tie::Handle/;
 
 use Win32::Unicode::Error;
 use Win32::Unicode::Encode;
@@ -65,36 +67,313 @@ my $MoveFile = Win32::API->new('kernel32.dll',
 	'I'
 );
 
-#sub open {
-#	my $class =shift;
-#	&_croakW("Usage: $class->open('attrebute', 'filename')") unless @_ == 2;
-#	my $attr = shift;
-#	my $file = utf8_to_utf16(catfile shift ) . NULL;
-#	
-#	bless { }, $class;
-#}
-#
-#sub close {
-#
-#}
-#
-#sub seek {
-#
-#}
-#
+sub new {
+	my $class = shift;
+	$class = ref $class || $class;
+	
+	my $self = IO::Handle::new($class);
+	tie *$self, $class;
+	
+	$self->open(@_) if @_;
+	
+	return $self;
+}
+
+sub TIEHANDLE {
+	my ($class, $win32_handle) = @_;
+	$class = ref $class || $class;
+	
+	return bless {
+		_handle  => $win32_handle,
+		_binmode => 0,
+	}, $class;
+}
+
+sub file_name {
+	my $self = shift;
+	return tied(*$self)->{_file_name};
+}
+
+sub win32_handle {
+	my $self = shift;
+	&_croakW("do not open filehandle") unless defined $self->{_handle};
+	return $self->{_handle};
+}
+
+sub open {
+	open($_[0], $_[1], $_[2]);
+}
+
+sub OPEN {
+	my $self =shift;
+	&_croakW("Usage: $self->open('attrebute', 'filename')") unless @_ == 2;
+	my $attr = shift;
+	my $file = utf8_to_utf16(catfile shift ) . NULL;
+	
+	my $handle = 
+		$attr eq '<' || $attr eq 'r' || $attr eq 'rb' ? &_create_file(
+			$file,
+			GENERIC_READ,
+			OPEN_EXISTING,
+		) :
+		
+		$attr eq '>' || $attr eq 'w' || $attr eq 'wb' ? &_create_file(
+			$file,
+			GENERIC_WRITE,
+			CREATE_ALWAYS,
+		) :
+		
+		$attr eq '>>' || $attr eq 'a' ? &_create_file(
+			$file,
+			GENERIC_WRITE,
+			OPEN_ALWAYS,
+		) :
+		
+		$attr eq '+<' || $attr eq 'r+' ? &_create_file(
+			$file,
+			GENERIC_READ | GENERIC_WRITE,
+			OPEN_EXISTING,
+		) :
+		
+		$attr eq '+>' || $attr eq 'w+' ? &_create_file(
+			$file,
+			GENERIC_READ | GENERIC_WRITE,
+			CREATE_ALWAYS,
+		) :
+		
+		$attr eq '+>>' || $attr eq 'a+' ? &_create_file(
+			$file,
+			GENERIC_READ | GENERIC_WRITE,
+			OPEN_ALWAYS,
+		) :
+		
+		&_croakW("'$attr' is unkown attribute")
+	;
+	
+	return 0 if $handle == INVALID_VALUE;
+	
+	$self->{_handle} = $handle;
+	$self->BINMODE if $attr eq 'rb' or $attr eq 'wb';
+	
+	$self->SEEK(0, 2) if $attr eq '>>' || $attr eq 'a' || $attr eq '+>>' || $attr eq 'a+';
+	
+	$self->{_file_name} = utf16_to_utf8($file);
+	
+	return 1;
+}
+
+sub _create_file {
+	my $file = shift;
+	my $type = shift;
+	my $disp = shift;
+	
+	return Win32API::File::CreateFileW(
+		$file,
+		$type,
+		FILE_SHARE_READ | FILE_SHARE_WRITE,
+		[],
+		$disp,
+		FILE_ATTRIBUTE_NORMAL,
+		[],
+	);
+}
+
+sub close {
+	close($_[0]);
+}
+
+sub CLOSE {
+	my $self = shift;
+	Win32API::File::CloseHandle($self->win32_handle);
+	delete $self->{_handle};
+}
+
+sub getc {
+	getc($_[0]);
+}
+
+sub read {
+	read($_[0], $_[1], $_[2], $_[3]);
+}
+
+sub READ {
+	my $self = shift;
+	my $into = \$_[0]; shift;
+	my $len = shift;
+	my $ofset = shift;
+	
+	my $result = Win32API::File::ReadFile(
+		$self->win32_handle,
+		my $data,
+		$len,
+		my $bytes_read_num,
+		[],
+	);
+	
+	$$into = $data if defined $data;
+	
+	if ($self->{_encode}) {
+		$$into = $self->{_encode}->decode($$into);
+	}
+	
+	return $bytes_read_num;
+}
+
+sub readline {
+	my $self = shift;
+	return scalar <$self>;
+}
+
+sub READLINE {
+	my $self = shift;
+	
+	my $encode;
+	if ($self->{_encode}) {
+		$encode = $self->{_encode};
+		delete $self->{_encode};
+	}
+	
+	my $line = "";
+	while (index($line, $/) == $[ -1) {
+		my $char = $self->GETC();
+		last if not defined $char or $char eq '';
+		$line .= $char;
+	}
+	
+	$line =~ s/\r\n/\n/ unless $self->{_binmode};
+	
+	if ($encode and $line) {
+		$line = $encode->decode($line);
+		$self->{_encode} = $encode;
+	}
+	
+	return $line eq '' ? undef : $line;
+}
+
+sub print {
+	my $self = shift;
+	tied(*$self)->write(@_);
+}
+
+sub printf {
+	my $self = shift;
+	my $format = shift;
+	tied(*$self)->write(sprintf $format, @_);
+}
+
+sub write {
+	my $self = shift;
+	print {$self} @_;
+}
+
+sub WRITE {
+	my ($self, $buff, $length, $offset) = @_;
+	$offset = 0 unless defined $offset;
+	
+	$buff =~ s/\r?\n/\r\n/g unless $self->{_binmode};
+	$buff = $self->{_encode}->encode($buff) if $self->{_encode};
+	
+	use bytes;
+	Win32API::File::WriteFile(
+		$self->win32_handle,
+		$buff,
+		length($buff),
+		my $write_size,
+		[],
+	);
+	
+	return $write_size;
+}
+
+sub seek {
+	seek($_[0], $_[1], $_[2]);
+}
+
+sub SEEK {
+	my $self = shift;
+	my $low = shift;
+	my $whence = shift;
+	
+	my $high = 0;
+	$high = ~0 if $low < 0;
+	
+	Win32API::File::SetFilePointer($self->win32_handle, $low, $high, $whence);
+}
+
+sub tell {
+	tell($_[0]);
+}
+
+sub TELL {
+	return $_[0]->SEEK(0, 1);
+}
+
 #sub flock {
 #
 #}
 #
-#sub read {
+#sub unlock {
 #
 #}
-#
-#sub read_line {
-#
-#}
-#
-#sub slurp {
+
+sub slurp {
+	my $self = shift;
+	$self = tied(*$self);
+	
+	my $size = Win32API::File::getFileSize($self->win32_handle) + 0;
+	print $size;
+	$self->SEEK(0, 0);
+	$self->READ(my $buff, $size);
+	return $buff;
+}
+
+sub binmode {
+	binmode($_[0], $_[1]);
+}
+
+sub BINMODE {
+	my $self = shift;
+	my $layer = shift;
+	
+	$self->{_binmode} = 0;
+	$self->{_encode}  = undef;
+	
+	if (not defined $layer or $layer =~ /:raw/) {
+		$self->{_binmode} = 1;
+	}
+	
+	elsif ($layer eq 1) {
+		$self->{_binmode} = 1;
+		return 1;
+	}
+	
+	if (defined $layer) {
+		if ($layer =~ /:(utf-?8)/i or $layer =~ /:encoding\(([^\)]+)\)/) {
+			$self->{_encode} = Encode::find_encoding($1);
+		}
+		
+		else {
+			&_croakW('Unknown layer');
+		}
+	}
+	
+	return 1;
+}
+
+sub eof {
+	eof($_[0]);
+}
+
+sub EOF {
+	my $self = shift;
+	
+	my $current = $self->TELL() + 0;
+	my $end     = Win32API::File::getFileSize($self->win32_handle) + 0;
+	
+	return $current == $end;
+}
+
+#sub stat {
 #
 #}
 
