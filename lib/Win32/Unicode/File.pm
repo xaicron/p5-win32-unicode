@@ -125,7 +125,7 @@ sub file_size {
 	$file = catfile $file;
 	
 	unless (&file_type(f => $file)) {
-		warn "$file is not the file";
+#		&_carpW("$file is not the file");
 		return;
 	}
 	
@@ -265,6 +265,11 @@ sub _is_dir {
 sub _croakW {
 	Win32::Unicode::Console::_row_warn(@_);
 	die Carp::shortmess();
+}
+
+sub _carpW {
+	Win32::Unicode::Console::_row_warn(@_);
+	warn Carp::shortmess();
 }
 
 1;
