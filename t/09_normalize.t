@@ -6,6 +6,11 @@ use Test::Exception;
 
 use Win32::Unicode::File qw/filename_normalize/;
 
+unless ($^O eq 'MSWin32') {
+	plan skip_all => 'MSWin32 Only';
+	exit;
+}
+
 plan tests => (1 * blocks) + 1;
 
 dies_ok { filename_normalize() };
