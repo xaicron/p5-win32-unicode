@@ -100,6 +100,28 @@ sub _row_warn {
 	$ConsoleOut->(STD_ERROR_HANDLE, CONSOLE_ERROR_HANDLE, @_);
 }
 
+package Win32::Unicode::Console::Tie;
+
+# original stdout;
+my $STDOUT = *STDOUT;
+
+sub TIEHANDLE {
+	my $class = shift;
+	bless \my ($obj), $class;
+}
+
+sub PRINT {
+	my $self = shift;
+	local *STDOUT = $STDOUT;
+	Win32::Unicode::Console::printW(@_);
+}
+
+sub PRINTF {
+	my $self = shift;
+	my $format = shift;
+	$self->PRINT(sprintf $format, @_);
+}
+
 1;
 __END__
 =head1 NAME
