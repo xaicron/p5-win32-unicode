@@ -202,17 +202,22 @@ sub rmdirW {
 # like File::Path::rmtree
 sub rmtreeW {
 	my $dir = shift;
+	my $stop = shift;
 	&_croakW('Usage: rmtreeW(dirname)') unless defined $dir;
 	$dir = catfile $dir;
 	return 0 unless file_type(d => $dir);
 	my $code = sub {
 		my $file = $_;
 		if (file_type(f => $file)) {
-			unlinkW $file or &_croakW("$file ", errorW);
+			if (not unlinkW $file) {
+				return 0 if $stop;
+			}
 		}
 		
 		elsif (file_type(d => $file)) {
-			rmdirW $file or &_croakW("$file ", errorW);
+			if (not rmdirW $file) {
+				return 0 if $stop;
+			}
 		}
 	};
 	
