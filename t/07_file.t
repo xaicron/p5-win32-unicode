@@ -17,13 +17,26 @@ use File::Temp qw/tempdir tempfile/;
 
 {
 	my $dir = 't/07_files';
-	ok file_type(d => $dir);
-	ok file_type(f => "$dir/file.txt");
-	ok file_type(d => "$dir/dir");
-	ok file_type(hf => "$dir/hidden.txt");
-	ok file_type(hd => "$dir/hidden");
-	ok file_type(rf => "$dir/read_only.txt");
-	ok file_type(rd => "$dir/read_only");
+	my $cmd = 'attrib';
+	
+	ok file_type(d => $dir), "dir";
+	ok file_type(f => "$dir/file.txt"), "file";
+	ok file_type(d => "$dir/dir"), "dir";
+	
+	{
+		system $cmd, '+H', "$dir/hidden.txt";
+		system $cmd, '+H', "$dir/hidden";
+		ok file_type(hf => "$dir/hidden.txt"), "hidden file";
+		ok file_type(hd => "$dir/hidden"), "hidden dir";
+	}
+	
+	{
+		system $cmd, '+R', "$dir/read_only.txt";
+		system $cmd, '+R', "$dir/read_only";
+		ok file_type(rf => "$dir/read_only.txt"), "read only file";
+		ok file_type(rd => "$dir/read_only"), "read only dir";
+	}
+	
 	is file_size("$dir/10byte.txt"), 10;
 	ok not file_size("$dir");
 	ok not file_type(t => '');
