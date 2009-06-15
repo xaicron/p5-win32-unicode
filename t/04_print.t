@@ -4,9 +4,10 @@ use Test::More tests => 5;
 use Test::Exception;
 use Test::Output;
 
-binmode Test::More->builder->output, ":encoding(cp932)";
-binmode Test::More->builder->failure_output, ":encoding(cp932)";
-binmode Test::More->builder->todo_output, ":encoding(cp932)";
+my $wuct = 'Win32::Unicode::Console::Tie';
+tie *{Test::More->builder->output}, $wuct;
+tie *{Test::More->builder->failure_output}, $wuct;
+tie *{Test::More->builder->todo_output}, $wuct;
 
 unless ($^O eq 'MSWin32') {
 	plan skip_all => 'MSWin32 Only';
