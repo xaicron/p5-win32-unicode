@@ -14,6 +14,8 @@ unless ($^O eq 'MSWin32') {
 	exit;
 }
 
+local $^W; # -w switch off ( Win32::API::Struct evil warnings stop!! )
+
 use Win32::Unicode::Dir;
 use Win32::Unicode::File;
 use utf8;
