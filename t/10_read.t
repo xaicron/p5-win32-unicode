@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use utf8;
-use Test::More tests => 24;
+use Test::More tests => 23;
 use Test::Exception;
 use Win32::Unicode::Console;
 
@@ -18,15 +18,15 @@ unless ($^O eq 'MSWin32') {
 }
 
 my $dir = 't/10_read';
-my $heart_file = File::Spec->catfile("$dir/test.txt");
+my $read_file = File::Spec->catfile("$dir/test.txt");
 
 ok my $wfile = Win32::Unicode::File->new;
 isa_ok $wfile, 'Win32::Unicode::File';
 
 # OO test
 {
-	ok $wfile->open(r => $heart_file);
-	is $wfile->file_name, $heart_file;
+	ok $wfile->open(r => $read_file);
+	is $wfile->file_name, $read_file;
 	ok $wfile->binmode(':utf8');
 	is $wfile->read(my $buff, 10), 10;
 	is $buff, '0123456789';
@@ -40,8 +40,7 @@ isa_ok $wfile, 'Win32::Unicode::File';
 
 # tie test
 {
-	ok open $wfile, '<', $heart_file;
-	is $wfile->file_name, $heart_file;
+	ok open $wfile, '<', $read_file;
 	ok binmode $wfile, ':utf8';
 	is read($wfile, my $buff, 10), 10;
 	is $buff, '0123456789';
