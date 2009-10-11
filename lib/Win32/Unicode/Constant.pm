@@ -2,14 +2,14 @@ package Win32::Unicode::Constant;
 
 use strict;
 use warnings;
-use Win32 ();
 use Carp ();
 use Exporter 'import';
 
 our $VERISON = '0.02';
-our @EXPORT = grep { !/import|BEGIN|EXPORT/ } keys %Win32::Unicode::Constant::;
+our @EXPORT = grep { Win32::Unicode::Constant->can($_) } grep { !/import|BEGIN|EXPORT/ } keys %Win32::Unicode::Constant::;
 
 sub NULL     () { "\x00" }
+sub NULLP    () { [] }
 sub MAX_PATH () { 520 }
 sub BUFF     () { NULL x (MAX_PATH + 1) }
 
@@ -66,13 +66,6 @@ sub FORMAT_MESSAGE_MAX_WIDTH_MASK  () { 255 * 2 }
 
 sub LANG_NEUTRAL    () { 0x00 }
 sub SUBLANG_DEFAULT () { 0x01 }
-#sub MAKELANGID ($$) {
-#	my $primL = shift;
-#	my $subL = shift;
-#	return (($subL << 10) | ($primL))
-#}
-#define MAKELANGID(primL, subL)   ((((unsigned short)(subL)) << 10) | (unsigned short)(primL)) 
-#sub LANG_USER_DEFAULT () { MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT) }
 sub LANG_USER_DEFAULT () { SUBLANG_DEFAULT << 10 | LANG_NEUTRAL }
 
 1;
