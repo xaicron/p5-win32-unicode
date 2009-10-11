@@ -3,7 +3,6 @@ package Win32::Unicode;
 use strict;
 use warnings;
 use 5.008001;
-use Win32::API ();
 use Exporter 'import';
 
 our $VERSION = '0.08';
