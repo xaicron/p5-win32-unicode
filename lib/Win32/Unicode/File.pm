@@ -171,10 +171,10 @@ sub _create_file {
 		$file,
 		$type,
 		FILE_SHARE_READ | FILE_SHARE_WRITE,
-		[],
+		NULLP,
 		$disp,
 		FILE_ATTRIBUTE_NORMAL,
-		[],
+		NULLP,
 	);
 }
 
@@ -207,7 +207,7 @@ sub READ {
 		my $data,
 		$len,
 		my $bytes_read_num,
-		[],
+		NULLP,
 	);
 	
 	$$into = $data if defined $data;
@@ -279,7 +279,7 @@ sub WRITE {
 		$buff,
 		length($buff),
 		my $write_size,
-		[],
+		NULLP,
 	);
 	
 	return $write_size;
@@ -412,10 +412,10 @@ sub file_size {
 		utf8_to_utf16($file) . NULL,
 		GENERIC_READ,
 		FILE_SHARE_READ,
-		[],
+		NULLP,
 		OPEN_EXISTING,
 		FILE_ATTRIBUTE_NORMAL,
-		[],
+		NULLP,
 	);
 	
 	return if $handle == INVALID_VALUE;
