@@ -221,19 +221,14 @@ sub READ {
 
 sub readline {
 	my $self = shift;
-	return scalar <$self>;
+	readline $self;
 }
 
-sub READLINE {
+my $_readline = sub {
 	my $self = shift;
+	my $encode = shift;
 	
-	my $encode;
-	if ($self->{_encode}) {
-		$encode = $self->{_encode};
-		delete $self->{_encode};
-	}
-	
-	my $line = "";
+	my $line = '';
 	while (index($line, $/) == $[ -1) {
 		my $char = $self->GETC();
 		last if not defined $char or $char eq '';
@@ -248,6 +243,28 @@ sub READLINE {
 	}
 	
 	return $line eq '' ? undef : $line;
+};
+
+sub READLINE {
+	my $self = shift;
+	
+	my $encode;
+	if ($self->{_encode}) {
+		$encode = $self->{_encode};
+		delete $self->{_encode};
+	}
+	
+	if (wantarray) {
+		my @lines;
+		while (my $line = $_readline->($self, $encode)) {
+			push @lines, $line;
+		}
+		return @lines;
+	}
+	
+	else {
+		return $_readline->($self, $encode);
+	}
 }
 
 sub print {
