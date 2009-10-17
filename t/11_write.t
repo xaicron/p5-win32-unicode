@@ -18,7 +18,7 @@ unless ($^O eq 'MSWin32') {
 	exit;
 }
 
-my $dir = tempdir( CLEANUP => 1 ) or die $!;
+my $dir = tempdir() or die $!;
 my $write_file = File::Spec->catfile("$dir/森鷗外.txt");
 
 ok my $wfile = Win32::Unicode::File->new;
@@ -47,3 +47,7 @@ isa_ok $wfile, 'Win32::Unicode::File';
 	is tell $wfile, 10;
 	ok close $wfile;
 };
+
+local $^W; # -w switch off ( Win32::API::Struct evil warnings stop!! )
+
+Win32::Unicode::Dir::rmtreeW($dir);
