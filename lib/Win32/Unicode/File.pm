@@ -94,6 +94,11 @@ sub file_name {
 	return tied(*$self)->{_file_name};
 }
 
+sub file_path {
+	my $self = shift;
+	return tied(*$self)->{_file_path};
+}
+
 sub win32_handle {
 	my $self = shift;
 	&_croakW("do not open filehandle") unless defined $self->{_handle};
@@ -158,6 +163,9 @@ sub OPEN {
 	$self->SEEK(0, 2) if $attr eq '>>' || $attr eq 'a' || $attr eq '+>>' || $attr eq 'a+';
 	
 	$self->{_file_name} = utf16_to_utf8($file);
+	
+	require Win32::Unicode::Dir;
+	$self->{_file_path} = File::Spec->rel2abs($self->{_file_name}, Win32::Unicode::Dir::getcwdW());
 	
 	return 1;
 }
