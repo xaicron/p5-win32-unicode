@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use utf8;
-use Test::More tests => 23;
+use Test::More tests => 24;
 use Test::Exception;
 use Win32::Unicode::Console;
 
@@ -27,6 +27,7 @@ isa_ok $wfile, 'Win32::Unicode::File';
 {
 	ok $wfile->open(r => $read_file);
 	is $wfile->file_name, $read_file;
+	is $wfile->file_path, File::Spec->catfile(Win32::Unicode::Dir::getcwdW() . "/$read_file");
 	ok $wfile->binmode(':utf8');
 	is $wfile->read(my $buff, 10), 10;
 	is $buff, '0123456789';
