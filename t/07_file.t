@@ -25,15 +25,15 @@ use File::Temp qw/tempdir tempfile/;
 	ok file_type(d => "$dir/dir"), "dir";
 	
 	{
-		system $cmd, '+H', "$dir/hidden.txt";
-		system $cmd, '+H', "$dir/hidden";
+		system $cmd, '+H', "$dir/hidden.txt" and die "Oops!!";
+		system $cmd, '+H', "$dir/hidden" and die "Oops!!";
 		ok file_type(hf => "$dir/hidden.txt"), "hidden file";
 		ok file_type(hd => "$dir/hidden"), "hidden dir";
 	}
 	
 	{
-		system $cmd, '+R', "$dir/read_only.txt";
-		system $cmd, '+R', "$dir/read_only";
+		system $cmd, '+R', "$dir/read_only.txt" and die "Oops!!";
+		system $cmd, '+R', "$dir/read_only" and die "Oops!!";
 		ok file_type(rf => "$dir/read_only.txt"), "read only file";
 		ok file_type(rd => "$dir/read_only"), "read only dir";
 	}
