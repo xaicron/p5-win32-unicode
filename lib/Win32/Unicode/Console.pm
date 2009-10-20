@@ -37,7 +37,16 @@ my $ConsoleOut = sub {
 	my $handle = $GetStdHandle->Call(shift);
 	return 0 unless @_;
 	
-	return print @_ if $handle != shift;
+	if ($handle != shift) {
+		if (tied *STDOUT and ref tied *STDOUT eq 'Win32::Unicode::Console::Tie') {
+			no warnings 'untie';
+			untie *STDOUT;
+			print @_;
+			tie *STDOUT, 'Win32::Unicode::Console::Tie';
+			return 1;
+		}
+		return print @_;
+	}
 	
 	my $str = join '', @_;
 	
@@ -102,9 +111,6 @@ sub _row_warn {
 
 package Win32::Unicode::Console::Tie;
 
-# original stdout;
-my $STDOUT = *STDOUT;
-
 sub TIEHANDLE {
 	my $class = shift;
 	bless \my ($obj), $class;
@@ -112,7 +118,6 @@ sub TIEHANDLE {
 
 sub PRINT {
 	my $self = shift;
-	local *STDOUT = $STDOUT;
 	Win32::Unicode::Console::printW(@_);
 }
 
