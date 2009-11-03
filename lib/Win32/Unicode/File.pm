@@ -115,6 +115,10 @@ sub OPEN {
 	my $attr = shift;
 	my $file = utf8_to_utf16(catfile shift ) . NULL;
 	
+	if ($attr =~ s/(:.*)$//) {
+		$self->BINMODE($1);
+	}
+	
 	my $handle = 
 		$attr eq '<' || $attr eq 'r' || $attr eq 'rb' ? &_create_file(
 			$file,
