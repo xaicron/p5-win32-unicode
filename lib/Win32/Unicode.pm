@@ -5,7 +5,7 @@ use warnings;
 use 5.008001;
 use Exporter ();
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 use Win32::Unicode::Console ':all';
 use Win32::Unicode::File ':all';

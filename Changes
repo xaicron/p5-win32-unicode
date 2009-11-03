@@ -1,5 +1,8 @@
 Revision history for Perl extension Win32::Unicode
 
+0.09    Tue Nov  3 21:05:29 2009 (+900)
+        - make Win32::Unicode::Native
+
 0.08    Sun Apr  5 01:27:14 2009 (+900)
         - Win32::Unicode::File::filename_normalize added.
         - Win32::Unicode::Dir buffer bug fix

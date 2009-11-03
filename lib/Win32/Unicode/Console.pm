@@ -16,7 +16,7 @@ our @EXPORT = qw/printW printfW warnW sayW dieW/;
 our @EXPORT_OK = qw//;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
-our $VERSION = '0.06';
+our $VERSION = '0.09';
 
 # GetStdHandle
 my $GetStdHandle = Win32::API->new('kernel32.dll',
