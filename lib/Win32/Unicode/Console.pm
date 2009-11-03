@@ -113,7 +113,7 @@ package Win32::Unicode::Console::Tie;
 
 sub TIEHANDLE {
 	my $class = shift;
-	bless \my ($obj), $class;
+	bless {}, $class;
 }
 
 sub PRINT {
@@ -125,6 +125,10 @@ sub PRINTF {
 	my $self = shift;
 	my $format = shift;
 	$self->PRINT(sprintf $format, @_);
+}
+
+sub BINMODE {
+	# TODO...?
 }
 
 1;
