@@ -168,6 +168,8 @@ sub fetch {
 	}
 }
 
+*readdir = \&fetch;
+
 # like use Cwd qw/getcwd/;
 sub getcwdW {
 	my $buff = BUFF;
