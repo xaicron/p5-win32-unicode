@@ -3,7 +3,7 @@ package Win32::Unicode;
 use strict;
 use warnings;
 use 5.008001;
-use Exporter 'import';
+use Exporter ();
 
 our $VERSION = '0.08';
 
@@ -28,11 +28,34 @@ our @EXPORT_OK = (
 );
 
 our %EXPORT_TAGS = (
-	$Win32::Unicode::Console::EXPORT_TAGS{all},
-	$Win32::Unicode::File::EXPORT_TAGS{all},
-	$Win32::Unicode::Dir::EXPORT_TAGS{all},
-	$Win32::Unicode::Error::EXPORT_TAGS{all},
+	console => $Win32::Unicode::Console::EXPORT_TAGS{all},
+	file    => $Win32::Unicode::File::EXPORT_TAGS{all},
+	dir     => $Win32::Unicode::Dir::EXPORT_TAGS{all},
+	error   => $Win32::Unicode::Error::EXPORT_TAGS{all},
+	all     => [@EXPORT, @EXPORT_OK],
 );
+
+sub import {
+	my $class = shift;
+	my $caller = caller(0);
+	
+	my @args;
+	for my $arg (@_) {
+		if ($arg eq '-native') {
+			require Win32::Unicode::Native;
+			no strict 'refs';
+			map {
+				*{"$caller\::$_"} = \&{"Win32::Unicode::Native::$_"};
+			} @Win32::Unicode::Native::EXPORT;
+		}
+		else {
+			push @args, $arg;
+		}
+	}
+	
+	local $Exporter::ExportLevel = 1;
+	Exporter::import($class, @args);
+}
 
 1;
 __END__
