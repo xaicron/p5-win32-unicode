@@ -50,13 +50,13 @@ my $ConsoleOut = sub {
 	
 	my $str = join '', @_;
 	
-	do {
+	while ($str) {
 		my $tmp_str = substr($str, 0, MAX_BUFFER_SIZE);
 		substr($str, 0, MAX_BUFFER_SIZE) = '';
 		
 		my $buff = 0;
 		$WriteConsole->Call($handle, utf8_to_utf16($tmp_str), length($tmp_str), $buff, NULL);
-	} while (MAX_BUFFER_SIZE < length($str));
+	}
 };
 
 # print Unicode to Console
