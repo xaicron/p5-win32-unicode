@@ -53,7 +53,7 @@ $sub_export->(qw{
 
 sub open {
 	my $fh = Win32::Unicode::File->new;
-	$fh->open($_[1], $_[2]);
+	$fh->open($_[1], $_[2]) or return;
 	return $_[0] = $fh;
 }
 
@@ -79,7 +79,7 @@ $sub_export->(qw{
 
 sub opendir {
 	my $dh = Win32::Unicode::Dir->new;
-	$dh->open($_[1]);
+	return unless $dh->open($_[1]);
 	return $_[0] = $dh;
 }
 
