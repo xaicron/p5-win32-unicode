@@ -67,7 +67,7 @@ sub close {
 $sub_export->(qw{
 	mkdirW
 	rmdirW
-	chidirW
+	chdirW
 	findW
 	finddepthW
 	mkpathW
