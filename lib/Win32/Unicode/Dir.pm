@@ -168,7 +168,7 @@ sub fetch {
 	}
 }
 
-*readdir = \&fetch;
+*read = *readdir = \&fetch;
 
 # like use Cwd qw/getcwd/;
 sub getcwdW {
@@ -361,7 +361,11 @@ sub _find {
 		unless ($bydepth) {
 			$::_ = $cur;
 			$name = catfile $cwd, $cur;
-			$code->();
+			$code->({
+				file => $::_,
+				path => $name,
+				cwd  => $cwd,
+			});
 		}
 		
 		if (file_type 'd', $cur) {
@@ -374,7 +378,11 @@ sub _find {
 		if ($bydepth) {
 			$::_ = $cur;
 			$name = catfile $cwd, $cur;
-			$code->();
+			$code->({
+				file => $::_,
+				path => $name,
+				cwd  => $cwd,
+			});
 		}
 	}
 	
