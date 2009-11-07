@@ -16,6 +16,7 @@ our @EXPORT = qw{
 	error
 	file_size
 	file_type
+	dir_size
 	open
 	close
 	opendir
@@ -34,6 +35,7 @@ my $sub_export = sub {
 
 # Win32::Unicode::Console
 $sub_export->(qw{
+	printfW
 	warnW
 	dieW
 	sayW
