@@ -74,7 +74,9 @@ sub new {
 	my $self = IO::Handle::new($class);
 	tie *$self, $class;
 	
-	$self->open(@_) if @_;
+	if (@_) {
+		return unless $self->open(@_);
+	}
 	
 	return $self;
 }
