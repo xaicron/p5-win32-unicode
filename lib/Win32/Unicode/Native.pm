@@ -61,8 +61,9 @@ sub open {
 
 sub close {
 	my $fh = $_[0];
-	$fh->close;
+	$fh->close or return;
 	$_[0] = undef;
+	return 1;
 }
 
 # Win32::Unicode::Dir
@@ -87,8 +88,9 @@ sub opendir {
 
 sub closedir {
 	my $dh = $_[0];
-	$dh->close;
+	$dh->close or return;
 	$_[0] = undef;
+	return 1;
 }
 
 sub readdir {
