@@ -11,6 +11,7 @@ author_tests 'xt';
 
 build_requires 'Test::More';
 test_requires  'Test::Output';
+test_requires  'Test::Base';
 use_test_base;
 auto_include;
 WriteAll;
