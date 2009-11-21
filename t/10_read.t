@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use utf8;
-use Test::More tests => 24;
+use Test::More tests => 26;
 use Test::Exception;
 use Win32::Unicode::Console;
 
@@ -35,6 +35,8 @@ isa_ok $wfile, 'Win32::Unicode::File';
 	is $wfile->readline(), "0123456789\n";
 	is $wfile->readline(), "はろーわーるど\n";
 	is $wfile->tell(), file_size $wfile->file_name;
+	ok $wfile->seek(0, 0);
+	is scalar @{[$wfile->readline()]}, 2;
 	ok not $wfile->getc();
 	ok $wfile->close;
 }
