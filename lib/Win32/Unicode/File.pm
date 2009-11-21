@@ -238,9 +238,14 @@ sub readline {
 	readline $self;
 }
 
-my $_readline = sub {
+sub _readline {
 	my $self = shift;
-	my $encode = shift;
+	
+	my $encoder;
+	if ($self->{_encode}) {
+		$encoder = $self->{_encode};
+		delete $self->{_encode};
+	}
 	
 	my $line = '';
 	while (index($line, $/) == $[ -1) {
@@ -251,9 +256,9 @@ my $_readline = sub {
 	
 	$line =~ s/\r\n/\n/ unless $self->{_binmode};
 	
-	if ($encode and $line) {
-		$line = $encode->decode($line);
-		$self->{_encode} = $encode;
+	if ($encoder and $line) {
+		$line = $encoder->decode($line);
+		$self->{_encode} = $encoder;
 	}
 	
 	return $line eq '' ? undef : $line;
@@ -262,22 +267,15 @@ my $_readline = sub {
 sub READLINE {
 	my $self = shift;
 	
-	my $encode;
-	if ($self->{_encode}) {
-		$encode = $self->{_encode};
-		delete $self->{_encode};
-	}
-	
 	if (wantarray) {
 		my @lines;
-		while (my $line = $_readline->($self, $encode)) {
+		while (my $line = $self->_readline) {
 			push @lines, $line;
 		}
 		return @lines;
 	}
-	
 	else {
-		return $_readline->($self, $encode);
+		return $self->_readline;
 	}
 }
 
