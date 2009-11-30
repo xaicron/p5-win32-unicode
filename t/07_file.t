@@ -2,16 +2,6 @@ use strict;
 use Test::More tests => 26;
 use Test::Exception;
 
-my $wuct = 'Win32::Unicode::Console::Tie';
-tie *{Test::More->builder->output}, $wuct;
-tie *{Test::More->builder->failure_output}, $wuct;
-tie *{Test::More->builder->todo_output}, $wuct;
-
-unless ($^O eq 'MSWin32') {
-	plan skip_all => 'MSWin32 Only';
-	exit;
-}
-
 use Win32::Unicode;
 use utf8;
 use File::Temp qw/tempdir tempfile/;

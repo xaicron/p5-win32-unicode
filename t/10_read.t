@@ -3,19 +3,8 @@ use warnings;
 use utf8;
 use Test::More tests => 26;
 use Test::Exception;
-use Win32::Unicode::Console;
-
-my $wuct = 'Win32::Unicode::Console::Tie';
-tie *{Test::More->builder->output}, $wuct;
-tie *{Test::More->builder->failure_output}, $wuct;
-tie *{Test::More->builder->todo_output}, $wuct;
 
 use Win32::Unicode::File;
-
-unless ($^O eq 'MSWin32') {
-	plan skip_all => 'MSWin32 Only';
-	exit;
-}
 
 my $dir = 't/10_read';
 my $read_file = File::Spec->catfile("$dir/test.txt");

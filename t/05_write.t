@@ -1,19 +1,8 @@
 use strict;
 use warnings;
-use Test::More tests => 6;
-
-my $wuct = 'Win32::Unicode::Console::Tie';
-tie *{Test::More->builder->output}, $wuct;
-tie *{Test::More->builder->failure_output}, $wuct;
-tie *{Test::More->builder->todo_output}, $wuct;
-
-unless ($^O eq 'MSWin32') {
-	plan skip_all => 'MSWin32 Only';
-	exit;
-}
-
-use Win32::Unicode;
 use utf8;
+use Test::More tests => 6;
+use Win32::Unicode;
 use File::Temp qw/tempdir tempfile/;
 
 my $str = 'ぁぃぅぇぉ';

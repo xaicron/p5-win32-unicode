@@ -4,19 +4,7 @@ use utf8;
 use Test::More tests => 15;
 use Test::Exception;
 use File::Temp qw/tempdir tempfile/;
-use Win32::Unicode::Console;
-
-my $wuct = 'Win32::Unicode::Console::Tie';
-tie *{Test::More->builder->output}, $wuct;
-tie *{Test::More->builder->failure_output}, $wuct;
-tie *{Test::More->builder->todo_output}, $wuct;
-
 use Win32::Unicode::File;
-
-unless ($^O eq 'MSWin32') {
-	plan skip_all => 'MSWin32 Only';
-	exit;
-}
 
 my $dir = tempdir() or die $!;
 my $write_file = File::Spec->catfile("$dir/森鷗外.txt");

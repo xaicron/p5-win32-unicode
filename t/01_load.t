@@ -3,11 +3,6 @@ use Test::More tests => 5;
 
 use Win32::Unicode;
 
-unless ($^O eq 'MSWin32') {
-	plan skip_all => 'MSWin32 Only';
-	exit;
-}
-
 can_ok 'Win32::Unicode', qw(
 	printW
 	sayW

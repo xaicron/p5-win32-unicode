@@ -2,17 +2,6 @@ use strict;
 use warnings;
 use Test::More tests => 51;
 use Test::Exception;
-use Win32::Unicode::Console;
-
-my $wuct = 'Win32::Unicode::Console::Tie';
-tie *{Test::More->builder->output}, $wuct;
-tie *{Test::More->builder->failure_output}, $wuct;
-tie *{Test::More->builder->todo_output}, $wuct;
-
-unless ($^O eq 'MSWin32') {
-	plan skip_all => 'MSWin32 Only';
-	exit;
-}
 
 local $^W; # -w switch off ( Win32::API::Struct evil warnings stop!! )
 
