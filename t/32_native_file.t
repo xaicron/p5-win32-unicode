@@ -8,7 +8,7 @@ use Win32::Unicode::Native;
 
 # read test
 {
-	ok open my $fh, '<', 't/92_file/open.txt' or die error;
+	ok open my $fh, '<', 't/32_file/open.txt' or die error;
 	isa_ok $fh, 'Win32::Unicode::File';
 	is scalar <$fh>, "success\n";
 	ok close $fh;
