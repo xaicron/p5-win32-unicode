@@ -429,6 +429,11 @@ sub file_type {
 sub file_size {
 	my $file = shift;
 	&_croakW('Usage: file_size(filename)') unless defined $file;
+	
+	if (ref $file eq __PACKAGE__) {
+		return Win32API::File::getFileSize(tied(*$file)->win32_handle) + 0;
+	}
+	
 	$file = catfile $file;
 	
 	unless (&file_type(f => $file)) {
