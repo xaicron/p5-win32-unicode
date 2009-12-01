@@ -18,7 +18,7 @@ use Win32::Unicode::Encode;
 use Win32::Unicode::Constant;
 
 our @EXPORT = qw/file_type file_size copyW moveW unlinkW touchW renameW/;
-our @EXPORT_OK = qw/filename_normalize/;
+our @EXPORT_OK = qw/filename_normalize slurp/;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
 our $VERSION = '0.09';
@@ -350,7 +350,6 @@ sub slurp {
 	$self = tied(*$self);
 	
 	my $size = Win32API::File::getFileSize($self->win32_handle) + 0;
-	print $size;
 	$self->SEEK(0, 0);
 	$self->READ(my $buff, $size);
 	return $buff;
