@@ -61,7 +61,7 @@ my $ConsoleOut = sub {
 
 # print Unicode to Console
 sub printW {
-	if (&_is_file_handle($_[0])) {
+	if (_is_file_handle($_[0])) {
 		my $fh = shift;
 		print {$fh} join "", @_;
 		return 1;
@@ -74,13 +74,13 @@ sub printW {
 
 # printf Unicode to Console
 sub printfW {
-	if (&_is_file_handle($_[0])) {
+	if (_is_file_handle($_[0])) {
 		my $fh = shift;
-		&printW($fh, sprintf shift, @_)
+		printW($fh, sprintf shift, @_)
 	}
 	
 	else {
-		&printW(sprintf shift, @_);
+		printW(sprintf shift, @_);
 	}
 }
 
@@ -90,7 +90,7 @@ sub _is_file_handle {
 
 # say Unicode to Console
 sub sayW {
-	&printW(@_, "\n");
+	printW(@_, "\n");
 }
 
 # warn Unicode to Console
@@ -101,7 +101,7 @@ sub warnW {
 
 # die Unicode to Console
 sub dieW {
-	&_row_warn(@_);
+	_row_warn(@_);
 	Carp::croak '';
 }
 

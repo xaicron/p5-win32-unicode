@@ -103,7 +103,7 @@ sub file_path {
 
 sub win32_handle {
 	my $self = shift;
-	&_croakW("do not open filehandle") unless defined $self->{_handle};
+	_croakW("do not open filehandle") unless defined $self->{_handle};
 	return $self->{_handle};
 }
 
@@ -113,7 +113,7 @@ sub open {
 
 sub OPEN {
 	my $self =shift;
-	&_croakW("Usage: $self->open('attrebute', 'filename')") unless @_ == 2;
+	_croakW("Usage: $self->open('attrebute', 'filename')") unless @_ == 2;
 	my $attr = shift;
 	my $file = utf8_to_utf16(catfile shift ) . NULL;
 	
@@ -122,43 +122,43 @@ sub OPEN {
 	}
 	
 	my $handle = 
-		$attr eq '<' || $attr eq 'r' || $attr eq 'rb' ? &_create_file(
+		$attr eq '<' || $attr eq 'r' || $attr eq 'rb' ? _create_file(
 			$file,
 			GENERIC_READ,
 			OPEN_EXISTING,
 		) :
 		
-		$attr eq '>' || $attr eq 'w' || $attr eq 'wb' ? &_create_file(
+		$attr eq '>' || $attr eq 'w' || $attr eq 'wb' ? _create_file(
 			$file,
 			GENERIC_WRITE,
 			CREATE_ALWAYS,
 		) :
 		
-		$attr eq '>>' || $attr eq 'a' ? &_create_file(
+		$attr eq '>>' || $attr eq 'a' ? _create_file(
 			$file,
 			GENERIC_WRITE,
 			OPEN_ALWAYS,
 		) :
 		
-		$attr eq '+<' || $attr eq 'r+' ? &_create_file(
+		$attr eq '+<' || $attr eq 'r+' ? _create_file(
 			$file,
 			GENERIC_READ | GENERIC_WRITE,
 			OPEN_EXISTING,
 		) :
 		
-		$attr eq '+>' || $attr eq 'w+' ? &_create_file(
+		$attr eq '+>' || $attr eq 'w+' ? _create_file(
 			$file,
 			GENERIC_READ | GENERIC_WRITE,
 			CREATE_ALWAYS,
 		) :
 		
-		$attr eq '+>>' || $attr eq 'a+' ? &_create_file(
+		$attr eq '+>>' || $attr eq 'a+' ? _create_file(
 			$file,
 			GENERIC_READ | GENERIC_WRITE,
 			OPEN_ALWAYS,
 		) :
 		
-		&_croakW("'$attr' is unkown attribute")
+		_croakW("'$attr' is unkown attribute")
 	;
 	
 	return 0 if $handle == INVALID_VALUE;
@@ -381,7 +381,7 @@ sub BINMODE {
 		}
 		
 		else {
-			&_croakW('Unknown layer');
+			_croakW('Unknown layer');
 		}
 	}
 	
@@ -406,14 +406,14 @@ sub EOF {
 #}
 
 sub file_type {
-	&_croakW('Usage: type(attribute, file_or_dir_name)') unless @_ == 2;
+	_croakW('Usage: type(attribute, file_or_dir_name)') unless @_ == 2;
 	my $attr = shift;
 	my $file = catfile shift;
 	
-	my $get_attr = &_get_file_type($file);
+	my $get_attr = _get_file_type($file);
 	for (split //, $attr) {
 		if ($_ eq 'f') {
-			return 0 unless &_is_file($file);
+			return 0 unless _is_file($file);
 			next;
 		}
 		
@@ -428,7 +428,7 @@ sub file_type {
 
 sub file_size {
 	my $file = shift;
-	&_croakW('Usage: file_size(filename)') unless defined $file;
+	_croakW('Usage: file_size(filename)') unless defined $file;
 	
 	if (ref $file eq __PACKAGE__) {
 		return Win32API::File::getFileSize(tied(*$file)->win32_handle) + 0;
@@ -436,8 +436,8 @@ sub file_size {
 	
 	$file = catfile $file;
 	
-	unless (&file_type(f => $file)) {
-#		&_carpW("$file is not the file");
+	unless (file_type(f => $file)) {
+#		_carpW("$file is not the file");
 		return;
 	}
 	
@@ -467,7 +467,7 @@ sub file_size {
 # like unix touch command
 sub touchW {
 	my $file = shift;
-	&_croakW('Usage: touchW(filename)') unless defined $file;
+	_croakW('Usage: touchW(filename)') unless defined $file;
 	$file = catfile $file;
 	return Win32::CreateFile($file) ? 1 : 0;
 }
@@ -475,15 +475,15 @@ sub touchW {
 # like CORE::unlink
 sub unlinkW {
 	my $file = shift;
-	&_croakW('Usage: unlinkW(filename)') unless defined $file;
+	_croakW('Usage: unlinkW(filename)') unless defined $file;
 	$file = utf8_to_utf16(catfile $file) . NULL;
 	return Win32API::File::DeleteFileW($file) ? 1 : 0;
 }
 
 # like File::Copy::copy
 sub copyW {
-	&_croakW('Usage: copyW(from, to [, over])') if @_ < 2;
-	my ($from, $to) = &_file_name_validete(shift, shift);
+	_croakW('Usage: copyW(from, to [, over])') if @_ < 2;
+	my ($from, $to) = _file_name_validete(shift, shift);
 	my $over = shift || 0;
 	
 	$from = utf8_to_utf16($from) . NULL;
@@ -494,13 +494,13 @@ sub copyW {
 
 # move file
 sub moveW {
-	&_croakW('Usage: moveW(from, to [, over])') if @_ < 2;
-	my ($from, $to) = &_file_name_validete(shift, shift);
+	_croakW('Usage: moveW(from, to [, over])') if @_ < 2;
+	my ($from, $to) = _file_name_validete(shift, shift);
 	my $over = shift || 0;
 	
 	unless ($MoveFile->Call(utf8_to_utf16($from) . NULL, utf8_to_utf16($to) . NULL)) {
-		return 0 unless &copyW($from, $to, $over);
-		return 0 unless &unlinkW($from);
+		return 0 unless copyW($from, $to, $over);
+		return 0 unless unlinkW($from);
 	};
 	
 	return 1;
@@ -511,13 +511,13 @@ my $back_to_dir = qr/^\.\.$/;
 my $in_dir      = qr#[\\/]$#;
 
 sub _file_name_validete {
-	&_croakW('from is a undefined values') unless defined $_[0];
-	&_croakW('to is a undefined values')   unless defined $_[1];
+	_croakW('from is a undefined values') unless defined $_[0];
+	_croakW('to is a undefined values')   unless defined $_[1];
 	
 	my $from = catfile shift;
 	my $to = shift;
 	
-	if ($to =~ $back_to_dir or $to =~ $in_dir or &file_type(d => $to)) {
+	if ($to =~ $back_to_dir or $to =~ $in_dir or file_type(d => $to)) {
 		$to = catfile $to, basename($from);
 	}
 	$to = catfile $to;
@@ -539,7 +539,7 @@ my %win32_taboo = (
 
 sub filename_normalize {
 	my $file_name = shift;
-	&_croakW('Usage: filename_nomalize($file_name)') unless defined $file_name;
+	_croakW('Usage: filename_nomalize($file_name)') unless defined $file_name;
 	$file_name =~ s#([\\\/\:\*\?\"\<\>|])#$win32_taboo{$1}#ge;
 	return $file_name;
 }
@@ -563,7 +563,7 @@ sub _is_file {
 	my $file = shift;
 	my $tmp_file = utf8_to_utf16($file) . NULL;
 	if ($PathFileExists->Call($tmp_file)) {
-		return 1 unless &_is_dir($file);
+		return 1 unless _is_dir($file);
 	};
 	return 0
 }
