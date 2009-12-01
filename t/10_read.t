@@ -1,10 +1,10 @@
 use strict;
 use warnings;
 use utf8;
-use Test::More tests => 26;
+use Test::More tests => 30;
 use Test::Exception;
 
-use Win32::Unicode::File;
+use Win32::Unicode::File ':all';
 
 my $dir = 't/10_read';
 my $read_file = File::Spec->catfile("$dir/test.txt");
@@ -12,6 +12,7 @@ my $read_file = File::Spec->catfile("$dir/test.txt");
 ok my $wfile = Win32::Unicode::File->new;
 isa_ok $wfile, 'Win32::Unicode::File';
 
+use Data::Dumper;
 # OO test
 {
 	ok $wfile->open(r => $read_file);
@@ -27,6 +28,12 @@ isa_ok $wfile, 'Win32::Unicode::File';
 	ok $wfile->seek(0, 0);
 	is scalar @{[$wfile->readline()]}, 2;
 	ok not $wfile->getc();
+	ok $wfile->eof();
+	my $data = $wfile->slurp;
+	{
+		use bytes;
+		is length($data), file_size($wfile);
+	}
 	ok $wfile->close;
 }
 
@@ -41,5 +48,11 @@ isa_ok $wfile, 'Win32::Unicode::File';
 	is <$wfile>, "はろーわーるど\n";
 	is tell($wfile), file_size $wfile->file_name;
 	ok not getc($wfile);
+	ok eof($wfile);
+	my $data = slurp($wfile);
+	{
+		use bytes;
+		is length($data), file_size($wfile);
+	}
 	ok close $wfile;
 }
