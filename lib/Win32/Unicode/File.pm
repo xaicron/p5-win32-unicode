@@ -214,7 +214,7 @@ sub READ {
 	my $self = shift;
 	my $into = \$_[0]; shift;
 	my $len = shift;
-	my $ofset = shift;
+#	my $offset = shift;
 	
 	my $result = Win32API::File::ReadFile(
 		$self->win32_handle,
