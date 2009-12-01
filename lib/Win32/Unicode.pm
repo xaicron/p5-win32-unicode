@@ -61,7 +61,7 @@ sub import {
 __END__
 =head1 NAME
 
-Win32::Unicode.pm - Unicode string to console out
+Win32::Unicode.pm - perl unicode-friendly wrapper for win32api.
 
 =head1 SYNOPSIS
 
@@ -118,7 +118,7 @@ Many features easy to use Perl because I think it looks identical to the standar
 
 =head1 AUTHOR
 
-Yuji Shimada E<lt>xaicron@gmail.comE<gt>
+Yuji Shimada E<lt>xaicron.cpan {at} gmail.comE<gt>
 
 =head1 SEE ALSO
 
