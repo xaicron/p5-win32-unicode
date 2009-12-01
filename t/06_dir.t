@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 51;
+use Test::More tests => 63;
 use Test::Exception;
 
 local $^W; # -w switch off ( Win32::API::Struct evil warnings stop!! )
@@ -44,11 +44,19 @@ ok touchW("$dirname/森鴎外/$dirname.txt");
 my $i = 0;
 my @file_names = ("森鴎外", "$dirname.txt");
 findW(sub {
-	is $_ , $file_names[$i++];
+	my $arg = shift;
+	is $_, $file_names[$i++];
+	is $_, $arg->{file};
+	is $Win32::Unicode::Dir::name, $arg->{path};
+	is $Win32::Unicode::Dir::cwd, $arg->{cwd};
 }, $dirname);
 
 finddepthW(sub {
+	my $arg = shift;
 	is $_, $file_names[--$i];
+	is $_, $arg->{file};
+	is $Win32::Unicode::Dir::name, $arg->{path};
+	is $Win32::Unicode::Dir::cwd, $arg->{cwd};
 }, $dirname);
 
 ok rmtreeW($dirname);
