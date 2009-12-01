@@ -256,7 +256,7 @@ sub _readline {
 	
 	$line =~ s/\r\n/\n/ unless $self->{_binmode};
 	
-	if ($encoder and $line) {
+	if ($encoder) {
 		$line = $encoder->decode($line);
 		$self->{_encode} = $encoder;
 	}
