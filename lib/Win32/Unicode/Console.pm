@@ -162,33 +162,33 @@ This module is by default C<printW> and C<warnW> export functions.
 This module PerlIO-proof.
 However, when the file is redirected to the C<CORE:: print> and C<CORE:: warn> switches.
 
-=head1 METHODS
+=head1 FUNCTIONS
 
 =over
 
 =item B<printW([$fh ,] @str)>
 
-Unicode string to console out.
+Flagged utf8 string to console out.
 Like print.
 
 =item B<printfW([$fh ,] @str)>
 
-Unicode string to console out.
+Flagged utf8 string to console out.
 Like printf.
 
 =item B<sayW([$fh ,] @str)>
 
-Unicode string to console out.
+Flagged utf8 string to console out.
 Like Perl6 say.
 
 =item B<warnW(@str)>
 
-Unicode string to console out.
+Flagged utf8 string to console out.
 Like warn.
 
 =item B<dieW(@str)>
 
-Unicode string to console out.
+Flagged utf8 string to console out.
 Like die.
 
 =back
