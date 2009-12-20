@@ -84,7 +84,7 @@ function.
 
 =head1 AUTHOR
 
-Yuji Shimada E<lt>xaicron@gmail.comE<gt>
+Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
 
 =head1 SEE ALSO
 

@@ -5,7 +5,7 @@ use warnings;
 use 5.008001;
 use Exporter 'import';
 
-our $VERSION = '0.02';
+our $VERSION = '0.09';
 
 use Win32::Unicode::Console ':all';
 use Win32::Unicode::File ':all';
@@ -103,3 +103,39 @@ sub readdir {
 
 1;
 __END__
+=head1 NAME
+
+Win32::Unicode::Native.pm - override some default method
+
+=head1 SYNOPSIS
+
+  use Win32::Unicode::Native;
+  
+  print $flagged_utf8;
+  
+  open my $fh, '<', $unicode_file_name or die error;
+  
+  opendir my $dh, $unicode_dir_name or die error;
+  
+=head1 DESCRIPTION
+
+Wn32::Unicode is a perl unicode-friendly wrapper for win32api.
+This module standard functions override.
+But it's limited to just using Win32.
+
+Many features easy to use Perl because I think it looks identical to the standard function.
+
+=head1 AUTHOR
+
+Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
+
+=head1 SEE ALSO
+
+L<Win32::Unicode>
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

@@ -424,6 +424,7 @@ Win32::Unicode::Dir.pm - Unicode string directory utility.
 
 =head1 SYNOPSIS
 
+  use Win32::Unicode::Console;
   use Win32::Unicode::Dir;
   
   my $dir = "I \x{2665} Perl";
@@ -442,7 +443,7 @@ Win32::Unicode::Dir.pm - Unicode string directory utility.
           # $_ is directory
       }
   }
-  $wdir->close || die $wdir->error;
+  $wdir->close || dieW $wdir->error;
   
   my $cwd = getcwdW();
   chdirW($change_dir_name);
@@ -453,7 +454,6 @@ Win32::Unicode::Dir.pm - Unicode string directory utility.
 =head1 DESCRIPTION
 
 Win32::Unicode::Dir is Unicode string directory utility.
-It was a great help to the core module.
 
 =head1 METHODS
 
@@ -461,17 +461,15 @@ It was a great help to the core module.
 
 =item B<new>
 
-constractor.
-
   my $wdir = Win32::Unicode::Dir->new;
 
-=item B<$wdir->open($dir)>
+=item B<open($dir)>
 
 Like opendir.
 
   $wdir->open($dir) or dieW $wdir->error;
 
-=item B<$wdir->fetch()>
+=item B<fetch()>
 
 Like readdir.
 
@@ -484,12 +482,24 @@ or
   for my $file ($wdir->fetch) {
      $ hogehoge
   }
+  
+C<read> and C<readdir> is alias of fetch.
 
-=item B<$wdir->close()>
+=item B<close()>
 
 Like closedir.
 
   $wdir->close or dieW $wdir->error
+
+=item B<error()>
+
+get error message.
+
+=back
+
+=head1 FUNCTIONS
+
+=over
 
 =item B<getcwdW>
 
@@ -501,7 +511,7 @@ Like Cwd::getcwd.
 
 Like chdir.
 
-  chdirW or dieW errroW;
+  chdirW($dir) or dieW errroW;
 
 =item B<mkdirW($new_dir)>
 
@@ -544,9 +554,15 @@ move directory tree.
 like File::Find::find.
 
   findW(sub {
-    my $file = $_;
-    my $full_path = $Win32::Unicode::Dir::name;
-    my $cwd = $Win32::Unicode::Dir::cwd;
+      my $file = $_;
+      my $full_path = $Win32::Unicode::Dir::name;
+      my $cwd = $Win32::Unicode::Dir::cwd;
+  }, $dir) or dieW errorW;
+
+or
+  findW(sub {
+      my $arg = shift;
+      printf "%s : %s : %s", $arg->{file}, $arg->{path}, $arg->{cwd};
   }, $dir) or dieW errorW;
 
 =item B<finddepthW($code, $dir)>
@@ -556,18 +572,15 @@ like File::Find::finddepth.
 =item B<dir_size($dir)>
 
 get directory size.
+this function are slow.
 
   my $dir_size = dir_size($dir) or dieW errorW
-
-=item B<error()>
-
-get error message.
 
 =back
 
 =head1 AUTHOR
 
-Yuji Shimada E<lt>xaicron@gmail.comE<gt>
+Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
 
 =head1 SEE ALSO
 

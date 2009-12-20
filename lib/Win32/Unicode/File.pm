@@ -606,9 +606,116 @@ Win32::Unicode::File.pm - Unicode string file utility.
 =head1 DESCRIPTION
 
 Win32::Unicode::Dir is Unicode string file utility.
-It was a great help to the core module.
 
 =head1 METHODS
+
+=over
+
+=item B<new([$mode, $file_name])>
+
+  my $fh = Win32::Unicode::File->new;
+  my $fh = Win32::Unicode::File->new($mode, $file_name); # open $file_name;
+
+=item B<open($mode, $file_name)>
+
+  $fh->open('<', $file_name) or dieW errorW;
+  
+  open $fh, '<', $file_name or dieW errorW;
+
+  # be useful mode
+  <   = r   = rb
+  >   = w   = wb
+  >>  = a
+  +<  = r+
+  +>  = w+
+  +>> = a+
+  
+=item B<close()>
+
+  $fh->close;
+
+  close $fh;
+
+=item B<read($buff, $len)>
+
+  $fh->read(my $buff, $len) or dieW errorW;
+  print $buff;
+  
+  read $fh, my $buff, $len;
+
+=item B<readline()>
+
+  my $line = $fh->readline;
+  my @line = $fh->readline;
+  
+  my $line = readline $fh;
+  my @line = <$fh>;
+  
+=item B<print(@str)>
+
+  $fh->print(@str);
+  print $fh @str;
+  
+=item B<printf($format, @str)>
+
+  $fh->printf('[%s]', $str);
+  printf $fh '%d', $str;
+
+=item B<write(@str)>
+
+  $fh->write(@str);
+  
+=item B<seek($ofset, $whence)>
+
+  $fh->seek(10, 1);
+  
+  seek $fh, 1024, 2;
+  
+=item B<tell()>
+
+  my $current = $fh->tell();
+  
+  my $current = tell $fh;
+
+=item B<slurp()>
+
+  my $data = $fh->slurp;
+  
+=item B<eof()>
+
+  if ($fh->eof) {
+     # ...snip
+  }
+
+or
+
+  if (eof $fh) {
+     # ...snip
+  }
+
+=item B<binmode($layer)>
+
+  $fh->binmode(':encoding(cp932)')
+  
+or
+
+  binmode $fh, ':raw :utf8';
+  
+Currently available now is only the layer below.
+
+  :raw
+  :utf8
+  :encoding(foo)
+
+=item B<error()>
+
+get error message.
+
+  $fh->error;
+
+=back
+
+=head1 FUNCTIONS
 
 =over
 
@@ -679,15 +786,11 @@ Normalize the characters are not allowed in the file name.
 
   my $nomalized_file_name = filename_normalize($filename);
 
-=item B<error()>
-
-get error message.
-
 =back
 
 =head1 AUTHOR
 
-Yuji Shimada E<lt>xaicron@gmail.comE<gt>
+Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
 
 =head1 SEE ALSO
 

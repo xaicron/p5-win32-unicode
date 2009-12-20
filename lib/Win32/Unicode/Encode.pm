@@ -17,7 +17,7 @@ my $utf16 = Encode::find_encoding 'utf16-le';
 sub utf16_to_utf8 {
 	my $str = shift;
 	return unless defined $str;
-	return &_denull($utf16->decode($str));
+	return _denull($utf16->decode($str));
 }
 
 sub utf8_to_utf16 {
@@ -49,23 +49,19 @@ Win32::Unicode::Encode.pm - encode and decode util
 
 This module is by default C<utf8_to_utf16> and C<utf16_to_utf8> export functions.
 
-=head2 Methods
+=head2 FUNCTIONS
 
 =over
 
 =item utf8_to_utf16
 
-utf8 to utf16
-
 =item utf16_to_utf8
-
-utf16 to utf8
 
 =back
 
 =head1 AUTHOR
 
-Yuji Shimada E<lt>xaicron@gmail.comE<gt>
+Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
 
 =head1 SEE ALSO
 

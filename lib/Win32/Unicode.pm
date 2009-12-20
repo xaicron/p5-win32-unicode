@@ -116,9 +116,15 @@ This module many functions import :P.
 
 Many features easy to use Perl because I think it looks identical to the standard function.
 
+=head1 OPTION
+
+Switch L<Win32::Unicode::Native>.
+
+  use Win32::Unicode '-native'; # eq use Win32::Unicode::Native
+
 =head1 AUTHOR
 
-Yuji Shimada E<lt>xaicron.cpan {at} gmail.comE<gt>
+Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
 
 =head1 SEE ALSO
 
