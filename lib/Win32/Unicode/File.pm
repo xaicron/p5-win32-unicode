@@ -159,9 +159,9 @@ sub OPEN {
 		) :
 		
 		_croakW("'$attr' is unkown attribute")
-	;
+	or return;
 	
-	return 0 if $handle == INVALID_VALUE;
+	return if $handle == INVALID_VALUE;
 	
 	$self->{_handle} = $handle;
 	$self->BINMODE if $attr eq 'rb' or $attr eq 'wb';
