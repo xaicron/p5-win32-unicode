@@ -54,12 +54,14 @@ $sub_export->(qw{
 });
 
 sub open {
+	local $Carp::CarpLevel = 1;
 	my $fh = Win32::Unicode::File->new;
 	$fh->open($_[1], $_[2]) or return;
 	return $_[0] = $fh;
 }
 
 sub close {
+	local $Carp::CarpLevel = 1;
 	my $fh = $_[0];
 	$fh->close or return;
 	$_[0] = undef;
@@ -81,12 +83,14 @@ $sub_export->(qw{
 });
 
 sub opendir {
+	local $Carp::CarpLevel = 1;
 	my $dh = Win32::Unicode::Dir->new;
 	return unless $dh->open($_[1]);
 	return $_[0] = $dh;
 }
 
 sub closedir {
+	local $Carp::CarpLevel = 1;
 	my $dh = $_[0];
 	$dh->close or return;
 	$_[0] = undef;
@@ -94,6 +98,7 @@ sub closedir {
 }
 
 sub readdir {
+	local $Carp::CarpLevel = 1;
 	my $dh = shift;
 	return $dh->fetch;
 };
