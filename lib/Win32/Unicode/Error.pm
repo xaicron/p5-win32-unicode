@@ -7,7 +7,7 @@ use Win32::API ();
 use Carp ();
 use Exporter 'import';
 
-our $VERISON = '0.02';
+our $VERSION = '0.10';
 
 use Win32::Unicode::Console;
 use Win32::Unicode::Constant;
@@ -84,7 +84,7 @@ function.
 
 =head1 AUTHOR
 
-Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
+Yuji Shimada E<lt>xaicron@gmail.comE<gt>
 
 =head1 SEE ALSO
 

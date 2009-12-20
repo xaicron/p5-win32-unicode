@@ -1,5 +1,9 @@
 Revision history for Perl extension Win32::Unicode
 
+0.10    Sun Dec 20 18:39:39 2009 (+900)
+        - bug fix
+        - wrote document.
+
 0.09    Tue Nov  3 21:05:29 2009 (+900)
         - make Win32::Unicode::Native
 
