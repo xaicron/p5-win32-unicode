@@ -363,26 +363,21 @@ sub BINMODE {
 	my $self = shift;
 	my $layer = shift;
 	
-	$self->{_binmode} = 0;
-	$self->{_encode}  = undef;
-	
-	if (not defined $layer or $layer =~ /:raw/) {
-		$self->{_binmode} = 1;
-	}
-	
-	elsif ($layer eq 1) {
+	if (not defined $layer or $layer eq 1) {
 		$self->{_binmode} = 1;
 		return 1;
 	}
 	
 	if (defined $layer) {
+		if ($layer =~ /:raw/) {
+			$self->{_binmode} = 1;
+		}
+		
 		if ($layer =~ /:(utf-?8)/i or $layer =~ /:encoding\(([^\)]+)\)/) {
 			$self->{_encode} = Encode::find_encoding($1);
 		}
 		
-		else {
-			_croakW('Unknown layer');
-		}
+		_croakW("Unknown layer $layer") unless $self->{_binmode} or $self->{_encode}
 	}
 	
 	return 1;

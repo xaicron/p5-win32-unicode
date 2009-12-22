@@ -39,7 +39,7 @@ use Data::Dumper;
 
 # tie test
 {
-	ok open $wfile, '<', $read_file;
+	ok open $wfile, '<:raw', $read_file;
 	ok binmode $wfile, ':utf8';
 	is read($wfile, my $buff, 10), 10;
 	is $buff, '0123456789';
