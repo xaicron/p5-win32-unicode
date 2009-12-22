@@ -1,5 +1,8 @@
 Revision history for Perl extension Win32::Unicode
 
+0.11    Wed Dec 23 03:55:38 2009 (+900)
+        - Win32::Unicode::File binmode bug fix.
+
 0.10    Sun Dec 20 18:39:39 2009 (+900)
         - bug fix
         - wrote document.
