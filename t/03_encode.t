@@ -1,6 +1,5 @@
 use strict;
 use Test::More tests => 4;
-use Win32::Unicode::Console;
 
 use Win32::Unicode::Encode;
 use utf8;
