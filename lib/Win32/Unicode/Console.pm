@@ -109,6 +109,12 @@ sub _row_warn {
 	$ConsoleOut->(STD_ERROR_HANDLE, CONSOLE_ERROR_HANDLE, @_);
 }
 
+# Handle OO calls
+*IO::Handle::printW = \&printW unless defined &IO::Handle::printW;
+*IO::Handle::printfW = \&printfW unless defined &IO::Handle::printfW;
+*IO::Handle::sayW = \&sayW unless defined &IO::Handle::sayW;
+
+
 package Win32::Unicode::Console::Tie;
 
 sub TIEHANDLE {
