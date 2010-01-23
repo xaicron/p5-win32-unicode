@@ -61,10 +61,13 @@ my $ConsoleOut = sub {
 
 # print Unicode to Console
 sub printW {
-	if (_is_file_handle($_[0])) {
+	my $res = _is_file_handle($_[0]);
+	if ($res == 1) {
 		my $fh = shift;
-		print {$fh} join "", @_;
-		return 1;
+		return print {$fh} join "", @_;
+	}
+	elsif ($res == -1) {
+		shift;
 	}
 	
 	$ConsoleOut->(STD_OUTPUT_HANDLE, CONSOLE_OUTPUT_HANDLE, @_);
@@ -74,17 +77,22 @@ sub printW {
 
 # printf Unicode to Console
 sub printfW {
-	if (_is_file_handle($_[0])) {
+	my $res = _is_file_handle($_[0]);
+	if ($res == 1) {
 		my $fh = shift;
-		printW($fh, sprintf shift, @_)
+		return printW($fh, sprintf shift, @_);
+	}
+	elsif ($res == -1) {
+		shift;
 	}
 	
-	else {
-		printW(sprintf shift, @_);
-	}
+	printW(sprintf shift, @_);
 }
 
 sub _is_file_handle {
+	return 0 unless defined $_[0];
+	my $fileno = fileno $_[0];
+	return -1 if defined $fileno and $fileno == fileno select; # default out through.
 	ref $_[0] eq 'GLOB' and ref(*{$_[0]}{IO}) =~ /^IO::/ ? 1 : 0;
 }
 
