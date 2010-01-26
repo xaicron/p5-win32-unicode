@@ -29,4 +29,7 @@ TODO: {
 	stdout_is { sayW STDOUT $str } "$str\n";
 };
 
+throws_ok { printW STDOUT, $str } qr/No comma allowed after filehandle/;
+throws_ok { printfW STDOUT, $str } qr/No comma allowed after filehandle/;
+
 done_testing;

@@ -64,10 +64,12 @@ sub printW {
 	my $res = _is_file_handle($_[0]);
 	if ($res == 1) {
 		my $fh = shift;
+		Carp::croak "No comma allowed after filehandle" unless scalar @_;
 		return print {$fh} join "", @_;
 	}
 	elsif ($res == -1) {
 		shift;
+		Carp::croak "No comma allowed after filehandle" unless scalar @_;
 	}
 	
 	$ConsoleOut->(STD_OUTPUT_HANDLE, CONSOLE_OUTPUT_HANDLE, @_);
@@ -80,10 +82,12 @@ sub printfW {
 	my $res = _is_file_handle($_[0]);
 	if ($res == 1) {
 		my $fh = shift;
+		Carp::croak "No comma allowed after filehandle" unless scalar @_;
 		return printW($fh, sprintf shift, @_);
 	}
 	elsif ($res == -1) {
 		shift;
+		Carp::croak "No comma allowed after filehandle" unless scalar @_;
 	}
 	
 	printW(sprintf shift, @_);
