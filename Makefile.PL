@@ -1,6 +1,8 @@
 use inc::Module::Install;
 name 'Win32-Unicode';
 all_from 'lib/Win32/Unicode.pm';
+readme_from 'lib/Win32/Unicode.pm';
+auto_set_repository;
 
 requires 'Win32::API';
 requires 'Win32API::File';
