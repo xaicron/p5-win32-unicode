@@ -414,6 +414,11 @@ sub _croakW {
 	die Carp::shortmess();
 }
 
+sub DESTROY {
+	my $self = shift;
+	$self->close if defined $self->{handle};
+}
+
 1;
 __END__
 =head1 NAME
