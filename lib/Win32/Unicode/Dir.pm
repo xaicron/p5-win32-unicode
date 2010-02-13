@@ -131,9 +131,7 @@ sub close {
 	my $self = shift;
 	_croakW("Can't open directory handle") unless $self->{handle};
 	return 0 unless $FindClose->Call($self->{handle});
-	for my $key (qw/dir handle first FileInfo/) {
-		delete $self->{handle};
-	}
+	delete @$self{qw[dir handle first FileInfo]};
 	return 1;
 }
 
