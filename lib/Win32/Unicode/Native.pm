@@ -13,32 +13,32 @@ use Win32::Unicode::Dir ':all';
 use Win32::Unicode::Error ();
 
 our @EXPORT = qw{
-	error
-	file_size
-	file_type
-	dir_size
-	open
-	close
-	opendir
-	closedir
-	readdir
+    error
+    file_size
+    file_type
+    dir_size
+    open
+    close
+    opendir
+    closedir
+    readdir
 };
 
 my $sub_export = sub {
-	for my $method (@_) {
-		my ($func) = $method =~ /^(.*)W$/;
-		no strict 'refs';
-		*{"$func"} = \&{"$method"};
-		push @EXPORT, $func;
-	}
+    for my $method (@_) {
+        my ($func) = $method =~ /^(.*)W$/;
+        no strict 'refs';
+        *{"$func"} = \&{"$method"};
+        push @EXPORT, $func;
+    }
 };
 
 # Win32::Unicode::Console
 $sub_export->(qw{
-	printfW
-	warnW
-	dieW
-	sayW
+    printfW
+    warnW
+    dieW
+    sayW
 });
 
 binmode STDOUT => ':utf8';
@@ -46,61 +46,61 @@ tie *STDOUT, 'Win32::Unicode::Console::Tie';
 
 # Win32::Unicode::File
 $sub_export->(qw{
-	unlinkW
-	renameW
-	copyW
-	moveW
-	touchW
+    unlinkW
+    renameW
+    copyW
+    moveW
+    touchW
 });
 
 sub open {
-	local $Carp::CarpLevel = 1;
-	my $fh = Win32::Unicode::File->new;
-	$fh->open($_[1], $_[2]) or return;
-	return $_[0] = $fh;
+    local $Carp::CarpLevel = 1;
+    my $fh = Win32::Unicode::File->new;
+    $fh->open($_[1], $_[2]) or return;
+    return $_[0] = $fh;
 }
 
 sub close {
-	local $Carp::CarpLevel = 1;
-	my $fh = $_[0];
-	$fh->close or return;
-	$_[0] = undef;
-	return 1;
+    local $Carp::CarpLevel = 1;
+    my $fh = $_[0];
+    $fh->close or return;
+    $_[0] = undef;
+    return 1;
 }
 
 # Win32::Unicode::Dir
 $sub_export->(qw{
-	mkdirW
-	rmdirW
-	chdirW
-	findW
-	finddepthW
-	mkpathW
-	rmtreeW
-	mvtreeW
-	cptreeW
-	getcwdW
+    mkdirW
+    rmdirW
+    chdirW
+    findW
+    finddepthW
+    mkpathW
+    rmtreeW
+    mvtreeW
+    cptreeW
+    getcwdW
 });
 
 sub opendir {
-	local $Carp::CarpLevel = 1;
-	my $dh = Win32::Unicode::Dir->new;
-	return unless $dh->open($_[1]);
-	return $_[0] = $dh;
+    local $Carp::CarpLevel = 1;
+    my $dh = Win32::Unicode::Dir->new;
+    return unless $dh->open($_[1]);
+    return $_[0] = $dh;
 }
 
 sub closedir {
-	local $Carp::CarpLevel = 1;
-	my $dh = $_[0];
-	$dh->close or return;
-	$_[0] = undef;
-	return 1;
+    local $Carp::CarpLevel = 1;
+    my $dh = $_[0];
+    $dh->close or return;
+    $_[0] = undef;
+    return 1;
 }
 
 sub readdir {
-	local $Carp::CarpLevel = 1;
-	my $dh = shift;
-	return $dh->fetch;
+    local $Carp::CarpLevel = 1;
+    my $dh = shift;
+    return $dh->fetch;
 };
 
 # Win32::Unicode::Error

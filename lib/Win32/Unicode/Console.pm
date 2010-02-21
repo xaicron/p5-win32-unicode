@@ -20,112 +20,112 @@ our $VERSION = '0.12';
 
 # GetStdHandle
 my $GetStdHandle = Win32::API->new('kernel32.dll',
-	'GetStdHandle',
-	'N',
-	'N',
+    'GetStdHandle',
+    'N',
+    'N',
 ) or die "GetStdHandle: $^E";
 
 # WriteConsole
 my $WriteConsole = Win32::API->new('kernel32.dll',
-	'WriteConsoleW',
-	[qw(N P N N P)],
-	'I',
+    'WriteConsoleW',
+    [qw(N P N N P)],
+    'I',
 ) or die "WriteConsole: $^E";
 
 # backup default std handle
 my $STD_HANDLE = {
-	STD_OUTPUT_HANDLE, $GetStdHandle->Call(STD_OUTPUT_HANDLE),
-	STD_ERROR_HANDLE,  $GetStdHandle->Call(STD_ERROR_HANDLE)
+    STD_OUTPUT_HANDLE, $GetStdHandle->Call(STD_OUTPUT_HANDLE),
+    STD_ERROR_HANDLE,  $GetStdHandle->Call(STD_ERROR_HANDLE)
 };
 
 # ConsoleOut
 my $ConsoleOut = sub {
-	my $out_handle = shift;
-	my $handle = $GetStdHandle->Call($out_handle);
-	return 0 unless @_;
-	
-	if ($handle != $STD_HANDLE->{$out_handle}) {
-		if (tied *STDOUT and ref tied *STDOUT eq 'Win32::Unicode::Console::Tie') {
-			no warnings 'untie';
-			untie *STDOUT;
-			print @_;
-			tie *STDOUT, 'Win32::Unicode::Console::Tie';
-			return 1;
-		}
-		return print @_;
-	}
-	
-	my $str = join '', @_;
-	
-	while ($str) {
-		my $tmp_str = substr($str, 0, MAX_BUFFER_SIZE);
-		substr($str, 0, MAX_BUFFER_SIZE) = '';
-		
-		my $buff = 0;
-		$WriteConsole->Call($handle, utf8_to_utf16($tmp_str), length($tmp_str), $buff, NULL);
-	}
+    my $out_handle = shift;
+    my $handle = $GetStdHandle->Call($out_handle);
+    return 0 unless @_;
+    
+    if ($handle != $STD_HANDLE->{$out_handle}) {
+        if (tied *STDOUT and ref tied *STDOUT eq 'Win32::Unicode::Console::Tie') {
+            no warnings 'untie';
+            untie *STDOUT;
+            print @_;
+            tie *STDOUT, 'Win32::Unicode::Console::Tie';
+            return 1;
+        }
+        return print @_;
+    }
+    
+    my $str = join '', @_;
+    
+    while ($str) {
+        my $tmp_str = substr($str, 0, MAX_BUFFER_SIZE);
+        substr($str, 0, MAX_BUFFER_SIZE) = '';
+        
+        my $buff = 0;
+        $WriteConsole->Call($handle, utf8_to_utf16($tmp_str), length($tmp_str), $buff, NULL);
+    }
 };
 
 # print Unicode to Console
 sub printW {
-	my $res = _is_file_handle($_[0]);
-	if ($res == 1) {
-		my $fh = shift;
-		Carp::croak "No comma allowed after filehandle" unless scalar @_;
-		return print {$fh} join "", @_;
-	}
-	elsif ($res == -1) {
-		shift;
-		Carp::croak "No comma allowed after filehandle" unless scalar @_;
-	}
-	
-	$ConsoleOut->(STD_OUTPUT_HANDLE, @_);
-	
-	return 1;
+    my $res = _is_file_handle($_[0]);
+    if ($res == 1) {
+        my $fh = shift;
+        Carp::croak "No comma allowed after filehandle" unless scalar @_;
+        return print {$fh} join "", @_;
+    }
+    elsif ($res == -1) {
+        shift;
+        Carp::croak "No comma allowed after filehandle" unless scalar @_;
+    }
+    
+    $ConsoleOut->(STD_OUTPUT_HANDLE, @_);
+    
+    return 1;
 }
 
 # printf Unicode to Console
 sub printfW {
-	my $res = _is_file_handle($_[0]);
-	if ($res == 1) {
-		my $fh = shift;
-		Carp::croak "No comma allowed after filehandle" unless scalar @_;
-		return printW($fh, sprintf shift, @_);
-	}
-	elsif ($res == -1) {
-		shift;
-		Carp::croak "No comma allowed after filehandle" unless scalar @_;
-	}
-	
-	printW(sprintf shift, @_);
+    my $res = _is_file_handle($_[0]);
+    if ($res == 1) {
+        my $fh = shift;
+        Carp::croak "No comma allowed after filehandle" unless scalar @_;
+        return printW($fh, sprintf shift, @_);
+    }
+    elsif ($res == -1) {
+        shift;
+        Carp::croak "No comma allowed after filehandle" unless scalar @_;
+    }
+    
+    printW(sprintf shift, @_);
 }
 
 sub _is_file_handle {
-	return 0 unless defined $_[0];
-	my $fileno = fileno $_[0];
-	return -1 if defined $fileno and $fileno == fileno select; # default out through.
-	ref $_[0] eq 'GLOB' and ref(*{$_[0]}{IO}) =~ /^IO::/ ? 1 : 0;
+    return 0 unless defined $_[0];
+    my $fileno = fileno $_[0];
+    return -1 if defined $fileno and $fileno == fileno select; # default out through.
+    ref $_[0] eq 'GLOB' and ref(*{$_[0]}{IO}) =~ /^IO::/ ? 1 : 0;
 }
 
 # say Unicode to Console
 sub sayW {
-	printW(@_, "\n");
+    printW(@_, "\n");
 }
 
 # warn Unicode to Console
 sub warnW {
-	$ConsoleOut->(STD_ERROR_HANDLE, Carp::shortmess(@_));
-	return 1;
+    $ConsoleOut->(STD_ERROR_HANDLE, Carp::shortmess(@_));
+    return 1;
 }
 
 # die Unicode to Console
 sub dieW {
-	_row_warn(@_);
-	Carp::croak '';
+    _row_warn(@_);
+    Carp::croak '';
 }
 
 sub _row_warn {
-	$ConsoleOut->(STD_ERROR_HANDLE, @_);
+    $ConsoleOut->(STD_ERROR_HANDLE, @_);
 }
 
 # Handle OO calls
@@ -137,23 +137,23 @@ sub _row_warn {
 package Win32::Unicode::Console::Tie;
 
 sub TIEHANDLE {
-	my $class = shift;
-	bless {}, $class;
+    my $class = shift;
+    bless {}, $class;
 }
 
 sub PRINT {
-	my $self = shift;
-	Win32::Unicode::Console::printW(@_);
+    my $self = shift;
+    Win32::Unicode::Console::printW(@_);
 }
 
 sub PRINTF {
-	my $self = shift;
-	my $format = shift;
-	$self->PRINT(sprintf $format, @_);
+    my $self = shift;
+    my $format = shift;
+    $self->PRINT(sprintf $format, @_);
 }
 
 sub BINMODE {
-	# TODO...?
+    # TODO...?
 }
 
 1;

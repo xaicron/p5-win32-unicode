@@ -19,36 +19,36 @@ our @EXPORT_OK = qw//;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
 my $GetLastError = Win32::API->new('kernel32.dll',
-	'GetLastError',
-	'',
-	'I',
+    'GetLastError',
+    '',
+    'I',
 ) or die $^E;
 
 my $FormatMessage = Win32::API->new('kernel32.dll', 
-	'FormatMessageW',
-	[qw/I P I I P I P/],
-	'I',
+    'FormatMessageW',
+    [qw/I P I I P I P/],
+    'I',
 ) or die $^E;
 
 sub error {
-	shift;
-	my $buff = BUFF;
-	my $result = $FormatMessage->Call(
-		FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL,
-		$GetLastError->Call(),
-		LANG_USER_DEFAULT,
-		$buff,
-		length($buff),
-		NULL,
-	);
-	
-	$buff = unpack "A520", $buff;
-	return utf16_to_utf8($buff);
+    shift;
+    my $buff = BUFF;
+    my $result = $FormatMessage->Call(
+        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        $GetLastError->Call(),
+        LANG_USER_DEFAULT,
+        $buff,
+        length($buff),
+        NULL,
+    );
+    
+    $buff = unpack "A520", $buff;
+    return utf16_to_utf8($buff);
 }
 
 sub errorW {
-	return __PACKAGE__->error;
+    return __PACKAGE__->error;
 }
 
 1;
