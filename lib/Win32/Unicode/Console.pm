@@ -2,7 +2,7 @@ package Win32::Unicode::Console;
 
 use strict;
 use warnings;
-use 5.008001;
+use 5.008003;
 use utf8;
 use Carp ();
 use Win32::API ();

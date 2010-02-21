@@ -2,7 +2,7 @@ package Win32::Unicode::Encode;
 
 use strict;
 use warnings;
-use 5.008001;
+use 5.008003;
 use Encode ();
 use Exporter 'import';
 

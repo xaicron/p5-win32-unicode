@@ -3,7 +3,7 @@ package Win32::Unicode::File;
 use strict;
 use warnings;
 use utf8;
-use 5.008001;
+use 5.008003;
 use Win32::API ();
 use Win32API::File ();
 use Carp ();
