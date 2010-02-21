@@ -11,8 +11,9 @@ tests 't/*.t';
 author_tests 'xt';
 
 build_requires 'Test::More';
-test_requires  'Test::Output';
-test_requires  'Test::Base';
+test_requires 'Test::Output';
+test_requires 'Test::Base';
+test_requires 'Test::Exception';
 use_test_base;
 auto_include;
 WriteAll;
