@@ -1,6 +1,11 @@
 Revision history for Perl extension Win32::Unicode
 
-0.12    Sun February 21 19:04:39 2010 (+900)
+0.13    Mon Feb 22 00:52:37 2010 (+900)
+        - Win32::Unicode::Console
+            When the console steering wheel changed,
+            the bug that was not output was corrected.
+
+0.12    Sun Feb 21 19:04:39 2010 (+900)
         - Win32::Unicode::Dir
             little bug fix. # thx report Stefan
             added DESTROY
