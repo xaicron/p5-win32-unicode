@@ -1,75 +1,67 @@
 use strict;
 use warnings;
 use utf8;
-use Test::Base;
+use Test::More;
 use Test::Exception;
 
 use Win32::Unicode::File qw/filename_normalize/;
-
-plan tests => (1 * blocks) + 1;
 
 dies_ok { filename_normalize() };
 
 sub normalize { filename_normalize(shift) }
 
-filters {
-	input    => [qw/chomp normalize/],
-	expected => [qw/chomp/],
+for (@{test_data()}) {
+    is normalize( $_->{input} ), $_->{expected}, $_->{desc};
+}
+
+done_testing;
+
+sub test_data {
+    return [
+        {
+            desc     => 'test [ \ ]',
+            input    => 'test_is_\_filename.txt',
+            expected => 'test_is_￥_filename.txt',
+        },
+        {
+            desc     => 'test [ / ]',
+            input    => 'test_is_/_filename.txt',
+            expected => 'test_is_／_filename.txt',
+        },
+        {
+            desc     => 'test [ : ]',
+            input    => 'test_is_:_filename.txt',
+            expected => 'test_is_：_filename.txt',
+        },
+        {
+            desc     => 'test [ * ]',
+            input    => 'test_is_*_filename.txt',
+            expected => 'test_is_＊_filename.txt',
+        },
+        {
+            desc     => 'test [ ? ]',
+            input    => 'test_is_?_filename.txt',
+            expected => 'test_is_？_filename.txt',
+        },
+        {
+            desc     => 'test [ " ]',
+            input    => 'test_is_"_filename.txt',
+            expected => 'test_is_″_filename.txt',
+        },
+        {
+            desc     => 'test [ < ]',
+            input    => 'test_is_<_filename.txt',
+            expected => 'test_is_＜_filename.txt',
+        },
+        {
+            desc     => 'test [ > ]',
+            input    => 'test_is_>_filename.txt',
+            expected => 'test_is_＞_filename.txt',
+        },
+        {
+            desc     => 'test [ | ]',
+            input    => 'test_is_|_filename.txt',
+            expected => 'test_is_｜_filename.txt',
+        },
+    ];
 };
-
-run_is;
-
-__END__
-=== test [ \ ]
---- input
-test_is_\_filename.txt
---- expected
-test_is_￥_filename.txt
-
-=== test [ / ]
---- input
-test_is_/_filename.txt
---- expected
-test_is_／_filename.txt
-
-=== test [ : ]
---- input
-test_is_:_filename.txt
---- expected
-test_is_：_filename.txt
-
-=== test [ * ]
---- input
-test_is_*_filename.txt
---- expected
-test_is_＊_filename.txt
-
-=== test [ ? ]
---- input
-test_is_?_filename.txt
---- expected
-test_is_？_filename.txt
-
-=== test [ " ]
---- input
-test_is_"_filename.txt
---- expected
-test_is_″_filename.txt
-
-=== test [ < ]
---- input
-test_is_<_filename.txt
---- expected
-test_is_＜_filename.txt
-
-=== test [ > ]
---- input
-test_is_>_filename.txt
---- expected
-test_is_＞_filename.txt
-
-=== test [ | ]
---- input
-test_is_|_filename.txt
---- expected
-test_is_｜_filename.txt
