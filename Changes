@@ -1,5 +1,13 @@
 Revision history for Perl extension Win32::Unicode
 
+0.12    Sun February 21 19:04:39 2010 (+900)
+        - Win32::Unicode::Dir
+            little bug fix. # thx report Stefan
+            added DESTROY
+        - Win32::Unicode::Console
+            deep recursive bug fix.
+            print $fh $str support.
+
 0.11    Wed Dec 23 03:55:38 2009 (+900)
         - Win32::Unicode::File binmode bug fix.
 
