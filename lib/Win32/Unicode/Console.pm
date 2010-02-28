@@ -102,9 +102,9 @@ sub printfW {
 
 sub _is_file_handle {
     return 0 unless defined $_[0];
-    my $fileno = fileno $_[0];
+    my $fileno = ref $_[0] eq 'GLOB' ? fileno $_[0] : undef;
     return -1 if defined $fileno and $fileno == fileno select; # default out through.
-    ref $_[0] eq 'GLOB' and ref(*{$_[0]}{IO}) =~ /^IO::/ ? 1 : 0;
+    defined $fileno and ref(*{$_[0]}{IO}) =~ /^IO::/ ? 1 : 0;
 }
 
 # say Unicode to Console

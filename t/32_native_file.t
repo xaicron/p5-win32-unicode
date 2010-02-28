@@ -20,6 +20,7 @@ use Win32::Unicode::Native;
 	ok open my $fh, '>', "$dir/write.txt" or die error;
 	isa_ok $fh, 'Win32::Unicode::File';
 	ok print $fh "write\n";
+	ok print $fh, "write\n";
 	ok close $fh;
 }
 
