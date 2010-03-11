@@ -313,32 +313,32 @@ sub _cptree {
 
 # like File::Find::find
 sub findW {
-    _croakW('Usage: findW(code_ref, dir)') unless @_ == 2;
+    _croakW('Usage: findW(code_ref, dir)') unless @_ >= 2;
     my $code = shift;
-    my $dir = catfile shift;
-    _find_wrap($code, $dir, 0);
+    _find_wrap($code, 0, @_);
     return 1;
 }
 
 # like File::Find::finddepth
 sub finddepthW {
-    _croakW('Usage: finddepthW(code_ref, dir)') unless @_ == 2;
+    _croakW('Usage: finddepthW(code_ref, dir)') unless @_ >= 2;
     my $code = shift;
-    my $dir = catfile shift;
-    _find_wrap($code, $dir, 1);
+    _find_wrap($code, 1, @_);
     return 1;
 }
 
 sub _find_wrap {
     my $code = shift;
-    my $dir = shift;
     my $bydepth = shift;
-    _croakW("$dir: no such directory") unless file_type(d => $dir);
-    
-    my $current = getcwdW;
-    _find($code, $dir, $bydepth);
-    chdirW($current);
-    $name = $cwd = undef;
+    for my $arg (@_) {
+        my $dir = catfile $arg;
+        _croakW("$dir: no such directory") unless file_type(d => $dir);
+        
+        my $current = getcwdW;
+        _find($code, $dir, $bydepth);
+        chdirW($current);
+        $name = $cwd = undef;
+    }
 }
 
 sub _find {
