@@ -32,7 +32,7 @@ my $WriteConsole = Win32::API->new('kernel32.dll',
     'I',
 ) or die "WriteConsole: $^E";
 
-# backup default std handle
+# default std handle
 my $STD_HANDLE = {
     STD_OUTPUT_HANDLE, $GetStdHandle->Call(STD_OUTPUT_HANDLE),
     STD_ERROR_HANDLE,  $GetStdHandle->Call(STD_ERROR_HANDLE)
@@ -41,10 +41,11 @@ my $STD_HANDLE = {
 # ConsoleOut
 my $ConsoleOut = sub {
     my $out_handle = shift;
-    my $handle = $GetStdHandle->Call($out_handle);
+    my $handle = $STD_HANDLE->{$out_handle};
+    my $console_handle = shift;
     return 0 unless @_;
     
-    if ($handle != $STD_HANDLE->{$out_handle}) {
+    unless ($console_handle->{$handle}) {
         if (tied *STDOUT and ref tied *STDOUT eq 'Win32::Unicode::Console::Tie') {
             no warnings 'untie';
             untie *STDOUT;
@@ -79,7 +80,7 @@ sub printW {
         Carp::croak "No comma allowed after filehandle" unless scalar @_;
     }
     
-    $ConsoleOut->(STD_OUTPUT_HANDLE, @_);
+    $ConsoleOut->(STD_OUTPUT_HANDLE, CONSOLE_OUTPUT_HANDLE, @_);
     
     return 1;
 }
@@ -114,7 +115,7 @@ sub sayW {
 
 # warn Unicode to Console
 sub warnW {
-    $ConsoleOut->(STD_ERROR_HANDLE, Carp::shortmess(@_));
+    $ConsoleOut->(STD_ERROR_HANDLE, CONSOLE_ERROR_HANDLE, Carp::shortmess(@_));
     return 1;
 }
 
@@ -125,7 +126,7 @@ sub dieW {
 }
 
 sub _row_warn {
-    $ConsoleOut->(STD_ERROR_HANDLE, @_);
+    $ConsoleOut->(STD_ERROR_HANDLE, CONSOLE_ERROR_HANDLE, @_);
 }
 
 # Handle OO calls
