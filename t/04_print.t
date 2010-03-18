@@ -10,12 +10,9 @@ binmode Test::More->builder->output, ':utf8';
 
 my $str = " I \x{2665} Perl";
 
-TODO: {
-	local $TODO = 'ToDo';
-	stdout_is { printW($str) }  $str;
-	stdout_is { printfW("[%s]", $str) } "[$str]" ;
-	stdout_is { sayW($str) } "$str\n";
-};
+stdout_is { printW($str) }  $str;
+stdout_is { printfW("[%s]", $str) } "[$str]" ;
+stdout_is { sayW($str) } "$str\n";
 
 stderr_like { printW undef } qr/uninitialized/;
 stderr_like { printfW undef } qr/uninitialized/;
