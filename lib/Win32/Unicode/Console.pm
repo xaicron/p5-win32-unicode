@@ -46,6 +46,7 @@ my $ConsoleOut = sub {
     return 0 unless @_;
     
     unless ($console_handle->{$handle}) {
+        return warn @_ if $handle == $STD_HANDLE->{&STD_ERROR_HANDLE};
         if (tied *STDOUT and ref tied *STDOUT eq 'Win32::Unicode::Console::Tie') {
             no warnings 'untie';
             untie *STDOUT;
