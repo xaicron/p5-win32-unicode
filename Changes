@@ -1,5 +1,9 @@
 Revision history for Perl extension Win32::Unicode
 
+0.15    Thu Mar 18 16:53:26 2010 (+900)
+        - Win32::Unicode::Console
+            supported console-redirect.
+
 0.14    Sun Feb 28 14:46:56 2010 (+900)
         - Win32::Unicode::Console
             print 'foo', 'bar' ... had stopped working
