@@ -72,12 +72,12 @@ sub printW {
     my $res = _is_file_handle($_[0]);
     if ($res == 1) {
         my $fh = shift;
-        Carp::croak "No comma allowed after filehandle" unless scalar @_;
+        _syntax_error() unless scalar @_;
         return print {$fh} join "", @_;
     }
     elsif ($res == -1) {
         shift;
-        Carp::croak "No comma allowed after filehandle" unless scalar @_;
+        _syntax_error() unless scalar @_;
     }
     
     $ConsoleOut->(STD_OUTPUT_HANDLE, CONSOLE_OUTPUT_HANDLE, @_);
@@ -90,12 +90,12 @@ sub printfW {
     my $res = _is_file_handle($_[0]);
     if ($res == 1) {
         my $fh = shift;
-        Carp::croak "No comma allowed after filehandle" unless scalar @_;
+        _syntax_error() unless scalar @_;
         return printW($fh, sprintf shift, @_);
     }
     elsif ($res == -1) {
         shift;
-        Carp::croak "No comma allowed after filehandle" unless scalar @_;
+        _syntax_error() unless scalar @_;
     }
     
     printW(sprintf shift, @_);
@@ -106,6 +106,11 @@ sub _is_file_handle {
     my $fileno = ref $_[0] eq 'GLOB' ? fileno $_[0] : undef;
     return -1 if defined $fileno and $fileno == fileno select; # default out through.
     defined $fileno and ref(*{$_[0]}{IO}) =~ /^IO::/ ? 1 : 0;
+}
+
+sub _syntax_error {
+    local $Carp::CarpLevel = 1;
+    Carp::croak "No comma allowed after filehandle";
 }
 
 # say Unicode to Console
