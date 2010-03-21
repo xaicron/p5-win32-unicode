@@ -6,6 +6,8 @@ use Win32::Unicode;
 use utf8;
 use File::Temp qw/tempdir tempfile/;
 
+close STDERR; # warnings to be quiet
+
 {
 	my $dir = 't/07_files';
 	my $cmd = 'attrib';

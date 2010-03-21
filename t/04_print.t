@@ -6,7 +6,7 @@ use Test::Exception;
 use Test::Output;
 use Win32::Unicode;
 
-binmode Test::More->builder->output, ':utf8';
+close STDERR; # warnings to be quiet
 
 my $str = " I \x{2665} Perl";
 

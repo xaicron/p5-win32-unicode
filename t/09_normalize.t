@@ -6,6 +6,8 @@ use Test::Exception;
 
 use Win32::Unicode::File qw/filename_normalize/;
 
+close STDERR; # warnings to be quiet
+
 dies_ok { filename_normalize() };
 
 sub normalize { filename_normalize(shift) }
