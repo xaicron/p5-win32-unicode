@@ -57,7 +57,8 @@ my $ConsoleOut = sub {
         return print @_;
     }
     
-    my $str = join '', @_;
+    my $separator = defined $\ ? $\ : '';
+    my $str = join '', @_, $separator;
     
     while ($str) {
         my $tmp_str = substr($str, 0, MAX_BUFFER_SIZE);
