@@ -39,7 +39,7 @@ my $STD_HANDLE = {
 };
 
 # ConsoleOut
-my $ConsoleOut = sub {
+sub _ConsoleOut {
     my $out_handle = shift;
     my $handle = $STD_HANDLE->{$out_handle};
     my $console_handle = shift;
@@ -82,7 +82,7 @@ sub printW {
         _syntax_error() unless scalar @_;
     }
     
-    $ConsoleOut->(STD_OUTPUT_HANDLE, CONSOLE_OUTPUT_HANDLE, @_);
+    _ConsoleOut(STD_OUTPUT_HANDLE, CONSOLE_OUTPUT_HANDLE, @_);
     
     return 1;
 }
@@ -122,7 +122,7 @@ sub sayW {
 
 # warn Unicode to Console
 sub warnW {
-    $ConsoleOut->(STD_ERROR_HANDLE, CONSOLE_ERROR_HANDLE, Carp::shortmess(@_));
+    _ConsoleOut(STD_ERROR_HANDLE, CONSOLE_ERROR_HANDLE, Carp::shortmess(@_));
     return 1;
 }
 
@@ -133,7 +133,7 @@ sub dieW {
 }
 
 sub _row_warn {
-    $ConsoleOut->(STD_ERROR_HANDLE, CONSOLE_ERROR_HANDLE, @_);
+    _ConsoleOut(STD_ERROR_HANDLE, CONSOLE_ERROR_HANDLE, @_);
 }
 
 # Handle OO calls
