@@ -1,5 +1,10 @@
 Revision history for Perl extension Win32::Unicode
 
+0.17    Fri Apr  2 15:26:18 2010 (+900)
+        - Win32::Unicode::Console
+            Added output record separator (allow $\).
+            Add to redirect standard output compatible.
+
 0.16    Thu Apr  1 23:35:56 2010 (+900)
         - Win32::Unicode::Console
             supported for redirecting STDERR.

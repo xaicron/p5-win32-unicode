@@ -7,7 +7,7 @@ use Win32::API ();
 use Carp ();
 use Exporter 'import';
 
-our $VERSION = '0.16';
+our $VERSION = '0.17';
 
 use Win32::Unicode::Console;
 use Win32::Unicode::Constant;
