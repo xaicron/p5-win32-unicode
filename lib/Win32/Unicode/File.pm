@@ -545,7 +545,6 @@ sub error {
 
 sub _get_file_type {
     my $file = shift;
-    my $buff = BUFF;
     $file = utf8_to_utf16($file) . NULL;
     my $result = $GetFileAttributes->Call($file);
     if ($result == INVALID_VALUE) {
