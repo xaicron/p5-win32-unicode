@@ -406,6 +406,7 @@ sub file_type {
     my $file = catfile shift;
     
     my $get_attr = _get_file_type($file);
+    return unless defined $get_attr;
     for (split //, $attr) {
         if ($_ eq 'f') {
             return unless _is_file($file);
@@ -547,7 +548,7 @@ sub _get_file_type {
     my $file = shift;
     $file = utf8_to_utf16($file) . NULL;
     my $result = $GetFileAttributes->Call($file);
-    if ($result == INVALID_VALUE) {
+    if (defined $result && $result == INVALID_VALUE) {
         return;
     }
     return $result;
