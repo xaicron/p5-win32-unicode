@@ -180,7 +180,7 @@ sub chdirW {
     my $set_dir = shift;
     _croakW('Usage: chdirW(dirname)') unless defined $set_dir;
     $set_dir = utf8_to_utf16(catfile $set_dir) . NULL;
-    return 0 unless $SetCurrentDirectory->Call($set_dir);
+    return unless $SetCurrentDirectory->Call($set_dir);
     return 1;
 }
 
@@ -205,25 +205,25 @@ sub rmtreeW {
     my $stop = shift;
     _croakW('Usage: rmtreeW(dirname)') unless defined $dir;
     $dir = catfile $dir;
-    return 0 unless file_type(d => $dir);
+    return unless file_type(d => $dir);
     my $code = sub {
         my $file = $_;
         if (file_type(f => $file)) {
             if (not unlinkW $file) {
-                return 0 if $stop;
+                return if $stop;
             }
         }
         
         elsif (file_type(d => $file)) {
             if (not rmdirW $file) {
-                return 0 if $stop;
+                return if $stop;
             }
         }
     };
     
     finddepthW($code, $dir);
     
-    return 0 unless rmdirW($dir);
+    return unless rmdirW($dir);
     return 1;
 }
 
@@ -237,7 +237,7 @@ sub mkpathW {
     for (splitdir $dir) {
         $mkpath = catfile $mkpath, $_;
         next if file_type d => $mkpath;
-        return 0 unless mkdirW $mkpath;
+        return unless mkdirW $mkpath;
     }
     return 1;
 }
@@ -306,7 +306,7 @@ sub _cptree {
     
     finddepthW($code, $from);
     if ($bymove) {
-        return 0 unless rmdirW $from;
+        return unless rmdirW $from;
     }
     return 1;
 }
