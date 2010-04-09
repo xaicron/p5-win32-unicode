@@ -37,18 +37,6 @@ my %FILE_TYPE_ATTRIBUTES = (
     e => FILE_ATTRIBUTE_ENCRYPTED,
 );
 
-my $PathFileExists = Win32::API->new('shlwapi.dll',
-    'PathFileExistsW',
-    'P',
-    'I',
-);
-
-my $PathIsDirectory = Win32::API->new('shlwapi.dll',
-    'PathIsDirectoryW',
-    'P',
-    'I',
-);
-
 my $GetFileAttributes = Win32::API->new('kernel32.dll',
     'GetFileAttributesW',
     'P',
@@ -409,7 +397,7 @@ sub file_type {
     return unless defined $get_attr;
     for (split //, $attr) {
         if ($_ eq 'f') {
-            return unless _is_file($file);
+            return if $get_attr & $FILE_TYPE_ATTRIBUTES{d};
             next;
         }
         
@@ -552,21 +540,6 @@ sub _get_file_type {
         return;
     }
     return $result;
-}
-
-sub _is_file {
-    my $file = shift;
-    my $tmp_file = utf8_to_utf16($file) . NULL;
-    if ($PathFileExists->Call($tmp_file)) {
-        return 1 unless _is_dir($file);
-    };
-    return;
-}
-
-sub _is_dir {
-    my $file = shift;
-    $file = utf8_to_utf16($file) . NULL;
-    return $PathIsDirectory->Call($file);
 }
 
 sub _croakW {
