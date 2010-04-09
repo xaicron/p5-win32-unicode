@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 63;
+use Test::More;
 use Test::Exception;
 
 local $^W; # -w switch off ( Win32::API::Struct evil warnings stop!! )
@@ -27,6 +27,17 @@ is $wdir->fetch, '..';
 is $wdir->fetch, $name;
 ok $wdir->close;
 
+do {
+    ok touchW "$path/0"; # create "0" file
+    my $wdir = Win32::Unicode::Dir->new;
+    $wdir->open($path);
+    my $count;
+    while (defined(my $file = $wdir->fetch)) {
+        $count++;
+    }
+    is $count, 4; # . .. $name 0
+};
+
 ok chdirW($path);
 is getcwdW, $path;
 
@@ -38,28 +49,29 @@ ok not mkdirW($dirname);
 ok rmdirW($dirname);
 ok not rmdirW($dirname);
 
-
 ok mkdirW($dirname);
 ok mkdirW("$dirname/森鴎外");
 ok touchW("$dirname/森鴎外/$dirname.txt");
+ok touchW("$dirname/森鴎外/0");
 
-my $i = 0;
-my @file_names = ("森鴎外", "$dirname.txt");
+my $file_names = {"森鴎外" => 1, "$dirname.txt" => 1, "0" => 1};
 findW(sub {
-	my $arg = shift;
-	is $_, $file_names[$i++];
-	is $_, $arg->{file};
-	is $Win32::Unicode::Dir::name, $arg->{path};
-	is $Win32::Unicode::Dir::cwd, $arg->{cwd};
+    my $arg = shift;
+    ok $file_names->{$_}++;
+    is $_, $arg->{file};
+    is $Win32::Unicode::Dir::name, $arg->{path};
+    is $Win32::Unicode::Dir::cwd, $arg->{cwd};
 }, $dirname);
 
 finddepthW(sub {
-	my $arg = shift;
-	is $_, $file_names[--$i];
-	is $_, $arg->{file};
-	is $Win32::Unicode::Dir::name, $arg->{path};
-	is $Win32::Unicode::Dir::cwd, $arg->{cwd};
+    my $arg = shift;
+    ok $file_names->{$_}++;
+    is $_, $arg->{file};
+    is $Win32::Unicode::Dir::name, $arg->{path};
+    is $Win32::Unicode::Dir::cwd, $arg->{cwd};
 }, $dirname);
+
+is_deeply {"森鴎外" => 3, "$dirname.txt" => 3, "0" => 3}, $file_names;
 
 ok rmtreeW($dirname);
 
@@ -123,3 +135,5 @@ dies_ok { Win32::Unicode::Dir->close() };
 dies_ok { dir_size() };
 
 dies_ok { findW(sub {}, 'aaa') };
+
+done_testing;
