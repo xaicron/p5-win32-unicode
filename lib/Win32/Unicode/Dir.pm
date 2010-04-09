@@ -161,7 +161,7 @@ sub fetch {
     
     else {
         return $first if $first;
-        return 0 unless $FindNextFile->Call($self->{handle} ,$self->{FileInfo});
+        return unless $FindNextFile->Call($self->{handle} ,$self->{FileInfo});
         return $GetcFileName->($self);
     }
 }
