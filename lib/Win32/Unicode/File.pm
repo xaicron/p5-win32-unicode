@@ -408,7 +408,7 @@ sub file_type {
     my $get_attr = _get_file_type($file);
     for (split //, $attr) {
         if ($_ eq 'f') {
-            return 0 unless _is_file($file);
+            return unless _is_file($file);
             next;
         }
         
@@ -416,7 +416,7 @@ sub file_type {
             Carp::carp "unkown attribute '$_'";
             next;
         }
-        return 0 unless $get_attr & $FILE_TYPE_ATTRIBUTES{$_};
+        return unless $get_attr & $FILE_TYPE_ATTRIBUTES{$_};
     }
     return 1;
 }
@@ -494,8 +494,8 @@ sub moveW {
     my $over = shift || 0;
     
     unless ($MoveFile->Call(utf8_to_utf16($from) . NULL, utf8_to_utf16($to) . NULL)) {
-        return 0 unless copyW($from, $to, $over);
-        return 0 unless unlinkW($from);
+        return unless copyW($from, $to, $over);
+        return unless unlinkW($from);
     };
     
     return 1;
@@ -549,7 +549,7 @@ sub _get_file_type {
     $file = utf8_to_utf16($file) . NULL;
     my $result = $GetFileAttributes->Call($file);
     if ($result == INVALID_VALUE) {
-        return 0;
+        return;
     }
     return $result;
 }
@@ -560,7 +560,7 @@ sub _is_file {
     if ($PathFileExists->Call($tmp_file)) {
         return 1 unless _is_dir($file);
     };
-    return 0
+    return;
 }
 
 sub _is_dir {
