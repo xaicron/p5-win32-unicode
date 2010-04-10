@@ -9,7 +9,7 @@ use Exporter 'import';
 # export subs
 our @EXPORT = qw/utf16_to_utf8 utf8_to_utf16/;
 
-our $VERSION = '0.17';
+our $VERSION = '0.18';
 
 # Unicode decoder
 my $utf16 = Encode::find_encoding 'utf16-le';

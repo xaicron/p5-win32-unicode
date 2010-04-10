@@ -1,5 +1,15 @@
 Revision history for Perl extension Win32::Unicode
 
+0.18    Sat Apr 10 17:29:54 2010 (+900)
+        - Win32::Unicode::File
+            Accelerated "file_type f => $file".
+        - Win32::Unicode::Dir
+            bug fixed.
+                while (defined(my $file = $wdir->fetch)) {
+                    # snip ...
+                }
+            now works.
+
 0.17    Fri Apr  2 15:26:18 2010 (+900)
         - Win32::Unicode::Console
             Added output record separator (allow $\).
