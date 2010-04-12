@@ -14,47 +14,47 @@ use Win32::Unicode::Error ':all';
 
 # export subs
 our @EXPORT = (
-	@Win32::Unicode::Console::EXPORT,
-	@Win32::Unicode::File::EXPORT,
-	@Win32::Unicode::Dir::EXPORT,
-	@Win32::Unicode::Error::EXPORT,
+    @Win32::Unicode::Console::EXPORT,
+    @Win32::Unicode::File::EXPORT,
+    @Win32::Unicode::Dir::EXPORT,
+    @Win32::Unicode::Error::EXPORT,
 );
 
 our @EXPORT_OK = (
-	@Win32::Unicode::Console::EXPORT_OK,
-	@Win32::Unicode::File::EXPORT_OK,
-	@Win32::Unicode::Dir::EXPORT_OK,
-	@Win32::Unicode::Error::EXPORT_OK,
+    @Win32::Unicode::Console::EXPORT_OK,
+    @Win32::Unicode::File::EXPORT_OK,
+    @Win32::Unicode::Dir::EXPORT_OK,
+    @Win32::Unicode::Error::EXPORT_OK,
 );
 
 our %EXPORT_TAGS = (
-	console => $Win32::Unicode::Console::EXPORT_TAGS{all},
-	file    => $Win32::Unicode::File::EXPORT_TAGS{all},
-	dir     => $Win32::Unicode::Dir::EXPORT_TAGS{all},
-	error   => $Win32::Unicode::Error::EXPORT_TAGS{all},
-	all     => [@EXPORT, @EXPORT_OK],
+    console => $Win32::Unicode::Console::EXPORT_TAGS{all},
+    file    => $Win32::Unicode::File::EXPORT_TAGS{all},
+    dir     => $Win32::Unicode::Dir::EXPORT_TAGS{all},
+    error   => $Win32::Unicode::Error::EXPORT_TAGS{all},
+    all     => [@EXPORT, @EXPORT_OK],
 );
 
 sub import {
-	my $class = shift;
-	my $caller = caller(0);
-	
-	my @args;
-	for my $arg (@_) {
-		if ($arg eq '-native') {
-			require Win32::Unicode::Native;
-			no strict 'refs';
-			map {
-				*{"$caller\::$_"} = \&{"Win32::Unicode::Native::$_"};
-			} @Win32::Unicode::Native::EXPORT;
-		}
-		else {
-			push @args, $arg;
-		}
-	}
-	
-	local $Exporter::ExportLevel = 1;
-	Exporter::import($class, @args);
+    my $class = shift;
+    my $caller = caller(0);
+    
+    my @args;
+    for my $arg (@_) {
+        if ($arg eq '-native') {
+            require Win32::Unicode::Native;
+            no strict 'refs';
+            map {
+                *{"$caller\::$_"} = \&{"Win32::Unicode::Native::$_"};
+            } @Win32::Unicode::Native::EXPORT;
+        }
+        else {
+            push @args, $arg;
+        }
+    }
+    
+    local $Exporter::ExportLevel = 1;
+    Exporter::import($class, @args);
 }
 
 1;
