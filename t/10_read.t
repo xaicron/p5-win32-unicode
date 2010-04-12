@@ -15,44 +15,44 @@ isa_ok $wfile, 'Win32::Unicode::File';
 use Data::Dumper;
 # OO test
 {
-	ok $wfile->open(r => $read_file);
-	is $wfile->file_name, $read_file;
-	is $wfile->file_path, File::Spec->catfile(Win32::Unicode::Dir::getcwdW() . "/$read_file");
-	ok $wfile->binmode(':utf8');
-	is $wfile->read(my $buff, 10), 10;
-	is $buff, '0123456789';
-	ok $wfile->seek(0, 0);
-	is $wfile->readline(), "0123456789\n";
-	is $wfile->readline(), "はろーわーるど\n";
-	is $wfile->tell(), file_size $wfile->file_name;
-	ok $wfile->seek(0, 0);
-	is scalar @{[$wfile->readline()]}, 2;
-	ok not $wfile->getc();
-	ok $wfile->eof();
-	my $data = $wfile->slurp;
-	{
-		use bytes;
-		is length($data), file_size($wfile);
-	}
-	ok $wfile->close;
+    ok $wfile->open(r => $read_file);
+    is $wfile->file_name, $read_file;
+    is $wfile->file_path, File::Spec->catfile(Win32::Unicode::Dir::getcwdW() . "/$read_file");
+    ok $wfile->binmode(':utf8');
+    is $wfile->read(my $buff, 10), 10;
+    is $buff, '0123456789';
+    ok $wfile->seek(0, 0);
+    is $wfile->readline(), "0123456789\n";
+    is $wfile->readline(), "はろーわーるど\n";
+    is $wfile->tell(), file_size $wfile->file_name;
+    ok $wfile->seek(0, 0);
+    is scalar @{[$wfile->readline()]}, 2;
+    ok not $wfile->getc();
+    ok $wfile->eof();
+    my $data = $wfile->slurp;
+    {
+        use bytes;
+        is length($data), file_size($wfile);
+    }
+    ok $wfile->close;
 }
 
 # tie test
 {
-	ok open $wfile, '<:raw', $read_file;
-	ok binmode $wfile, ':utf8';
-	is read($wfile, my $buff, 10), 10;
-	is $buff, '0123456789';
-	ok seek($wfile, 0, 0);
-	is readline($wfile), "0123456789\n";
-	is <$wfile>, "はろーわーるど\n";
-	is tell($wfile), file_size $wfile->file_name;
-	ok not getc($wfile);
-	ok eof($wfile);
-	my $data = slurp($wfile);
-	{
-		use bytes;
-		is length($data), file_size($wfile);
-	}
-	ok close $wfile;
+    ok open $wfile, '<:raw', $read_file;
+    ok binmode $wfile, ':utf8';
+    is read($wfile, my $buff, 10), 10;
+    is $buff, '0123456789';
+    ok seek($wfile, 0, 0);
+    is readline($wfile), "0123456789\n";
+    is <$wfile>, "はろーわーるど\n";
+    is tell($wfile), file_size $wfile->file_name;
+    ok not getc($wfile);
+    ok eof($wfile);
+    my $data = slurp($wfile);
+    {
+        use bytes;
+        is length($data), file_size($wfile);
+    }
+    ok close $wfile;
 }

@@ -22,10 +22,10 @@ ok warnW($str), "warnW";
 dies_ok { dieW($str) } "dieW";
 
 TODO: {
-	local $TODO = 'ToDo';
-	stdout_is { printW STDOUT $str }  $str;
-	stdout_is { printfW STDOUT "[%s]", $str } "[$str]" ;
-	stdout_is { sayW STDOUT $str } "$str\n";
+    local $TODO = 'ToDo';
+    stdout_is { printW STDOUT $str }  $str;
+    stdout_is { printfW STDOUT "[%s]", $str } "[$str]" ;
+    stdout_is { sayW STDOUT $str } "$str\n";
 };
 
 throws_ok { printW STDOUT, $str } qr/No comma allowed after filehandle/;

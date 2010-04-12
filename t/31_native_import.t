@@ -6,10 +6,10 @@ use Test::More;
 use Win32::Unicode '-native';
 
 my @subs = qw{
-	printf warn say die error
-	open close opendir closedir readdir
-	file_type file_size copy move unlink touch rename
-	mkdir rmdir getcwd chdir find finddepth mkpath rmtree mvtree cptree dir_size
+    printf warn say die error
+    open close opendir closedir readdir
+    file_type file_size copy move unlink touch rename
+    mkdir rmdir getcwd chdir find finddepth mkpath rmtree mvtree cptree dir_size
 };
 
 require_ok 'Win32::Unicode::Native';
