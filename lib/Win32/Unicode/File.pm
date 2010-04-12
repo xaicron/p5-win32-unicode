@@ -96,7 +96,7 @@ sub win32_handle {
 }
 
 sub open {
-    open($_[0], $_[1], $_[2]);
+    CORE::open($_[0], $_[1], $_[2]);
 }
 
 sub OPEN {
@@ -182,7 +182,7 @@ sub _create_file {
 }
 
 sub close {
-    close($_[0]);
+    CORE::close($_[0]);
 }
 
 sub CLOSE {
@@ -192,11 +192,11 @@ sub CLOSE {
 }
 
 sub getc {
-    getc($_[0]);
+    CORE::getc($_[0]);
 }
 
 sub read {
-    read($_[0], $_[1], $_[2], $_[3]);
+    CORE::read($_[0], $_[1], $_[2], $_[3]);
 }
 
 sub READ {
@@ -224,7 +224,7 @@ sub READ {
 
 sub readline {
     my $self = shift;
-    readline $self;
+    CORE::readline $self;
 }
 
 sub _readline {
@@ -281,7 +281,7 @@ sub printf {
 
 sub write {
     my $self = shift;
-    print {$self} @_;
+    CORE::print {$self} @_;
 }
 
 sub WRITE {
@@ -304,7 +304,7 @@ sub WRITE {
 }
 
 sub seek {
-    seek($_[0], $_[1], $_[2]);
+    CORE::seek($_[0], $_[1], $_[2]);
 }
 
 sub SEEK {
@@ -319,7 +319,7 @@ sub SEEK {
 }
 
 sub tell {
-    tell($_[0]);
+    CORE::tell($_[0]);
 }
 
 sub TELL {
@@ -345,7 +345,7 @@ sub slurp {
 }
 
 sub binmode {
-    binmode($_[0], $_[1]);
+    CORE::binmode($_[0], $_[1]);
 }
 
 sub BINMODE {
@@ -373,7 +373,7 @@ sub BINMODE {
 }
 
 sub eof {
-    eof($_[0]);
+    CORE::eof($_[0]);
 }
 
 sub EOF {
