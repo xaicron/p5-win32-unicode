@@ -119,7 +119,7 @@ sub open {
     
     $self->{handle} = $FindFirstFile->Call($dir, $self->{FileInfo});
     
-    return 0 if $self->{handle} == INVALID_HANDLE_VALUE;
+    return if $self->{handle} == INVALID_HANDLE_VALUE;
     
     $self->{first} = $GetcFileName->($self);
     
@@ -130,7 +130,7 @@ sub open {
 sub close {
     my $self = shift;
     _croakW("Can't open directory handle") unless $self->{handle};
-    return 0 unless $FindClose->Call($self->{handle});
+    return unless $FindClose->Call($self->{handle});
     delete @$self{qw[dir handle first FileInfo]};
     return 1;
 }
