@@ -43,7 +43,7 @@ sub _ConsoleOut {
     my $out_handle = shift;
     my $handle = $STD_HANDLE->{$out_handle};
     my $console_handle = shift;
-    return 0 unless @_;
+    return unless @_;
     
     unless ($console_handle->{$handle}) {
         return warn @_ if $handle == $STD_HANDLE->{&STD_ERROR_HANDLE};
