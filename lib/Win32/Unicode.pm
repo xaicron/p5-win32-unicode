@@ -11,6 +11,7 @@ use Win32::Unicode::Console ':all';
 use Win32::Unicode::File ':all';
 use Win32::Unicode::Dir ':all';
 use Win32::Unicode::Error ':all';
+use Win32::Unicode::Process ':all';
 
 # export subs
 our @EXPORT = (
@@ -18,6 +19,7 @@ our @EXPORT = (
     @Win32::Unicode::File::EXPORT,
     @Win32::Unicode::Dir::EXPORT,
     @Win32::Unicode::Error::EXPORT,
+    @Win32::Unicode::Process::EXPORT,
 );
 
 our @EXPORT_OK = (
@@ -25,6 +27,7 @@ our @EXPORT_OK = (
     @Win32::Unicode::File::EXPORT_OK,
     @Win32::Unicode::Dir::EXPORT_OK,
     @Win32::Unicode::Error::EXPORT_OK,
+    @Win32::Unicode::Process::EXPORT_OK,
 );
 
 our %EXPORT_TAGS = (
@@ -32,6 +35,7 @@ our %EXPORT_TAGS = (
     file    => $Win32::Unicode::File::EXPORT_TAGS{all},
     dir     => $Win32::Unicode::Dir::EXPORT_TAGS{all},
     error   => $Win32::Unicode::Error::EXPORT_TAGS{all},
+    process => $Win32::Unicode::Process::EXPORT_TAGS{all},
     all     => [@EXPORT, @EXPORT_OK],
 );
 

@@ -8,8 +8,9 @@ use Exporter 'import';
 our $VERSION = '0.18';
 
 use Win32::Unicode::Console ':all';
-use Win32::Unicode::File ':all';
-use Win32::Unicode::Dir ':all';
+use Win32::Unicode::File    ':all';
+use Win32::Unicode::Dir     ':all';
+use Win32::Unicode::Process ':all';
 use Win32::Unicode::Error ();
 
 our @EXPORT = qw{
@@ -105,6 +106,12 @@ sub readdir {
 
 # Win32::Unicode::Error
 *error = \&Win32::Unicode::Error::errorW;
+
+# Win32::Unicode::Process
+$sub_export->(qw{
+    systemW
+    execW
+});
 
 1;
 __END__

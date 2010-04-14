@@ -1,10 +1,11 @@
 use strict;
-use Test::More tests => 5;
+use Test::More tests => 6;
 
 use Win32::Unicode;
 
-can_ok 'Win32::Unicode', qw(
+can_ok 'Win32::Unicode::Console', qw(
     printW
+    printfW
     sayW
     warnW
 );
@@ -40,4 +41,9 @@ can_ok 'Win32::Unicode::Encode', qw(
 
 can_ok 'Win32::Unicode::Error', qw(
     errorW
+);
+
+can_ok 'Win32::Unicode::Process', qw(
+    systemW
+    execW
 );
