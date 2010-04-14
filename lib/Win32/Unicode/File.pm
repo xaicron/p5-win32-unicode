@@ -41,19 +41,19 @@ my $GetFileAttributes = Win32::API->new('kernel32.dll',
     'GetFileAttributesW',
     'P',
     'N',
-);
+) or die "GetFileAttributesW: $^E";
 
 my $CopyFile = Win32::API->new('kernel32.dll',
     'CopyFileW',
     ['P', 'P', 'I'],
     'I',
-);
+) or die "CopyFileW: $^E";
 
 my $MoveFile = Win32::API->new('kernel32.dll',
     'MoveFileW',
     ['P', 'P'],
     'I'
-);
+) or die "MoveFileW: $^E";
 
 sub new {
     my $class = shift;
