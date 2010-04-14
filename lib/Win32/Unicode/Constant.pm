@@ -12,6 +12,9 @@ sub NULL     () { "\x00" }
 sub NULLP    () { [] }
 sub MAX_PATH () { 520 }
 sub BUFF     () { NULL x (MAX_PATH + 1) }
+sub TRUE     () { 1 }
+sub FALSE    () { 0 }
+sub INFINITE () { 0xFFFFFFFF }
 
 # console
 sub STD_INPUT_HANDLE      () { -10 }
@@ -64,9 +67,32 @@ sub FORMAT_MESSAGE_FROM_SYSTEM     () { 0x00001000 }
 sub FORMAT_MESSAGE_IGNORE_INSERTS  () { 0x00000200 }
 sub FORMAT_MESSAGE_MAX_WIDTH_MASK  () { 255 * 2 }
 
-sub LANG_NEUTRAL    () { 0x00 }
-sub SUBLANG_DEFAULT () { 0x01 }
+sub LANG_NEUTRAL      () { 0x00 }
+sub SUBLANG_DEFAULT   () { 0x01 }
 sub LANG_USER_DEFAULT () { SUBLANG_DEFAULT << 10 | LANG_NEUTRAL }
+
+# process priority
+sub NORMAL_PRIORITY_CLASS       () { 0x00000020 }
+sub IDLE_PRIORITY_CLASS         () { 0x00000040 }
+sub HIGH_PRIORITY_CLASS         () { 0x00000080 }
+sub REALTIME_PRIORITY_CLASS     () { 0x00000100 }
+sub BELOW_NORMAL_PRIORITY_CLASS () { 0x00004000 }
+sub ABOVE_NORMAL_PRIORITY_CLASS () { 0x00008000 }
+
+# process flag
+sub DEBUG_PROCESS              () { 0x00000001 }
+sub DEBUG_ONLY_THIS_PROCESS    () { 0x00000002 }
+sub CREATE_SUSPENDED           () { 0x00000004 }
+sub DETACHED_PROCESS           () { 0x00000008 }
+sub CREATE_NEW_CONSOLE         () { 0x00000010 }
+sub CREATE_NEW_PROCESS_GROUPE  () { 0x00000200 }
+sub CREATE_UNICODE_ENVIRONMENT () { 0x00000400 }
+sub CREATE_SEPARATE_WOW_VDM    () { 0x00000800 }
+sub CREATE_SHARED_WOW_VDM      () { 0x00001000 }
+sub CREATE_FORCEDOS            () { 0x00002000 }
+sub CREATE_BREAKAWAY_FROM_JOB  () { 0x01000000 }
+sub CREATE_DEFAULT_ERROR_MODE  () { 0x04000000 }
+sub CREATE_NO_WINDOW           () { 0x08000000 }
 
 1;
 __END__
