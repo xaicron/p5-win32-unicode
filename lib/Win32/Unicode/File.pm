@@ -43,6 +43,12 @@ my $GetFileAttributes = Win32::API->new('kernel32.dll',
     'N',
 ) or die "GetFileAttributesW: $^E";
 
+my $GetFileSize = Win32::API->new('kernel32.dll',
+    'GetFileSize',
+    ['N', 'P'],
+    'N',
+) or die "GetFileSize: $^E";
+
 my $CopyFile = Win32::API->new('kernel32.dll',
     'CopyFileW',
     ['P', 'P', 'I'],
@@ -416,15 +422,14 @@ sub file_size {
     _croakW('Usage: file_size(filename)') unless defined $file;
     
     if (ref $file eq __PACKAGE__) {
-        return Win32API::File::getFileSize(tied(*$file)->win32_handle) + 0;
+        my $low  = $GetFileSize->Call(tied(*$file)->win32_handle, \my $high);
+        return if $low == INVALID_VALUE;
+        return $high ? _to64int($high, $low) : $low;
     }
     
     $file = catfile $file;
     
-    unless (file_type(f => $file)) {
-#        _carpW("$file is not the file");
-        return;
-    }
+    return unless file_type(f => $file);
     
     my $handle = Win32API::File::CreateFileW(
         utf8_to_utf16($file) . NULL,
@@ -435,18 +440,21 @@ sub file_size {
         FILE_ATTRIBUTE_NORMAL,
         NULLP,
     );
-    
     return if $handle == INVALID_VALUE;
     
-    my $size = Win32API::File::getFileSize($handle);
+    my $low  = $GetFileSize->Call($handle, \my $high);
     Win32API::File::CloseHandle($handle);
     
-    if ($size == INVALID_VALUE) {
-        warn 'Could not get file size - ' . errorW;
-        return;
-    }
+    return if $low == INVALID_VALUE;
+    return $high ? _to64int($high, $low) : $low;
+}
+
+# TODO あとで切り出す？
+sub _to64int {
+    my ($high, $low) = @_;
     
-    return $size;
+    use bigint;
+    return (($high << 32) + $low);
 }
 
 # like unix touch command
