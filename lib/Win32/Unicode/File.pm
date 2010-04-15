@@ -17,7 +17,7 @@ use Win32::Unicode::Error;
 use Win32::Unicode::Encode;
 use Win32::Unicode::Constant;
 
-our @EXPORT = qw/file_type file_size copyW moveW unlinkW touchW renameW/;
+our @EXPORT = qw/file_type file_size copyW moveW unlinkW touchW renameW statW/;
 our @EXPORT_OK = qw/filename_normalize slurp/;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
@@ -36,6 +36,26 @@ my %FILE_TYPE_ATTRIBUTES = (
     i => FILE_ATTRIBUTE_NOT_CONTENT_INDEXED,
     e => FILE_ATTRIBUTE_ENCRYPTED,
 );
+
+# FILETIME Struct
+Win32::API::Struct->typedef('FILETIME', qw(
+    DWORD dwLowDateTime;
+    DWORD dwHighDateTime;
+));
+
+# BY_HANDLE_FILE_INFORMATION Struct
+Win32::API::Struct->typedef('BY_HANDLE_FILE_INFORMATION', qw{
+    DWORD    dwFileAttributes;
+    FILETIME ctime;
+    FILETIME atime;
+    FILETIME mtime;
+    DWORD    dwVolumeSerialNumber;
+    DWORD    size_high;
+    DWORD    size_low;
+    DWORD    nNumberOfLinks;
+    DWORD    nFileIndexHigh;
+    DWORD    nFileIndexLow;
+});
 
 my $GetFileAttributes = Win32::API->new('kernel32.dll',
     'GetFileAttributesW',
@@ -60,6 +80,12 @@ my $MoveFile = Win32::API->new('kernel32.dll',
     ['P', 'P'],
     'I'
 ) or die "MoveFileW: $^E";
+
+my $GetFileInformationByHandle = Win32::API->new('kernel32.dll',
+    'GetFileInformationByHandle',
+    ['N', 'S'],
+    'N',
+) or die "GetFileInformationByHandle: $^E";
 
 sub new {
     my $class = shift;
@@ -391,9 +417,61 @@ sub EOF {
     return $current == $end;
 }
 
-#sub stat {
-#
-#}
+sub statW {
+    my $file = shift;
+    _croakW('Usage: statW(filename)') unless defined $file;
+    my $wantarray = wantarray;
+    
+    my $fi = Win32::API::Struct->new('BY_HANDLE_FILE_INFORMATION');
+    
+    if (ref $file eq __PACKAGE__) {
+        $GetFileInformationByHandle->Call(tied(*$file)->win32_handle, $fi) or return;
+    }
+    else {
+        $file = catfile $file;
+        return unless file_type(f => $file);
+        
+        my $handle = Win32API::File::CreateFileW(
+            utf8_to_utf16($file) . NULL,
+            GENERIC_READ,
+            FILE_SHARE_READ,
+            NULLP,
+            OPEN_EXISTING,
+            FILE_ATTRIBUTE_NORMAL,
+            NULLP,
+        );
+        return if $handle == INVALID_VALUE;
+        
+        $GetFileInformationByHandle->Call($handle, $fi) or return;
+        Win32API::File::CloseHandle($handle);
+    }
+    
+    my $result = +{};
+    
+    $result->{size} = $fi->{size_high} ? _to64int($fi->{size_high}, $fi->{size_low}) : $fi->{size_low};
+    
+    for my $key (qw/ctime atime mtime/) {
+        use bigint;
+        my $etime = ($fi->{$key}{dwHighDateTime} << 32) + $fi->{$key}{dwLowDateTime};
+        $result->{$key} = ($etime - 116444736000000000) / 10000000; # to epoch
+    }
+    
+    return $wantarray ? (
+        $result->{dev},     #  0 dev      device number of filesystem
+        $result->{ino},     #  1 ino      inode number
+        $result->{mode},    #  2 mode     file mode  (type and permissions)
+        $result->{nlink},   #  3 nlink    number of (hard) links to the file
+        $result->{uid},     #  4 uid      numeric user ID of file's owner
+        $result->{gid},     #  5 gid      numeric group ID of file's owner
+        $result->{rdev},    #  6 rdev     the device identifier (special files only)
+        $result->{size},    #  7 size     total size of file, in bytes
+        $result->{atime},   #  8 atime    last access time in seconds since the epoch
+        $result->{mtime},   #  9 mtime    last modify time in seconds since the epoch
+        $result->{ctime},   # 10 ctime    inode change time in seconds since the epoch (*)
+        $result->{blksize}, # 11 blksize  preferred block size for file system I/O
+        $result->{blocks},  # 12 blocks   actual number of blocks allocated
+    ) : $result;
+}
 
 sub file_type {
     _croakW('Usage: type(attribute, file_or_dir_name)') unless @_ == 2;
