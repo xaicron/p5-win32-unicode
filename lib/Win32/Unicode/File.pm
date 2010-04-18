@@ -15,6 +15,7 @@ use base qw/Tie::Handle/;
 use Win32::Unicode::Util;
 use Win32::Unicode::Error;
 use Win32::Unicode::Constant;
+use Win32::Unicode::Define;
 
 use constant CYGWIN => $^O eq 'cygwin';
 
@@ -37,56 +38,6 @@ my %FILE_TYPE_ATTRIBUTES = (
     i => FILE_ATTRIBUTE_NOT_CONTENT_INDEXED,
     e => FILE_ATTRIBUTE_ENCRYPTED,
 );
-
-# FILETIME Struct
-Win32::API::Struct->typedef('FILETIME', qw(
-    DWORD dwLowDateTime;
-    DWORD dwHighDateTime;
-));
-
-# BY_HANDLE_FILE_INFORMATION Struct
-Win32::API::Struct->typedef('BY_HANDLE_FILE_INFORMATION', qw{
-    DWORD    dwFileAttributes;
-    FILETIME ctime;
-    FILETIME atime;
-    FILETIME mtime;
-    DWORD    dwVolumeSerialNumber;
-    DWORD    size_high;
-    DWORD    size_low;
-    DWORD    nNumberOfLinks;
-    DWORD    nFileIndexHigh;
-    DWORD    nFileIndexLow;
-});
-
-my $GetFileAttributes = Win32::API->new('kernel32.dll',
-    'GetFileAttributesW',
-    'P',
-    'N',
-) or die "GetFileAttributesW: $^E";
-
-my $GetFileSize = Win32::API->new('kernel32.dll',
-    'GetFileSize',
-    ['N', 'P'],
-    'N',
-) or die "GetFileSize: $^E";
-
-my $CopyFile = Win32::API->new('kernel32.dll',
-    'CopyFileW',
-    ['P', 'P', 'I'],
-    'I',
-) or die "CopyFileW: $^E";
-
-my $MoveFile = Win32::API->new('kernel32.dll',
-    'MoveFileW',
-    ['P', 'P'],
-    'I'
-) or die "MoveFileW: $^E";
-
-my $GetFileInformationByHandle = Win32::API->new('kernel32.dll',
-    'GetFileInformationByHandle',
-    ['N', 'S'],
-    'N',
-) or die "GetFileInformationByHandle: $^E";
 
 sub new {
     my $class = shift;
@@ -420,9 +371,10 @@ sub statW {
     my $fi = Win32::API::Struct->new('BY_HANDLE_FILE_INFORMATION');
     
     if (ref $file eq __PACKAGE__) {
-        $GetFileInformationByHandle->Call(tied(*$file)->win32_handle, $fi) or return;
+        GetFileInformationByHandle->Call(tied(*$file)->win32_handle, $fi) or return;
     }
     else {
+        $file = cyg2ms($file) or return if CYGWIN;
         $file = catfile $file;
         return unless file_type(f => $file);
         
@@ -437,7 +389,7 @@ sub statW {
         );
         return if $handle == INVALID_VALUE;
         
-        $GetFileInformationByHandle->Call($handle, $fi) or return;
+        GetFileInformationByHandle->Call($handle, $fi) or return;
         Win32API::File::CloseHandle($handle);
     }
     
@@ -497,7 +449,7 @@ sub file_size {
     _croakW('Usage: file_size(filename)') unless defined $file;
     
     if (ref $file eq __PACKAGE__) {
-        my $low  = $GetFileSize->Call(tied(*$file)->win32_handle, \my $high);
+        my $low  = GetFileSize->Call(tied(*$file)->win32_handle, \my $high);
         return if $low == INVALID_VALUE;
         return $high ? to64int($high, $low) : $low;
     }
@@ -518,7 +470,7 @@ sub file_size {
     );
     return if $handle == INVALID_VALUE;
     
-    my $low  = $GetFileSize->Call($handle, \my $high);
+    my $low  = GetFileSize->Call($handle, \my $high);
     Win32API::File::CloseHandle($handle);
     
     return if $low == INVALID_VALUE;
@@ -555,7 +507,7 @@ sub copyW {
     $from = utf8_to_utf16($from) . NULL;
     $to   = utf8_to_utf16($to) . NULL;
     
-    return $CopyFile->Call($from, $to, !$over) ? 1 : 0;
+    return CopyFile->Call($from, $to, !$over) ? 1 : 0;
 }
 
 # move file
@@ -564,7 +516,7 @@ sub moveW {
     my ($from, $to) = _file_name_validete(shift, shift);
     my $over = shift || 0;
     
-    unless ($MoveFile->Call(utf8_to_utf16($from) . NULL, utf8_to_utf16($to) . NULL)) {
+    unless (MoveFile->Call(utf8_to_utf16($from) . NULL, utf8_to_utf16($to) . NULL)) {
         return unless copyW($from, $to, $over);
         return unless unlinkW($from);
     };
@@ -617,7 +569,7 @@ sub error {
 sub _get_file_type {
     my $file = shift;
     $file = utf8_to_utf16($file) . NULL;
-    my $result = $GetFileAttributes->Call($file);
+    my $result = GetFileAttributes->Call($file);
     if (defined $result && $result == INVALID_VALUE) {
         return;
     }

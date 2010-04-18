@@ -12,6 +12,7 @@ use Exporter 'import';
 use Win32::Unicode::Util;
 use Win32::Unicode::Error;
 use Win32::Unicode::Constant;
+use Win32::Unicode::Define;
 use Win32::Unicode::File;
 
 use constant CYGWIN => $^O eq 'cygwin';
@@ -27,79 +28,6 @@ our $VERSION = '0.18';
 our $cwd;
 our $name;
 our $skip_pattern = qr/\A(?:(?:\.{1,2})|(?:System Volume Information))\z/;
-
-# FILETIME Struct
-Win32::API::Struct->typedef('FILETIME', qw(
-    DWORD dwLowDateTime;
-    DWORD dwHighDateTime;
-));
-
-# WIN32_FIND_DATAW Struct
-Win32::API::Struct->typedef('WIN32_FIND_DATAW', qw{
-    DWORD    dwFileAttributes;
-    FILETIME ftCreationTime;
-    FILETIME ftLastAccessTime;
-    FILETIME ftLastWriteTime;
-    DWORD    nFileSizeHigh;
-    DWORD    nFileSizeLow;
-    DWORD    dwReserved0;
-    DWORD    dwReserved1;
-    WCHAR    cFileName[520];
-    WCHAR    cAlternateFileName[28];
-});
-
-# GetCurrentDirectory
-my $GetCurrentDirectory = Win32::API->new('kernel32.dll',
-    'GetCurrentDirectoryW',
-    ['N', 'P'],
-    'N',
-) or die "GetCurrentDirectory: $^E";
-
-# SetCurrentDirectory
-my $SetCurrentDirectory = Win32::API->new('kernel32.dll',
-    'SetCurrentDirectoryW',
-    'P',
-    'I',
-) or die "SetCurrentDirectory: $^E";
-
-# FindFirstFile
-my $FindFirstFile = Win32::API->new('kernel32.dll',
-    'FindFirstFileW',
-    'PS',
-    'N',
-) or die "FindFirstFile: $^E";
-
-# FindNextFile
-my $FindNextFile = Win32::API->new('kernel32.dll',
-    'FindNextFileW',
-    'NS',
-    'I',
-) or die "FindNextFile $^E";
-
-# FindClose
-my $FindClose = Win32::API->new('kernel32.dll',
-    'FindClose',
-    'N',
-    'I',
-) or die "FileClose $^E";
-
-# GetcFileName
-my $GetcFileName = sub {
-    my $self = shift;
-    my $cFileName = do {
-        use bytes;
-        unpack "x44A520", $self->{FileInfo}->{buffer};
-    };
-    delete $self->{FileInfo}->{cFileName};
-    return utf16_to_utf8($cFileName . NULL);
-};
-
-# RemoveDirectory
-my $RemoveDirectory = Win32::API->new('kernel32.dll',
-    'RemoveDirectoryW',
-    'P',
-    'I',
-) or die "FileClose $^E";
 
 sub new {
     my $class = shift;
@@ -119,11 +47,11 @@ sub open {
     $self->{dir} = catfile $dir, '*';
     $dir = utf8_to_utf16($self->{dir}) . NULL;
     
-    $self->{handle} = $FindFirstFile->Call($dir, $self->{FileInfo});
+    $self->{handle} = FindFirstFile->Call($dir, $self->{FileInfo});
     
     return if $self->{handle} == INVALID_HANDLE_VALUE;
     
-    $self->{first} = $GetcFileName->($self);
+    $self->{first} = $self->_cFileName;
     
     return $self;
 }
@@ -132,7 +60,7 @@ sub open {
 sub close {
     my $self = shift;
     _croakW("Can't open directory handle") unless $self->{handle};
-    return unless $FindClose->Call($self->{handle});
+    return unless FindClose->Call($self->{handle});
     delete @$self{qw[dir handle first FileInfo]};
     return 1;
 }
@@ -154,8 +82,8 @@ sub fetch {
         my @files;
         
         push @files, $first if $first;
-        while ($FindNextFile->Call($self->{handle} ,$self->{FileInfo})) {
-            push @files, $GetcFileName->($self);
+        while (FindNextFile->Call($self->{handle} ,$self->{FileInfo})) {
+            push @files, $self->_cFileName;
         }
         
         return @files;
@@ -163,17 +91,27 @@ sub fetch {
     
     else {
         return $first if $first;
-        return unless $FindNextFile->Call($self->{handle} ,$self->{FileInfo});
-        return $GetcFileName->($self);
+        return unless FindNextFile->Call($self->{handle} ,$self->{FileInfo});
+        return $self->_cFileName;
     }
 }
 
 *read = *readdir = \&fetch;
 
+sub _cFileName {
+    my $self = shift;
+    my $cFileName = do {
+        use bytes;
+        unpack "x44A520", $self->{FileInfo}->{buffer};
+    };
+    delete $self->{FileInfo}->{cFileName};
+    return utf16_to_utf8($cFileName . NULL);
+};
+
 # like use Cwd qw/getcwd/;
 sub getcwdW {
     my $buff = BUFF;
-    my $length = $GetCurrentDirectory->Call(MAX_PATH + 1, $buff);
+    my $length = GetCurrentDirectory->Call(MAX_PATH + 1, $buff);
     return utf16_to_utf8(substr $buff, 0, $length * 2);
 }
 
@@ -184,7 +122,7 @@ sub chdirW {
     _croakW('Usage: chdirW(dirname)') unless defined $set_dir;
     $set_dir = cyg2ms($set_dir) or return if CYGWIN;
     $set_dir = utf8_to_utf16(catfile $set_dir) . NULL;
-    return unless $SetCurrentDirectory->Call($set_dir);
+    return unless SetCurrentDirectory->Call($set_dir);
     return chdirW(utf16_to_utf8($set_dir), ++$retry) if CYGWIN && !$retry; # bug ?
     return 1;
 }
@@ -203,7 +141,7 @@ sub rmdirW {
     _croakW('Usage: rmdirW(dirname)') unless defined $dir;
     $dir = cyg2ms($dir) or return if CYGWIN;
     $dir = utf8_to_utf16(catfile $dir) . NULL;
-    return $RemoveDirectory->Call($dir) ? 1 : 0;
+    return RemoveDirectory->Call($dir) ? 1 : 0;
 }
 
 # like File::Path::rmtree
