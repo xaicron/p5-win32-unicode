@@ -8,9 +8,9 @@ use Exporter ();
 our $VERSION = '0.18';
 
 use Win32::Unicode::Console ':all';
-use Win32::Unicode::File ':all';
-use Win32::Unicode::Dir ':all';
-use Win32::Unicode::Error ':all';
+use Win32::Unicode::File    ':all';
+use Win32::Unicode::Dir     ':all';
+use Win32::Unicode::Error   ':all';
 use Win32::Unicode::Process ':all';
 
 # export subs
