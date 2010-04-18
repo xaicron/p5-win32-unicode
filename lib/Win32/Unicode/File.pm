@@ -7,15 +7,16 @@ use 5.008003;
 use Win32::API ();
 use Win32API::File ();
 use Carp ();
-use File::Spec::Functions qw/catfile/;
 use File::Basename qw/basename/;
 use Exporter 'import';
 use IO::Handle;
 use base qw/Tie::Handle/;
 
+use Win32::Unicode::Util;
 use Win32::Unicode::Error;
-use Win32::Unicode::Encode;
 use Win32::Unicode::Constant;
+
+use constant CYGWIN => $^O eq 'cygwin';
 
 our @EXPORT = qw/file_type file_size copyW moveW unlinkW touchW renameW statW/;
 our @EXPORT_OK = qw/filename_normalize slurp/;
@@ -111,11 +112,6 @@ sub TIEHANDLE {
     }, $class;
 }
 
-sub file_name {
-    my $self = shift;
-    return tied(*$self)->{_file_name};
-}
-
 sub file_path {
     my $self = shift;
     return tied(*$self)->{_file_path};
@@ -136,6 +132,7 @@ sub OPEN {
     _croakW("Usage: $self->open('attrebute', 'filename')") unless @_ == 2;
     my $attr = shift;
     my $file = shift;
+    $file = cyg2ms($file) or return if CYGWIN;
     my $utf16_file = utf8_to_utf16(catfile $file) . NULL;
     
     if ($attr =~ s/(:.*)$//) {
@@ -189,10 +186,8 @@ sub OPEN {
     
     $self->SEEK(0, 2) if $attr eq '>>' || $attr eq 'a' || $attr eq '+>>' || $attr eq 'a+';
     
-    $self->{_file_name} = $file;
-    
     require Win32::Unicode::Dir;
-    $self->{_file_path} = File::Spec->rel2abs($self->{_file_name}, Win32::Unicode::Dir::getcwdW());
+    $self->{_file_path} = File::Spec->rel2abs($file, Win32::Unicode::Dir::getcwdW());
     
     return 1;
 }
@@ -448,7 +443,7 @@ sub statW {
     
     my $result = +{};
     
-    $result->{size} = $fi->{size_high} ? _to64int($fi->{size_high}, $fi->{size_low}) : $fi->{size_low};
+    $result->{size} = $fi->{size_high} ? to64int($fi->{size_high}, $fi->{size_low}) : $fi->{size_low};
     
     for my $key (qw/ctime atime mtime/) {
         use bigint;
@@ -476,7 +471,9 @@ sub statW {
 sub file_type {
     _croakW('Usage: type(attribute, file_or_dir_name)') unless @_ == 2;
     my $attr = shift;
-    my $file = catfile shift;
+    my $file = shift;
+    $file = cyg2ms($file) or return if CYGWIN;
+    $file = catfile $file;
     
     my $get_attr = _get_file_type($file);
     return unless defined $get_attr;
@@ -502,9 +499,10 @@ sub file_size {
     if (ref $file eq __PACKAGE__) {
         my $low  = $GetFileSize->Call(tied(*$file)->win32_handle, \my $high);
         return if $low == INVALID_VALUE;
-        return $high ? _to64int($high, $low) : $low;
+        return $high ? to64int($high, $low) : $low;
     }
     
+    $file = cyg2ms($file) or return if CYGWIN;
     $file = catfile $file;
     
     return unless file_type(f => $file);
@@ -524,21 +522,14 @@ sub file_size {
     Win32API::File::CloseHandle($handle);
     
     return if $low == INVALID_VALUE;
-    return $high ? _to64int($high, $low) : $low;
-}
-
-# TODO あとで切り出す？
-sub _to64int {
-    my ($high, $low) = @_;
-    
-    use bigint;
-    return (($high << 32) + $low);
+    return $high ? to64int($high, $low) : $low;
 }
 
 # like unix touch command
 sub touchW {
     my $file = shift;
     _croakW('Usage: touchW(filename)') unless defined $file;
+    $file = cyg2ms($file) or return if CYGWIN;
     $file = catfile $file;
     return Win32::CreateFile($file) ? 1 : 0;
 }
@@ -547,6 +538,7 @@ sub touchW {
 sub unlinkW {
     my $file = shift;
     _croakW('Usage: unlinkW(filename)') unless defined $file;
+    $file = cyg2ms($file) or return if CYGWIN;
     $file = utf8_to_utf16(catfile $file) . NULL;
     return Win32API::File::DeleteFileW($file) ? 1 : 0;
 }
@@ -556,6 +548,9 @@ sub copyW {
     _croakW('Usage: copyW(from, to [, over])') if @_ < 2;
     my ($from, $to) = _file_name_validete(shift, shift);
     my $over = shift || 0;
+    
+    $from = cyg2ms($from) or return if CYGWIN;
+    $to   = cyg2ms($to)   or return if CYGWIN;
     
     $from = utf8_to_utf16($from) . NULL;
     $to   = utf8_to_utf16($to) . NULL;
@@ -588,7 +583,7 @@ sub _file_name_validete {
     my $from = catfile shift;
     my $to = shift;
     
-    if ($to =~ $back_to_dir or $to =~ $in_dir or file_type(d => $to)) {
+    if ($to =~ $back_to_dir or $to =~ $in_dir or (CYGWIN ? file_type(d => cyg2ms($to)) : file_type(d => $to))) {
         $to = catfile $to, basename($from);
     }
     $to = catfile $to;

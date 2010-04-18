@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use utf8;
-use Test::More tests => 15;
+use Test::More tests => 14;
 use Test::Exception;
 use File::Temp qw/tempdir tempfile/;
 use Win32::Unicode::File;
@@ -15,7 +15,6 @@ isa_ok $wfile, 'Win32::Unicode::File';
 # OO test
 {
     ok $wfile->open(w => $write_file);
-    is $wfile->file_name, $write_file;
     ok $wfile->binmode(':utf8');
     ok $wfile->write('0123456789');
     ok $wfile->seek(0, 2);

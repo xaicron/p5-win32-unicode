@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use utf8;
-use Test::More tests => 30;
+use Test::More tests => 29;
 use Test::Exception;
 
 use Win32::Unicode::File ':all';
@@ -16,7 +16,6 @@ use Data::Dumper;
 # OO test
 {
     ok $wfile->open(r => $read_file);
-    is $wfile->file_name, $read_file;
     is $wfile->file_path, File::Spec->catfile(Win32::Unicode::Dir::getcwdW() . "/$read_file");
     ok $wfile->binmode(':utf8');
     is $wfile->read(my $buff, 10), 10;
@@ -24,7 +23,7 @@ use Data::Dumper;
     ok $wfile->seek(0, 0);
     is $wfile->readline(), "0123456789\n";
     is $wfile->readline(), "はろーわーるど\n";
-    is $wfile->tell(), file_size $wfile->file_name;
+    is $wfile->tell(), file_size $wfile->file_path;
     ok $wfile->seek(0, 0);
     is scalar @{[$wfile->readline()]}, 2;
     ok not $wfile->getc();
@@ -46,7 +45,7 @@ use Data::Dumper;
     ok seek($wfile, 0, 0);
     is readline($wfile), "0123456789\n";
     is <$wfile>, "はろーわーるど\n";
-    is tell($wfile), file_size $wfile->file_name;
+    is tell($wfile), file_size $wfile->file_path;
     ok not getc($wfile);
     ok eof($wfile);
     my $data = slurp($wfile);

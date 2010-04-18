@@ -5,7 +5,7 @@ auto_set_repository;
 
 requires 'Win32::API';
 requires 'Win32API::File';
-requires 'File::Spec::Functions';
+requires 'File::Spec';
 
 tests 't/*.t';
 author_tests 'xt';

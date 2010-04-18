@@ -6,15 +6,15 @@ use 5.008003;
 use Win32 ();
 use Win32::API ();
 use Carp ();
-use File::Spec::Functions qw/catfile splitdir/;
 use File::Basename qw/basename dirname/;
 use Exporter 'import';
 
+use Win32::Unicode::Util;
 use Win32::Unicode::Error;
-use Win32::Unicode::Encode;
 use Win32::Unicode::Constant;
 use Win32::Unicode::File;
-use Win32::Unicode::Console;
+
+use constant CYGWIN => $^O eq 'cygwin';
 
 # export subs
 our @EXPORT    = qw/file_type file_size mkdirW rmdirW getcwdW chdirW findW finddepthW mkpathW rmtreeW mvtreeW cptreeW dir_size/;
@@ -114,6 +114,8 @@ sub open {
     
     $self->{FileInfo} = Win32::API::Struct->new('WIN32_FIND_DATAW');
     
+    $dir = cyg2ms($dir) or return if CYGWIN;
+    
     $self->{dir} = catfile $dir, '*';
     $dir = utf8_to_utf16($self->{dir}) . NULL;
     
@@ -178,15 +180,19 @@ sub getcwdW {
 # like CORE::chdir
 sub chdirW {
     my $set_dir = shift;
+    my $retry = shift || 0;
     _croakW('Usage: chdirW(dirname)') unless defined $set_dir;
+    $set_dir = cyg2ms($set_dir) or return if CYGWIN;
     $set_dir = utf8_to_utf16(catfile $set_dir) . NULL;
     return unless $SetCurrentDirectory->Call($set_dir);
+    return chdirW(utf16_to_utf8($set_dir), ++$retry) if CYGWIN && !$retry; # bug ?
     return 1;
 }
 
 # like CORE::mkdir
 sub mkdirW {
     my $dir = shift;
+    $dir = cyg2ms($dir) or return if CYGWIN;
     _croakW('Usage: mkdirW(dirname)') unless defined $dir;
     return Win32::CreateDirectory(catfile $dir) ? 1 : 0;
 }
@@ -195,6 +201,7 @@ sub mkdirW {
 sub rmdirW {
     my $dir = shift;
     _croakW('Usage: rmdirW(dirname)') unless defined $dir;
+    $dir = cyg2ms($dir) or return if CYGWIN;
     $dir = utf8_to_utf16(catfile $dir) . NULL;
     return $RemoveDirectory->Call($dir) ? 1 : 0;
 }
@@ -257,18 +264,21 @@ my $is_drive = qr/^[a-zA-Z]:/;
 my $in_dir   = qr#[\\/]$#;
 
 sub _cptree {
-    my $from = catfile shift;
+    my $from = shift;
     my $to = shift;
     my $over = shift || 0;
     my $bymove = shift || 0;
     
     _croakW("$from: no such directory") unless file_type d => $from;
     
+    $from = cyg2ms($from) or return if CYGWIN;
+    $from = catfile $from;
+    $to = cyg2ms($to) or return if CYGWIN;
+    
     if ($to =~ $is_drive) {
         $to = catfile $to, basename($from) if $to =~ $in_dir;
         $to = catfile $to;
     }
-    
     else {
         $to = catfile getcwdW(), $to, basename($from) if $to =~ $in_dir;
         $to = catfile getcwdW(), $to;
@@ -278,12 +288,12 @@ sub _cptree {
         mkpathW $to or _croakW("$to " . errorW);
     }
     
-    (my $replace_from = $from) =~ s/\\/\\\\/g;
+    my $replace_from = quotemeta $from;
     my $code = sub {
         my $from_file = $_;
         my $from_full_path = $Win32::Unicode::Dir::name;
         
-        (my $to_file = $from_full_path) =~ s/$replace_from\\?//;
+        (my $to_file = $from_full_path) =~ s/$replace_from//;
         $to_file = catfile $to, $to_file;
         
         if (file_type d => $from_file) {
@@ -331,8 +341,10 @@ sub _find_wrap {
     my $code = shift;
     my $bydepth = shift;
     for my $arg (@_) {
-        my $dir = catfile $arg;
-        _croakW("$dir: no such directory") unless file_type(d => $dir);
+        my $dir = $arg;
+        $dir = cyg2ms($dir) or return if CYGWIN;
+        $dir = catfile $dir;
+       _croakW("$dir: no such directory") unless file_type(d => $dir);
         
         my $current = getcwdW;
         _find($code, $dir, $bydepth);

@@ -1,0 +1,81 @@
+package Win32::Unicode::Util;
+
+use strict;
+use warnings;
+use 5.008003;
+use Encode ();
+use File::Basename qw/fileparse/;
+use File::Spec::Win32;
+use File::Spec::Cygwin;
+use Exporter 'import';
+
+use constant CYGWIN => $^O eq 'cygwin';
+
+File::Basename::fileparse_set_fstype('MSWIN32');
+
+# export subs
+our @EXPORT = qw/utf16_to_utf8 utf8_to_utf16 cyg2ms to64int catfile splitdir/;
+
+our $VERSION = '0.18';
+
+# Unicode decoder
+my $utf16 = Encode::find_encoding 'utf16-le';
+
+sub utf16_to_utf8 {
+    my $str = shift;
+    return unless defined $str;
+    return _denull($utf16->decode($str));
+}
+
+sub utf8_to_utf16 {
+    my $str = shift;
+    return unless defined $str;
+    return $utf16->encode($str);
+}
+
+sub _denull {
+    my $str = shift;
+    $str =~ s/\x00//g;
+    return $str;
+}
+
+sub to64int {
+    my ($high, $low) = @_;
+    
+    use bigint;
+    return (($high << 32) + $low);
+}
+
+sub cyg2ms {
+    require Win32::Unicode::Dir;
+    
+    my $path = shift;
+    my ($name, $dir) = fileparse $path;
+    
+    $dir =~ s/^([A-Z]:)\./$1/i; # C:.\ => C:\
+    
+    my $current = Win32::Unicode::Dir::getcwdW() or return;
+    CORE::chdir $dir or return;
+    $dir = Win32::Unicode::Dir::getcwdW() or return;
+    CORE::chdir $current or return;
+    
+    if (defined $name) {
+        return catfile($dir, $name) if defined $dir;
+        return $name;
+    }
+    
+    return $dir;
+}
+
+# works on '..'
+sub catfile {
+    my $path = File::Spec::Win32->catfile(@_);
+    $path = File::Spec::Cygwin->catfile($path) if CYGWIN;
+    return $path;
+}
+
+sub splitdir {
+    return File::Spec::Win32->splitdir(@_);
+}
+
+1;

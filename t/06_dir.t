@@ -13,6 +13,8 @@ use utf8;
 use File::Temp qw/tempdir tempfile/;
 use File::Basename qw/fileparse/;
 
+use constant CYGWIN => $^O eq 'cygwin';
+
 my ($fh, $filename) = tempfile("tempXXXX", DIR => tempdir(CLEANUP => 1)) or die "$!";
 
 my ($name, $path) = fileparse $filename;
@@ -39,7 +41,11 @@ do {
 };
 
 ok chdirW($path);
-is getcwdW, $path;
+
+SKIP: {
+    skip 'only MSWIN32', 1 if CYGWIN;
+    is getcwdW, $path;
+};
 
 my $dirname = "I \x{2665} Perl";
 
@@ -54,7 +60,7 @@ ok mkdirW("$dirname/森鴎外");
 ok touchW("$dirname/森鴎外/$dirname.txt");
 ok touchW("$dirname/森鴎外/0");
 
-my $file_names = {"森鴎外" => 1, "$dirname.txt" => 1, "0" => 1};
+my $file_names = +{"森鴎外" => 1, "$dirname.txt" => 1, "0" => 1};
 findW(sub {
     my $arg = shift;
     ok $file_names->{$_}++;
@@ -71,7 +77,7 @@ finddepthW(sub {
     is $Win32::Unicode::Dir::cwd, $arg->{cwd};
 }, $dirname);
 
-is_deeply {"森鴎外" => 3, "$dirname.txt" => 3, "0" => 3}, $file_names;
+is_deeply +{"森鴎外" => 3, "$dirname.txt" => 3, "0" => 3}, $file_names;
 
 ok rmtreeW($dirname);
 
