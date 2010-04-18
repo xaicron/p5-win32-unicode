@@ -119,6 +119,8 @@ is dir_size('test'), 10;
 rmtreeW($dirname);
 rmtreeW('test');
 
+chdir '/'; # CLEANUP tempdir
+
 # Exeption Tests
 dies_ok { mkdirW() };
 dies_ok { rmdirW() };
