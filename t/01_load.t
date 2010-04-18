@@ -37,7 +37,7 @@ can_ok 'Win32::Unicode::File', qw(
 can_ok 'Win32::Unicode::Util', qw(
     utf16_to_utf8
     utf8_to_utf16
-    cyg2ms
+    cygpathw
     to64int
     catfile
     splitdir

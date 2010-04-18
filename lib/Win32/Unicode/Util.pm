@@ -14,7 +14,7 @@ use constant CYGWIN => $^O eq 'cygwin';
 File::Basename::fileparse_set_fstype('MSWIN32');
 
 # export subs
-our @EXPORT = qw/utf16_to_utf8 utf8_to_utf16 cyg2ms to64int catfile splitdir/;
+our @EXPORT = qw/utf16_to_utf8 utf8_to_utf16 cygpathw to64int catfile splitdir/;
 
 our $VERSION = '0.18';
 
@@ -46,7 +46,7 @@ sub to64int {
     return (($high << 32) + $low);
 }
 
-sub cyg2ms {
+sub cygpathw {
     require Win32::Unicode::Dir;
     
     my $path = shift;

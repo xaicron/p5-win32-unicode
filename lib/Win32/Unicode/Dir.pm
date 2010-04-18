@@ -42,7 +42,7 @@ sub open {
     
     $self->{FileInfo} = Win32::API::Struct->new('WIN32_FIND_DATAW');
     
-    $dir = cyg2ms($dir) or return if CYGWIN;
+    $dir = cygpathw($dir) or return if CYGWIN;
     
     $self->{dir} = catfile $dir, '*';
     $dir = utf8_to_utf16($self->{dir}) . NULL;
@@ -120,7 +120,7 @@ sub chdirW {
     my $set_dir = shift;
     my $retry = shift || 0;
     _croakW('Usage: chdirW(dirname)') unless defined $set_dir;
-    $set_dir = cyg2ms($set_dir) or return if CYGWIN;
+    $set_dir = cygpathw($set_dir) or return if CYGWIN;
     $set_dir = utf8_to_utf16(catfile $set_dir) . NULL;
     return unless SetCurrentDirectory->Call($set_dir);
     return chdirW(utf16_to_utf8($set_dir), ++$retry) if CYGWIN && !$retry; # bug ?
@@ -130,7 +130,7 @@ sub chdirW {
 # like CORE::mkdir
 sub mkdirW {
     my $dir = shift;
-    $dir = cyg2ms($dir) or return if CYGWIN;
+    $dir = cygpathw($dir) or return if CYGWIN;
     _croakW('Usage: mkdirW(dirname)') unless defined $dir;
     return Win32::CreateDirectory(catfile $dir) ? 1 : 0;
 }
@@ -139,7 +139,7 @@ sub mkdirW {
 sub rmdirW {
     my $dir = shift;
     _croakW('Usage: rmdirW(dirname)') unless defined $dir;
-    $dir = cyg2ms($dir) or return if CYGWIN;
+    $dir = cygpathw($dir) or return if CYGWIN;
     $dir = utf8_to_utf16(catfile $dir) . NULL;
     return RemoveDirectory->Call($dir) ? 1 : 0;
 }
@@ -209,9 +209,9 @@ sub _cptree {
     
     _croakW("$from: no such directory") unless file_type d => $from;
     
-    $from = cyg2ms($from) or return if CYGWIN;
+    $from = cygpathw($from) or return if CYGWIN;
     $from = catfile $from;
-    $to = cyg2ms($to) or return if CYGWIN;
+    $to = cygpathw($to) or return if CYGWIN;
     
     if ($to =~ $is_drive) {
         $to = catfile $to, basename($from) if $to =~ $in_dir;
@@ -280,7 +280,7 @@ sub _find_wrap {
     my $bydepth = shift;
     for my $arg (@_) {
         my $dir = $arg;
-        $dir = cyg2ms($dir) or return if CYGWIN;
+        $dir = cygpathw($dir) or return if CYGWIN;
         $dir = catfile $dir;
        _croakW("$dir: no such directory") unless file_type(d => $dir);
         

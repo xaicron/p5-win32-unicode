@@ -83,7 +83,7 @@ sub OPEN {
     _croakW("Usage: $self->open('attrebute', 'filename')") unless @_ == 2;
     my $attr = shift;
     my $file = shift;
-    $file = cyg2ms($file) or return if CYGWIN;
+    $file = cygpathw($file) or return if CYGWIN;
     my $utf16_file = utf8_to_utf16(catfile $file) . NULL;
     
     if ($attr =~ s/(:.*)$//) {
@@ -374,7 +374,7 @@ sub statW {
         GetFileInformationByHandle->Call(tied(*$file)->win32_handle, $fi) or return;
     }
     else {
-        $file = cyg2ms($file) or return if CYGWIN;
+        $file = cygpathw($file) or return if CYGWIN;
         $file = catfile $file;
         return unless file_type(f => $file);
         
@@ -424,7 +424,7 @@ sub file_type {
     _croakW('Usage: type(attribute, file_or_dir_name)') unless @_ == 2;
     my $attr = shift;
     my $file = shift;
-    $file = cyg2ms($file) or return if CYGWIN;
+    $file = cygpathw($file) or return if CYGWIN;
     $file = catfile $file;
     
     my $get_attr = _get_file_type($file);
@@ -454,7 +454,7 @@ sub file_size {
         return $high ? to64int($high, $low) : $low;
     }
     
-    $file = cyg2ms($file) or return if CYGWIN;
+    $file = cygpathw($file) or return if CYGWIN;
     $file = catfile $file;
     
     return unless file_type(f => $file);
@@ -481,7 +481,7 @@ sub file_size {
 sub touchW {
     my $file = shift;
     _croakW('Usage: touchW(filename)') unless defined $file;
-    $file = cyg2ms($file) or return if CYGWIN;
+    $file = cygpathw($file) or return if CYGWIN;
     $file = catfile $file;
     return Win32::CreateFile($file) ? 1 : 0;
 }
@@ -490,7 +490,7 @@ sub touchW {
 sub unlinkW {
     my $file = shift;
     _croakW('Usage: unlinkW(filename)') unless defined $file;
-    $file = cyg2ms($file) or return if CYGWIN;
+    $file = cygpathw($file) or return if CYGWIN;
     $file = utf8_to_utf16(catfile $file) . NULL;
     return Win32API::File::DeleteFileW($file) ? 1 : 0;
 }
@@ -501,8 +501,8 @@ sub copyW {
     my ($from, $to) = _file_name_validete(shift, shift);
     my $over = shift || 0;
     
-    $from = cyg2ms($from) or return if CYGWIN;
-    $to   = cyg2ms($to)   or return if CYGWIN;
+    $from = cygpathw($from) or return if CYGWIN;
+    $to   = cygpathw($to)   or return if CYGWIN;
     
     $from = utf8_to_utf16($from) . NULL;
     $to   = utf8_to_utf16($to) . NULL;
@@ -535,7 +535,7 @@ sub _file_name_validete {
     my $from = catfile shift;
     my $to = shift;
     
-    if ($to =~ $back_to_dir or $to =~ $in_dir or (CYGWIN ? file_type(d => cyg2ms($to)) : file_type(d => $to))) {
+    if ($to =~ $back_to_dir or $to =~ $in_dir or (CYGWIN ? file_type(d => cygpathw($to)) : file_type(d => $to))) {
         $to = catfile $to, basename($from);
     }
     $to = catfile $to;
