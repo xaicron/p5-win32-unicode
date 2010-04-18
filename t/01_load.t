@@ -34,9 +34,13 @@ can_ok 'Win32::Unicode::File', qw(
     renameW
 );
 
-can_ok 'Win32::Unicode::Encode', qw(
+can_ok 'Win32::Unicode::Util', qw(
     utf16_to_utf8
     utf8_to_utf16
+    cyg2ms
+    to64int
+    catfile
+    splitdir
 );
 
 can_ok 'Win32::Unicode::Error', qw(

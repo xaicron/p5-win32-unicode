@@ -1,7 +1,7 @@
 use strict;
 use Test::More tests => 4;
 
-use Win32::Unicode::Encode;
+use Win32::Unicode::Util;
 use utf8;
 use Encode qw/encode/;
 
