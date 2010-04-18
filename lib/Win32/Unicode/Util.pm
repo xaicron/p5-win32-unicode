@@ -67,7 +67,6 @@ sub cyg2ms {
     return $dir;
 }
 
-# works on '..'
 sub catfile {
     my $path = File::Spec::Win32->catfile(@_);
     $path = File::Spec::Cygwin->catfile($path) if CYGWIN;
