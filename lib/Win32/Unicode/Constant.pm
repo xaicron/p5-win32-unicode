@@ -94,5 +94,9 @@ sub CREATE_BREAKAWAY_FROM_JOB  () { 0x01000000 }
 sub CREATE_DEFAULT_ERROR_MODE  () { 0x04000000 }
 sub CREATE_NO_WINDOW           () { 0x08000000 }
 
+# error code
+sub NO_ERROR          () { 0x00000000 }
+sub ERROR_FILE_EXISTS () { 0x00000050 }
+
 1;
 __END__

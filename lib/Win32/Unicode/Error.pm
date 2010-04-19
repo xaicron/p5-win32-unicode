@@ -9,10 +9,7 @@ use Exporter 'import';
 
 our $VERSION = '0.18';
 
-use Errno qw[
-    ERROR_FILE_EXISTS
-    :POSIX
-];
+use Errno qw/:POSIX/;
 
 use Win32::Unicode::Constant;
 use Win32::Unicode::Util;
