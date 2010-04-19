@@ -52,6 +52,7 @@ $sub_export->(qw{
     copyW
     moveW
     touchW
+    statW
 });
 
 sub open {
