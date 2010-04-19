@@ -45,7 +45,6 @@ sub errorW {
 
 sub _set_errno {
     my $errno = GetLastError->Call;
-    warn $errno;
     $! = $ERROR_TABLE{$errno} || $errno;
     return;
 }
