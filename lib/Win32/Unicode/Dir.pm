@@ -14,6 +14,7 @@ use Win32::Unicode::Error;
 use Win32::Unicode::Constant;
 use Win32::Unicode::Define;
 use Win32::Unicode::File;
+use Win32::Unicode::Console;
 
 use constant CYGWIN => $^O eq 'cygwin';
 
