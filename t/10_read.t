@@ -4,6 +4,8 @@ use utf8;
 use Test::More tests => 29;
 use Test::Exception;
 
+local $^W; # -w switch off ( Win32::API::Struct evil warnings stop!! )
+
 use Win32::Unicode::File ':all';
 
 my $dir = 't/10_read';

@@ -16,7 +16,7 @@ use constant +{
     FindClose                  => Win32::API->new('kernel32', 'FindClose'                 , 'N'         , 'I'),
     RemoveDirectory            => Win32::API->new('kernel32', 'RemoveDirectoryW'          , 'P'         , 'I'),
     GetFileAttributes          => Win32::API->new('kernel32', 'GetFileAttributesW'        , 'P'         , 'N'),
-    GetFileSize                => Win32::API->new('kernel32', 'GetFileSize'               , 'NP'        , 'N'),
+    GetFileSizeEx              => Win32::API->new('kernel32', 'GetFileSizeEx'             , 'NS'        , 'I'),
     CopyFile                   => Win32::API->new('kernel32', 'CopyFileW'                 , 'PPI'       , 'I'),
     MoveFile                   => Win32::API->new('kernel32', 'MoveFileW'                 , 'PP'        , 'I'),
     GetFileInformationByHandle => Win32::API->new('kernel32', 'GetFileInformationByHandle', 'NS'        , 'N'),
@@ -28,6 +28,11 @@ use constant +{
     WaitForSingleObject        => Win32::API->new('kernel32', 'WaitForSingleObject'       , 'NN'        , 'N'),
     WaitForInputIdle           => Win32::API->new('user32'  , 'WaitForInputIdle'          , 'NN'        , 'N'),
 };
+
+Win32::API::Struct->typedef('LARGE_INTEGER', qw(
+    DWORD low;
+    DWORD high;
+));
 
 Win32::API::Struct->typedef('FILETIME', qw(
     DWORD dwLowDateTime;
