@@ -539,7 +539,6 @@ L<Win32::API>
 L<Win32API::File>
 L<Win32::Unicode>
 L<Win32::Unicode::File>
-L<Win32::Unicode::Encode>
 L<Win32::Unicode::Error>
 
 =head1 LICENSE
