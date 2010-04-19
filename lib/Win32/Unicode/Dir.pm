@@ -16,8 +16,6 @@ use Win32::Unicode::Define;
 use Win32::Unicode::File;
 use Win32::Unicode::Console;
 
-use constant CYGWIN => $^O eq 'cygwin';
-
 # export subs
 our @EXPORT    = qw/file_type file_size mkdirW rmdirW getcwdW chdirW findW finddepthW mkpathW rmtreeW mvtreeW cptreeW dir_size/;
 our @EXPORT_OK = qw//;
@@ -49,8 +47,7 @@ sub open {
     $dir = utf8_to_utf16($self->{dir}) . NULL;
     
     $self->{handle} = FindFirstFile->Call($dir, $self->{FileInfo});
-    
-    return if $self->{handle} == INVALID_HANDLE_VALUE;
+    return Win32::Unicode::Error::_set_errno if $self->{handle} == INVALID_HANDLE_VALUE;
     
     $self->{first} = $self->_cFileName;
     
@@ -61,7 +58,7 @@ sub open {
 sub close {
     my $self = shift;
     _croakW("Can't open directory handle") unless $self->{handle};
-    return unless FindClose->Call($self->{handle});
+    return Win32::Unicode::Error::_set_errno unless FindClose->Call($self->{handle});
     delete @$self{qw[dir handle first FileInfo]};
     return 1;
 }
@@ -89,10 +86,9 @@ sub fetch {
         
         return @files;
     }
-    
     else {
         return $first if $first;
-        return unless FindNextFile->Call($self->{handle} ,$self->{FileInfo});
+        return Win32::Unicode::Error::_set_errno unless FindNextFile->Call($self->{handle} ,$self->{FileInfo});
         return $self->_cFileName;
     }
 }
@@ -123,7 +119,7 @@ sub chdirW {
     _croakW('Usage: chdirW(dirname)') unless defined $set_dir;
     $set_dir = cygpathw($set_dir) or return if CYGWIN;
     $set_dir = utf8_to_utf16(catfile $set_dir) . NULL;
-    return unless SetCurrentDirectory->Call($set_dir);
+    return Win32::Unicode::Error::_set_errno unless SetCurrentDirectory->Call($set_dir);
     return chdirW(utf16_to_utf8($set_dir), ++$retry) if CYGWIN && !$retry; # bug ?
     return 1;
 }
@@ -133,7 +129,7 @@ sub mkdirW {
     my $dir = shift;
     $dir = cygpathw($dir) or return if CYGWIN;
     _croakW('Usage: mkdirW(dirname)') unless defined $dir;
-    return Win32::CreateDirectory(catfile $dir) ? 1 : 0;
+    return Win32::CreateDirectory(catfile $dir) ? 1 : Win32::Unicode::Error::_set_errno;
 }
 
 # like CORE::rmdir
@@ -142,7 +138,7 @@ sub rmdirW {
     _croakW('Usage: rmdirW(dirname)') unless defined $dir;
     $dir = cygpathw($dir) or return if CYGWIN;
     $dir = utf8_to_utf16(catfile $dir) . NULL;
-    return RemoveDirectory->Call($dir) ? 1 : 0;
+    return RemoveDirectory->Call($dir) ? 1 : Win32::Unicode::Error::_set_errno;
 }
 
 # like File::Path::rmtree
