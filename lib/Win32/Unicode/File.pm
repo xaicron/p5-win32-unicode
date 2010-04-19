@@ -129,9 +129,9 @@ sub OPEN {
         ) :
         
         _croakW("'$attr' is unkown attribute")
-    or return;
+    or return Win32::Unicode::Error::_set_errno;
     
-    return if $handle == INVALID_VALUE;
+    return Win32::Unicode::Error::_set_errno if $handle == INVALID_VALUE;
     
     $self->{_handle} = $handle;
     $self->BINMODE if $attr eq 'rb' or $attr eq 'wb';
@@ -166,7 +166,7 @@ sub close {
 
 sub CLOSE {
     my $self = shift;
-    Win32API::File::CloseHandle($self->win32_handle);
+    Win32API::File::CloseHandle($self->win32_handle) or return Win32::Unicode::Error::_set_errno;
     delete $self->{_handle};
 }
 
@@ -184,13 +184,13 @@ sub READ {
     my $len = shift;
 #    my $offset = shift;
     
-    my $result = Win32API::File::ReadFile(
+    Win32API::File::ReadFile(
         $self->win32_handle,
         my $data,
         $len,
         my $bytes_read_num,
         NULLP,
-    );
+    ) or return Win32::Unicode::Error::_set_errno;
     
     $$into = $data if defined $data;
     
@@ -229,7 +229,7 @@ sub _readline {
         $self->{_encode} = $encoder;
     }
     
-    return $line eq '' ? undef : $line;
+    return $line eq '' ? () : $line;
 };
 
 sub READLINE {
@@ -277,7 +277,7 @@ sub WRITE {
         length($buff),
         my $write_size,
         NULLP,
-    );
+    ) or return Win32::Unicode::Error::_set_errno;
     
     return $write_size;
 }
@@ -469,31 +469,41 @@ sub file_size {
         FILE_ATTRIBUTE_NORMAL,
         NULLP,
     );
-    return if $handle == INVALID_VALUE;
+    return Win32::Unicode::Error::_set_errno if $handle == INVALID_VALUE;
     
     my $low  = GetFileSize->Call($handle, \my $high);
     Win32API::File::CloseHandle($handle);
     
-    return if $low == INVALID_VALUE;
+    return Win32::Unicode::Error::_set_errno if $low == INVALID_VALUE;
     return $high ? to64int($high, $low) : $low;
 }
 
 # like unix touch command
 sub touchW {
-    my $file = shift;
-    _croakW('Usage: touchW(filename)') unless defined $file;
-    $file = cygpathw($file) or return if CYGWIN;
-    $file = catfile $file;
-    return Win32::CreateFile($file) ? 1 : 0;
+    my @files = @_;
+    _croakW('Usage: touchW(filename)') unless @files;
+    my $count = 0;
+    for my $file (@files) {
+        $file = cygpathw($file) or return if CYGWIN;
+        $file = catfile $file;
+        $count += Win32::CreateFile($file) ? 1 : 0;
+    }
+    Win32::Unicode::Error::_set_errno unless $count;
+    return $count;
 }
 
 # like CORE::unlink
 sub unlinkW {
-    my $file = shift;
-    _croakW('Usage: unlinkW(filename)') unless defined $file;
-    $file = cygpathw($file) or return if CYGWIN;
-    $file = utf8_to_utf16(catfile $file) . NULL;
-    return Win32API::File::DeleteFileW($file) ? 1 : 0;
+    my @files = @_;
+    _croakW('Usage: unlinkW(filename)') unless @files;
+    my $count = 0;
+    for my $file (@files) {
+        $file = cygpathw($file) or return if CYGWIN;
+        $file = utf8_to_utf16(catfile $file) . NULL;
+        $count += Win32API::File::DeleteFileW($file) ? 1 : 0;
+    }
+    Win32::Unicode::Error::_set_errno unless $count;
+    return $count;
 }
 
 # like File::Copy::copy
@@ -508,7 +518,7 @@ sub copyW {
     $from = utf8_to_utf16($from) . NULL;
     $to   = utf8_to_utf16($to) . NULL;
     
-    return CopyFile->Call($from, $to, !$over) ? 1 : 0;
+    return CopyFile->Call($from, $to, !$over) ? 1 : Win32::Unicode::Error::_set_errno;
 }
 
 # move file
@@ -572,7 +582,7 @@ sub _get_file_type {
     $file = utf8_to_utf16($file) . NULL;
     my $result = GetFileAttributes->Call($file);
     if (defined $result && $result == INVALID_VALUE) {
-        return;
+        return Win32::Unicode::Error::_set_errno;
     }
     return $result;
 }

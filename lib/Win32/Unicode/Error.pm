@@ -9,6 +9,11 @@ use Exporter 'import';
 
 our $VERSION = '0.18';
 
+use Errno qw[
+    ERROR_FILE_EXISTS
+    :POSIX
+];
+
 use Win32::Unicode::Constant;
 use Win32::Unicode::Util;
 use Win32::Unicode::Define;
@@ -17,6 +22,10 @@ use Win32::Unicode::Define;
 our @EXPORT    = qw/errorW/;
 our @EXPORT_OK = qw/error/;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
+
+my %ERROR_TABLE = (
+    &ERROR_FILE_EXISTS => EEXIST,
+);
 
 sub errorW {
     my $buff = BUFF;
@@ -34,6 +43,13 @@ sub errorW {
     return utf16_to_utf8($buff);
 }
 
+sub _set_errno {
+    my $errno = GetLastError->Call;
+    warn $errno;
+    $! = $ERROR_TABLE{$errno} || $errno;
+    return;
+}
+
 *error = *errorW;
 
 1;
@@ -41,6 +57,7 @@ __END__
 =head1 NAME
 
 Win32::Unicode::Error.pm - return error message.
+
 
 =head1 SYNOPSIS
 
