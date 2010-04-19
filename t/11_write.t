@@ -24,12 +24,9 @@ isa_ok $wfile, 'Win32::Unicode::File';
 
 # tie test
 {
-    ok open $wfile, '<', $write_file;
+    ok open $wfile, '>', $write_file;
     ok binmode $wfile, ':utf8';
-    TODO: {
-        local $TODO = 'todo';
-        ok print $wfile '0123456789';
-    };
+    ok print $wfile '0123456789';
     ok seek($wfile, 0, 2);
     is tell $wfile, 10;
     ok close $wfile;
