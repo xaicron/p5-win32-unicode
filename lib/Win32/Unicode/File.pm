@@ -359,7 +359,7 @@ sub EOF {
     my $self = shift;
     
     my $current = $self->TELL() + 0;
-    my $end     = Win32API::File::getFileSize($self->win32_handle) + 0;
+    my $end     = file_size($self) + 0;
     
     return $current == $end;
 }
@@ -450,8 +450,9 @@ sub file_size {
     _croakW('Usage: file_size(filename)') unless defined $file;
     
     if (ref $file eq __PACKAGE__) {
-        my $low  = GetFileSize->Call(tied(*$file)->win32_handle, \my $high);
-        return if $low == INVALID_VALUE;
+        my $self = "$file" =~ /GLOB/ ? tied *$file : $file;
+        my $low  = GetFileSize->Call($self->win32_handle, \my $high);
+        return Win32::Unicode::Error::_set_errno if $low == INVALID_VALUE;
         return $high ? to64int($high, $low) : $low;
     }
     
