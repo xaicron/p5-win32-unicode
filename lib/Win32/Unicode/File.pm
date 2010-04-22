@@ -18,8 +18,6 @@ use Win32::Unicode::Constant;
 use Win32::Unicode::Define;
 use Win32::Unicode::Console;
 
-use constant CYGWIN => $^O eq 'cygwin';
-
 our @EXPORT = qw/file_type file_size copyW moveW unlinkW touchW renameW statW/;
 our @EXPORT_OK = qw/filename_normalize slurp/;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
@@ -291,10 +289,24 @@ sub SEEK {
     my $low = shift;
     my $whence = shift;
     
-    my $high = 0;
-    $high = ~0 if $low < 0;
-    
-    Win32API::File::SetFilePointer($self->win32_handle, $low, $high, $whence);
+    if (is64int($low)) {
+        my ($pos_low, $pos_high);
+        if ($low > 0) {
+            $pos_low  = $low % _32INT;
+            $pos_high = $low / _32INT;
+        }
+        else {
+            $pos_low  = $low % _S32INT;
+            $pos_high = $low / _S32INT;
+        }
+        my $res_low = Win32API::File::SetFilePointer($self->win32_handle, $pos_low, $pos_high, $whence);
+        return to64int($pos_high, $pos_low);
+    }
+    else {
+        my $high = 0;
+        $high = ~0 if $low < 0;
+        return Win32API::File::SetFilePointer($self->win32_handle, $low, $high, $whence);
+    }
 }
 
 sub tell {

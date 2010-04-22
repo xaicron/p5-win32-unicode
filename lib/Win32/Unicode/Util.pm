@@ -9,12 +9,12 @@ use File::Spec::Win32;
 use File::Spec::Cygwin;
 use Exporter 'import';
 
-use constant CYGWIN => $^O eq 'cygwin';
+use Win32::Unicode::Constant qw/CYGWIN _32INT _S32INT/;
 
 File::Basename::fileparse_set_fstype('MSWIN32');
 
 # export subs
-our @EXPORT = qw/utf16_to_utf8 utf8_to_utf16 cygpathw to64int catfile splitdir/;
+our @EXPORT = qw/utf16_to_utf8 utf8_to_utf16 cygpathw to64int is64int catfile splitdir/;
 
 our $VERSION = '0.18';
 
@@ -44,6 +44,10 @@ sub to64int {
     
     use bigint;
     return (($high << 32) + $low);
+}
+
+sub is64int {
+    $_[0] > _32INT or $_[0] < _S32INT;
 }
 
 sub cygpathw {

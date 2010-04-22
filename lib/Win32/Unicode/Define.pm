@@ -27,6 +27,7 @@ use constant +{
     CreateProcess              => Win32::API->new('kernel32', 'CreateProcessW'            , 'PPPPNNPPSS', 'I'),
     WaitForSingleObject        => Win32::API->new('kernel32', 'WaitForSingleObject'       , 'NN'        , 'N'),
     WaitForInputIdle           => Win32::API->new('user32'  , 'WaitForInputIdle'          , 'NN'        , 'N'),
+    SetFilePointerEx           => Win32::API->new('kernel32', 'SetFilePointerEx'          , 'NSSN'      , 'I'),
 };
 
 Win32::API::Struct->typedef('LARGE_INTEGER', qw(
