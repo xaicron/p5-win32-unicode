@@ -501,8 +501,7 @@ sub file_size {
 
 # like unix touch command
 sub touchW {
-    my @files = @_;
-    _croakW('Usage: touchW(filename)') unless @files;
+    my @files = @_ ? @_ : ($_);
     my $count = 0;
     for my $file (@files) {
         $file = cygpathw($file) or return if CYGWIN;
@@ -515,8 +514,7 @@ sub touchW {
 
 # like CORE::unlink
 sub unlinkW {
-    my @files = @_;
-    _croakW('Usage: unlinkW(filename)') unless @files;
+    my @files = @_ ? @_ : ($_);
     my $count = 0;
     for my $file (@files) {
         $file = cygpathw($file) or return if CYGWIN;

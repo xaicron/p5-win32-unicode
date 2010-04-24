@@ -47,10 +47,16 @@ close STDERR; # warnings to be quiet
     ok unlinkW "$tmpdir/$filename.txt";
 }
 
+# $_ tests
+{
+    my $tmpdir = tempdir( CLEANUP => 1 ) or die $!;
+    local $_ = "$tmpdir/ほげ";
+    ok touchW;
+    ok unlinkW;
+}
+
 # exeption
 {
-    dies_ok { touchW() };
-    dies_ok { unlinkW() };
     dies_ok { file_type() };
     dies_ok { file_type('t') };
     dies_ok { copyW() };

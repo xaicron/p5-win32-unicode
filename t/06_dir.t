@@ -119,11 +119,13 @@ is dir_size('test'), 10;
 rmtreeW($dirname);
 rmtreeW('test');
 
+local $_ = 'ほげ';
+ok mkdirW;
+ok rmdirW;
+
 chdir '/'; # CLEANUP tempdir
 
 # Exeption Tests
-dies_ok { mkdirW() };
-dies_ok { rmdirW() };
 dies_ok { rmtreeW() };
 dies_ok { mkpathW() };
 

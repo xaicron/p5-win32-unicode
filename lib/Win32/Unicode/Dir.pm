@@ -126,16 +126,14 @@ sub chdirW {
 
 # like CORE::mkdir
 sub mkdirW {
-    my $dir = shift;
+    my $dir = defined $_[0] ? $_[0] : $_;
     $dir = cygpathw($dir) or return if CYGWIN;
-    _croakW('Usage: mkdirW(dirname)') unless defined $dir;
     return Win32::CreateDirectory(catfile $dir) ? 1 : Win32::Unicode::Error::_set_errno;
 }
 
 # like CORE::rmdir
 sub rmdirW {
-    my $dir = shift;
-    _croakW('Usage: rmdirW(dirname)') unless defined $dir;
+    my $dir = defined $_[0] ? $_[0] : $_;
     $dir = cygpathw($dir) or return if CYGWIN;
     $dir = utf8_to_utf16(catfile $dir) . NULL;
     return RemoveDirectory->Call($dir) ? 1 : Win32::Unicode::Error::_set_errno;
