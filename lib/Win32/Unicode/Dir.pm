@@ -17,7 +17,7 @@ use Win32::Unicode::File;
 use Win32::Unicode::Console;
 
 # export subs
-our @EXPORT    = qw/file_type file_size mkdirW rmdirW getcwdW chdirW findW finddepthW mkpathW rmtreeW mvtreeW cptreeW dir_size/;
+our @EXPORT    = qw/file_type file_size mkdirW rmdirW getcwdW chdirW findW finddepthW mkpathW rmtreeW mvtreeW cptreeW dir_size file_list dir_list/;
 our @EXPORT_OK = qw//;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
@@ -347,6 +347,28 @@ sub dir_size {
     }, $dir);
     
     return $size;
+}
+
+sub file_list {
+    my $dir = shift;
+    _croakW('Usage: file_list(dirname)') unless defined $dir;
+    
+    my $wdir = __PACKAGE__->new->open($dir) or return;
+    my @files = grep { !/^\.{1,2}$/ && file_type f => $_ } $wdir->fetch;
+    $wdir->close;
+    
+    return @files;
+}
+
+sub dir_list {
+    my $dir = shift;
+    _croakW('Usage: dir_list(dirname)') unless defined $dir;
+    
+    my $wdir = __PACKAGE__->new->open($dir) or return;
+    my @dirs = grep { !/^\.{1,2}$/ && file_type d => $_ } $wdir->fetch;
+    $wdir->close;
+    
+    return @dirs;
 }
 
 # return error message

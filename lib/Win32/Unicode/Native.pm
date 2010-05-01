@@ -23,6 +23,8 @@ our @EXPORT = qw{
     opendir
     closedir
     readdir
+    file_list
+    dir_list
 };
 
 my $sub_export = sub {

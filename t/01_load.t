@@ -22,6 +22,8 @@ can_ok 'Win32::Unicode::Dir', qw(
     fetch
     file_type
     file_size
+    file_list
+    dir_list
 );
 
 can_ok 'Win32::Unicode::File', qw(
