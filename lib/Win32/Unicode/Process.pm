@@ -53,7 +53,7 @@ sub _create_process {
         push @args, qq{"$arg"};
     }
     
-    $cmd = utf8_to_utf16("/x /c $cmd @args") . NULL; # mybe security hole :-(
+    $cmd = utf8_to_utf16("/x /c $cmd " . join q{ }, @args) . NULL; # mybe security hole :-(
     
     my $si = Win32::API::Struct->new('STARTUPINFO');
     my $pi = Win32::API::Struct->new('PROCESS_INFORMATION');
