@@ -376,6 +376,7 @@ sub EOF {
     return $current == $end;
 }
 
+# Unimplemented
 sub statW {
     my $file = shift;
     _croakW('Usage: statW(filename)') unless defined $file;
@@ -408,7 +409,7 @@ sub statW {
     
     my $result = +{};
     
-    # uid guid
+    # uid guid (really?)
     $result->{uid} = 0;
     $result->{gud} = 0;
     
@@ -661,7 +662,7 @@ Win32::Unicode::Dir is Unicode string file utility.
   +<  = r+
   +>  = w+
   +>> = a+
-  
+
 =item B<close()>
 
   $fh->close;
