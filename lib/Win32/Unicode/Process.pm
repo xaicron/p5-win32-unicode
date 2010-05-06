@@ -77,3 +77,59 @@ sub _create_process {
 1;
 
 __END__
+=head1 NAME
+
+Win32::Unicode::Process.pm - manipulate processes.
+
+=head1 SYNOPSIS
+
+  use Win32::Unicode::Process;
+  
+  systemW "echo $flagged_utf8_string";
+  systemW 'perl', '-e', 'print "ok"';
+  
+  execW "echo $flagged_utf8_string";
+  execW 'perl', '-e', 'print "ok"';
+  
+=head1 DESCRIPTION
+
+B<THIS MODULE IS ALPHA LEVEL AND MANY BUGS>.
+
+Win32::Unicode::Process is Unicode friendly manipulate process.
+But always use the SHELL.
+That could become a security hole.
+
+=head1 FUNCTIONS
+
+=over
+
+=item B<systemW>
+
+like CORE::system.
+
+  systemW "echo $flagged_utf8_string";
+  systemW 'perl', '-e', 'print "ok"';
+
+=item B<execW>
+
+like CORE::exec
+
+  execW "echo $flagged_utf8_string";
+  execW 'perl', '-e', 'print "ok"';
+
+=back
+
+=head1 AUTHOR
+
+Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
+
+=head1 SEE ALSO
+
+L<Win32::Process>
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
