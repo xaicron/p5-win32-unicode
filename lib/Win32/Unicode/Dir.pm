@@ -546,6 +546,18 @@ this function are slow.
 
   my $dir_size = dir_size($dir) or dieW errorW
 
+=item B<file_list($dir)>
+
+get files from $dir
+
+  my @files = file_list $dir;
+
+=item B<dir_list($dir)>
+
+get directorys from $dir
+
+  my @dirs = dir_list $dir;
+
 =back
 
 =head1 AUTHOR
