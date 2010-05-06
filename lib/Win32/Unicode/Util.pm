@@ -16,8 +16,6 @@ File::Basename::fileparse_set_fstype('MSWIN32');
 # export subs
 our @EXPORT = qw/utf16_to_utf8 utf8_to_utf16 cygpathw to64int is64int catfile splitdir/;
 
-our $VERSION = '0.18';
-
 # Unicode decoder
 my $utf16 = Encode::find_encoding 'utf16-le';
 

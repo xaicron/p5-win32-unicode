@@ -1,5 +1,16 @@
 Revision history for Perl extension Win32::Unicode
 
+0.19    Fri May  7 00:31:59 2010 (+900)
+        - Whole
+            - Supported for cygwin.
+            - Created Win32::Unicode::Process.
+              BUT ALPHA LEVEL.
+            - Moved Win32::Unicode::Encode to Win32::Unicode::Util
+        - Win32::Unicode::File
+            - file_size is supported large file.
+        - Win32::Unicode::Dir
+            - Added file_list, dir_list
+
 0.18    Sat Apr 10 17:29:54 2010 (+900)
         - Win32::Unicode::File
             Accelerated "file_type f => $file".

@@ -17,7 +17,7 @@ our @EXPORT = qw/printW printfW warnW sayW dieW/;
 our @EXPORT_OK = qw//;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
-our $VERSION = '0.18';
+our $VERSION = '0.19';
 
 # default std handle
 my $STD_HANDLE = {

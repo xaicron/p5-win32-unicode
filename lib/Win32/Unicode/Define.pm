@@ -5,7 +5,6 @@ use warnings;
 use Win32::API ();
 use Exporter 'import';
 
-our $VERISON = '0.18';
 our @EXPORT = grep { !/import|BEGIN|EXPORT/ && Win32::Unicode::Define->can($_) } keys %Win32::Unicode::Define::;
 
 use constant +{
