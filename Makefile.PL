@@ -1,7 +1,11 @@
 use inc::Module::Install;
+use Module::Install::XSUtil 0.21;
+
 name 'Win32-Unicode';
 all_from 'lib/Win32/Unicode.pm';
-auto_set_repository;
+
+use_ppport 3.19;
+cc_warnings;
 
 requires 'Win32::API';
 requires 'Win32API::File';
@@ -13,5 +17,10 @@ author_tests 'xt';
 build_requires 'Test::More';
 test_requires 'Test::Output';
 test_requires 'Test::Exception';
+
+cc_src_paths qw(xs);
+
 auto_include;
+auto_set_repository;
+
 WriteAll;

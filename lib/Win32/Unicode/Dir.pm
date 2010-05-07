@@ -23,6 +23,9 @@ our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
 our $VERSION = '0.19';
 
+use XSLoader;
+XSLoader::load('Win32::Unicode', $VERSION);
+
 # global vars
 our $cwd;
 our $name;
@@ -107,9 +110,7 @@ sub _cFileName {
 
 # like use Cwd qw/getcwd/;
 sub getcwdW {
-    my $buff = BUFF;
-    my $length = GetCurrentDirectory->Call(MAX_PATH + 1, $buff);
-    return utf16_to_utf8(substr $buff, 0, $length * 2);
+    utf16_to_utf8 XS_getcwd();
 }
 
 # like CORE::chdir
