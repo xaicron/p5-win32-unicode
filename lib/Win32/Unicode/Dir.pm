@@ -119,9 +119,9 @@ sub chdirW {
     my $retry = shift || 0;
     _croakW('Usage: chdirW(dirname)') unless defined $set_dir;
     $set_dir = cygpathw($set_dir) or return if CYGWIN;
-    $set_dir = utf8_to_utf16(catfile $set_dir) . NULL;
-    return Win32::Unicode::Error::_set_errno unless XS_chdir($set_dir);
-    return chdirW(utf16_to_utf8($set_dir), ++$retry) if CYGWIN && !$retry; # bug ?
+    $set_dir = catfile($set_dir) . NULL;
+    return Win32::Unicode::Error::_set_errno unless XS_chdir(utf8_to_utf16 $set_dir);
+    return chdirW($set_dir, ++$retry) if CYGWIN && !$retry; # bug ?
     return 1;
 }
 
