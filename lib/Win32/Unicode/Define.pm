@@ -11,7 +11,6 @@ use constant +{
     FindFirstFile              => Win32::API->new('kernel32', 'FindFirstFileW'            , 'PS'        , 'N'),
     FindNextFile               => Win32::API->new('kernel32', 'FindNextFileW'             , 'NS'        , 'I'),
     FindClose                  => Win32::API->new('kernel32', 'FindClose'                 , 'N'         , 'I'),
-    RemoveDirectory            => Win32::API->new('kernel32', 'RemoveDirectoryW'          , 'P'         , 'I'),
     GetFileAttributes          => Win32::API->new('kernel32', 'GetFileAttributesW'        , 'P'         , 'N'),
     GetFileSizeEx              => Win32::API->new('kernel32', 'GetFileSizeEx'             , 'NS'        , 'I'),
     CopyFile                   => Win32::API->new('kernel32', 'CopyFileW'                 , 'PPI'       , 'I'),

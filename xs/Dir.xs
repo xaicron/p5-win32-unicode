@@ -29,7 +29,15 @@ XS_chdir(SV* dir)
     CODE:
         STRLEN len;
         const WCHAR* chdir = SvPV_const(dir, len);
-        
         RETVAL = SetCurrentDirectoryW(chdir);
+    OUTPUT:
+        RETVAL
+
+int
+XS_rmdir(SV* dir)
+    CODE:
+        STRLEN len;
+        const WCHAR* rmdir = SvPV_const(dir, len);
+        RETVAL = RemoveDirectoryW(rmdir);
     OUTPUT:
         RETVAL

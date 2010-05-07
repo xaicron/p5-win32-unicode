@@ -137,7 +137,7 @@ sub rmdirW {
     my $dir = defined $_[0] ? $_[0] : $_;
     $dir = cygpathw($dir) or return if CYGWIN;
     $dir = utf8_to_utf16(catfile $dir) . NULL;
-    return RemoveDirectory->Call($dir) ? 1 : Win32::Unicode::Error::_set_errno;
+    return XS_rmdir($dir) ? 1 : Win32::Unicode::Error::_set_errno;
 }
 
 # like File::Path::rmtree
