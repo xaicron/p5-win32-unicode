@@ -110,18 +110,29 @@ sub sayW {
 # warn Unicode to Console
 sub warnW {
     my $str = join q{}, @_;
-    my $no_line_out = $str =~ s/\n$//;
+    $str .= $str =~ s/\n$// ? "\n" : Carp::shortmess('');
+    
+    if ($SIG{__WARN__} && ref $SIG{__WARN__} eq 'CODE') {
+        return $SIG{__WARN__}->($str);
+    }
+    
     _row_warn($str);
-    $no_line_out ? CORE::warn("\n") : Carp::carp('');
     return 1;
 }
 
 # die Unicode to Console
 sub dieW {
     my $str = join q{}, @_;
-    my $no_line_out = $str =~ s/\n$//;
+    $str .= $str =~ s/\n$// ? "\n" : Carp::shortmess('');
+    
+    if ($SIG{__DIE__} && ref $SIG{__DIE__} eq 'CODE') {
+        $SIG{__DIE__}->($str);
+    }
+    local $SIG{__DIE__};
+    
+    $str =~ s/\n$//;
     _row_warn($str);
-    $no_line_out ? CORE::die("\n") : Carp::croak('');
+    CORE::die("\n");
     return;
 }
 
