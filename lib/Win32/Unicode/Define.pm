@@ -8,7 +8,6 @@ use Exporter 'import';
 our @EXPORT = grep { !/import|BEGIN|EXPORT/ && Win32::Unicode::Define->can($_) } keys %Win32::Unicode::Define::;
 
 use constant +{
-    SetCurrentDirectory        => Win32::API->new('kernel32', 'SetCurrentDirectoryW'      , 'P'         , 'I'),
     FindFirstFile              => Win32::API->new('kernel32', 'FindFirstFileW'            , 'PS'        , 'N'),
     FindNextFile               => Win32::API->new('kernel32', 'FindNextFileW'             , 'NS'        , 'I'),
     FindClose                  => Win32::API->new('kernel32', 'FindClose'                 , 'N'         , 'I'),
