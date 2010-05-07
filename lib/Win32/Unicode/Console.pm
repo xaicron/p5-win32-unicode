@@ -109,14 +109,20 @@ sub sayW {
 
 # warn Unicode to Console
 sub warnW {
-    _ConsoleOut(STD_ERROR_HANDLE, CONSOLE_ERROR_HANDLE, Carp::shortmess(@_));
+    my $str = join q{}, @_;
+    my $no_line_out = $str =~ s/\n$//;
+    _row_warn($str);
+    $no_line_out ? CORE::warn("\n") : Carp::carp('');
     return 1;
 }
 
 # die Unicode to Console
 sub dieW {
-    _row_warn(@_);
-    Carp::croak '';
+    my $str = join q{}, @_;
+    my $no_line_out = $str =~ s/\n$//;
+    _row_warn($str);
+    $no_line_out ? CORE::die("\n") : Carp::croak('');
+    return;
 }
 
 sub _row_warn {
