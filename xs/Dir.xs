@@ -15,7 +15,7 @@ MODULE = Win32::Unicode PACKAGE = Win32::Unicode::Dir
 PROTOTYPES: DISABLE
 
 SV*
-XS_getcwd()
+GetCurrentDirectory()
     CODE:
         WCHAR cur[MAX_PATH];
         
@@ -25,7 +25,7 @@ XS_getcwd()
         RETVAL
 
 int
-XS_chdir(SV* dir)
+SetCurrentDirectory(SV* dir)
     CODE:
         STRLEN len;
         const WCHAR* chdir = SvPV_const(dir, len);
@@ -34,7 +34,7 @@ XS_chdir(SV* dir)
         RETVAL
 
 int
-XS_rmdir(SV* dir)
+RemoveDirectory(SV* dir)
     CODE:
         STRLEN len;
         const WCHAR* rmdir = SvPV_const(dir, len);
