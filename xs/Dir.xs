@@ -9,7 +9,6 @@
 #define _UNICODE
 
 #include <windows.h>
-#include <tchar.h>
 
 MODULE = Win32::Unicode PACKAGE = Win32::Unicode::Dir
 
