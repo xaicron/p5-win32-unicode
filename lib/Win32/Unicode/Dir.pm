@@ -110,7 +110,7 @@ sub _cFileName {
 
 # like use Cwd qw/getcwd/;
 sub getcwdW {
-    utf16_to_utf8 GetCurrentDirectory();
+    utf16_to_utf8 get_current_directory();
 }
 
 # like CORE::chdir
@@ -120,7 +120,7 @@ sub chdirW {
     _croakW('Usage: chdirW(dirname)') unless defined $set_dir;
     $set_dir = cygpathw($set_dir) or return if CYGWIN;
     $set_dir = catfile($set_dir);
-    return Win32::Unicode::Error::_set_errno unless SetCurrentDirectory(utf8_to_utf16($set_dir) . NULL);
+    return Win32::Unicode::Error::_set_errno unless set_current_directory(utf8_to_utf16($set_dir) . NULL);
     return chdirW($set_dir, ++$retry) if CYGWIN && !$retry; # bug ?
     return 1;
 }
@@ -137,7 +137,7 @@ sub rmdirW {
     my $dir = defined $_[0] ? $_[0] : $_;
     $dir = cygpathw($dir) or return if CYGWIN;
     $dir = utf8_to_utf16(catfile $dir) . NULL;
-    return RemoveDirectory($dir) ? 1 : Win32::Unicode::Error::_set_errno;
+    return remove_directory($dir) ? 1 : Win32::Unicode::Error::_set_errno;
 }
 
 # like File::Path::rmtree
