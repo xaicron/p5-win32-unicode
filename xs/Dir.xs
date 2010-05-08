@@ -10,7 +10,7 @@
 #define __HANDLE    "handle"
 #define __FIRST     "first"
 
-MODULE = Win32::Unicode PACKAGE = Win32::Unicode::Dir
+MODULE = Win32::Unicode::Dir    PACKAGE  = Win32::Unicode::Dir
 
 PROTOTYPES: DISABLE
 
