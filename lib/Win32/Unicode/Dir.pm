@@ -344,10 +344,7 @@ sub file_list {
     _croakW('Usage: file_list(dirname)') unless defined $dir;
     
     my $wdir = __PACKAGE__->new->open($dir) or return;
-    my @files = grep { !/^\.{1,2}$/ && file_type f => $_ } $wdir->fetch;
-    $wdir->close;
-    
-    return @files;
+    return grep { !/^\.{1,2}$/ && file_type f => $_ } $wdir->fetch;
 }
 
 sub dir_list {
@@ -355,10 +352,7 @@ sub dir_list {
     _croakW('Usage: dir_list(dirname)') unless defined $dir;
     
     my $wdir = __PACKAGE__->new->open($dir) or return;
-    my @dirs = grep { !/^\.{1,2}$/ && file_type d => $_ } $wdir->fetch;
-    $wdir->close;
-    
-    return @dirs;
+    return grep { !/^\.{1,2}$/ && file_type d => $_ } $wdir->fetch;
 }
 
 # return error message
