@@ -12,7 +12,6 @@
 #include <tchar.h>
 
 #define __HANDLE    "handle"
-#define __FILE_INFO "file_info"
 #define __FIRST     "first"
 
 MODULE = Win32::Unicode PACKAGE = Win32::Unicode::Dir
@@ -78,3 +77,11 @@ find_next_file(SV* self)
     OUTPUT:
         RETVAL
 
+int
+find_close(SV* self)
+    CODE:
+        HV* h = (HV*)SvRV(self);
+        int handle = SvIV(*hv_fetch(h, __HANDLE, strlen(__HANDLE), 0));
+        RETVAL = FindClose(handle);
+    OUTPUT:
+        RETVAL

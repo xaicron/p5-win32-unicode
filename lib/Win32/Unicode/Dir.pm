@@ -59,7 +59,7 @@ sub open {
 sub close {
     my $self = shift;
     _croakW("Can't open directory handle") unless $self->{handle};
-    return Win32::Unicode::Error::_set_errno unless FindClose->Call($self->{handle});
+    return Win32::Unicode::Error::_set_errno unless $self->find_close;
     delete @$self{qw[dir handle first FileInfo]};
     return 1;
 }

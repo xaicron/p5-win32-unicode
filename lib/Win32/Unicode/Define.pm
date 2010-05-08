@@ -8,9 +8,6 @@ use Exporter 'import';
 our @EXPORT = grep { !/import|BEGIN|EXPORT/ && Win32::Unicode::Define->can($_) } keys %Win32::Unicode::Define::;
 
 use constant +{
-    FindFirstFile              => Win32::API->new('kernel32', 'FindFirstFileW'            , 'PS'        , 'N'),
-    FindNextFile               => Win32::API->new('kernel32', 'FindNextFileW'             , 'NS'        , 'I'),
-    FindClose                  => Win32::API->new('kernel32', 'FindClose'                 , 'N'         , 'I'),
     GetFileAttributes          => Win32::API->new('kernel32', 'GetFileAttributesW'        , 'P'         , 'N'),
     GetFileSizeEx              => Win32::API->new('kernel32', 'GetFileSizeEx'             , 'NS'        , 'I'),
     CopyFile                   => Win32::API->new('kernel32', 'CopyFileW'                 , 'PPI'       , 'I'),
@@ -35,19 +32,6 @@ Win32::API::Struct->typedef('FILETIME', qw(
     DWORD dwLowDateTime;
     DWORD dwHighDateTime;
 ));
-
-Win32::API::Struct->typedef('WIN32_FIND_DATAW', qw{
-    DWORD    dwFileAttributes;
-    FILETIME ftCreationTime;
-    FILETIME ftLastAccessTime;
-    FILETIME ftLastWriteTime;
-    DWORD    nFileSizeHigh;
-    DWORD    nFileSizeLow;
-    DWORD    dwReserved0;
-    DWORD    dwReserved1;
-    WCHAR    cFileName[520];
-    WCHAR    cAlternateFileName[28];
-});
 
 Win32::API::Struct->typedef('BY_HANDLE_FILE_INFORMATION', qw{
     DWORD    dwFileAttributes;
