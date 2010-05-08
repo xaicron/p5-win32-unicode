@@ -6,3 +6,11 @@ inc
 pm_to_blib
 MANIFEST
 Makefile.old
+nytprof*
+ppport.h
+xs/*c
+xs/*o
+*.bs
+*.def
+*.old
+dll*
