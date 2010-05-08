@@ -15,6 +15,14 @@ use Win32::Unicode::Constant;
 use Win32::Unicode::Define;
 use Win32::Unicode::File;
 use Win32::Unicode::Console;
+use Win32::Unicode::XS qw{
+    get_current_directory
+    set_current_directory
+    remove_directory
+    find_first_file
+    find_next_file
+    find_close
+};
 
 # export subs
 our @EXPORT    = qw/file_type file_size mkdirW rmdirW getcwdW chdirW findW finddepthW mkpathW rmtreeW mvtreeW cptreeW dir_size file_list dir_list/;
@@ -22,9 +30,6 @@ our @EXPORT_OK = qw//;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
 our $VERSION = '0.19';
-
-use XSLoader;
-XSLoader::load('Win32::Unicode', $VERSION);
 
 # global vars
 our $cwd;
