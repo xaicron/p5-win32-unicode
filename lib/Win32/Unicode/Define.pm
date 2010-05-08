@@ -8,7 +8,6 @@ use Exporter 'import';
 our @EXPORT = grep { !/import|BEGIN|EXPORT/ && Win32::Unicode::Define->can($_) } keys %Win32::Unicode::Define::;
 
 use constant +{
-    GetFileAttributes          => Win32::API->new('kernel32', 'GetFileAttributesW'        , 'P'         , 'N'),
     GetFileSizeEx              => Win32::API->new('kernel32', 'GetFileSizeEx'             , 'NS'        , 'I'),
     CopyFile                   => Win32::API->new('kernel32', 'CopyFileW'                 , 'PPI'       , 'I'),
     MoveFile                   => Win32::API->new('kernel32', 'MoveFileW'                 , 'PP'        , 'I'),
