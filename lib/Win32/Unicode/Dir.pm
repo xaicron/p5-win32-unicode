@@ -42,17 +42,15 @@ sub open {
     my $dir = shift;
     _croakW('Usage $obj->open(dirname)') unless defined $dir;
     
-    $self->{FileInfo} = Win32::API::Struct->new('WIN32_FIND_DATAW');
-    
     $dir = cygpathw($dir) or return if CYGWIN;
     
     $self->{dir} = catfile $dir, '*';
     $dir = utf8_to_utf16($self->{dir}) . NULL;
     
-    $self->{handle} = FindFirstFile->Call($dir, $self->{FileInfo});
+    $self->find_first_file($dir);
     return Win32::Unicode::Error::_set_errno if $self->{handle} == INVALID_HANDLE_VALUE;
     
-    $self->{first} = $self->_cFileName;
+    $self->{first} = utf16_to_utf8($self->{first});
     
     return $self;
 }
@@ -83,30 +81,21 @@ sub fetch {
         my @files;
         
         push @files, $first if $first;
-        while (FindNextFile->Call($self->{handle} ,$self->{FileInfo})) {
-            push @files, $self->_cFileName;
+        while (defined(my $file = $self->find_next_file)) {
+            push @files, utf16_to_utf8($file);
         }
         
         return @files;
     }
     else {
         return $first if $first;
-        return Win32::Unicode::Error::_set_errno unless FindNextFile->Call($self->{handle} ,$self->{FileInfo});
-        return $self->_cFileName;
+        my $file = $self->find_next_file;
+        return Win32::Unicode::Error::_set_errno unless defined $file;
+        return utf16_to_utf8($file);
     }
 }
 
 *read = *readdir = \&fetch;
-
-sub _cFileName {
-    my $self = shift;
-    my $cFileName = do {
-        use bytes;
-        unpack "x44A520", $self->{FileInfo}->{buffer};
-    };
-    delete $self->{FileInfo}->{cFileName};
-    return utf16_to_utf8($cFileName . NULL);
-};
 
 # like use Cwd qw/getcwd/;
 sub getcwdW {

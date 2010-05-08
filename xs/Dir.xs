@@ -9,6 +9,11 @@
 #define _UNICODE
 
 #include <windows.h>
+#include <tchar.h>
+
+#define __HANDLE    "handle"
+#define __FILE_INFO "file_info"
+#define __FIRST     "first"
 
 MODULE = Win32::Unicode PACKAGE = Win32::Unicode::Dir
 
@@ -29,6 +34,7 @@ set_current_directory(SV* dir)
     CODE:
         STRLEN len;
         const WCHAR* chdir = SvPV_const(dir, len);
+        
         RETVAL = SetCurrentDirectoryW(chdir);
     OUTPUT:
         RETVAL
@@ -38,6 +44,37 @@ remove_directory(SV* dir)
     CODE:
         STRLEN len;
         const WCHAR* rmdir = SvPV_const(dir, len);
+        
         RETVAL = RemoveDirectoryW(rmdir);
     OUTPUT:
         RETVAL
+
+void
+find_first_file(SV* self, SV* dir)
+    CODE:
+        WIN32_FIND_DATAW file_info;
+        STRLEN len;
+        const WCHAR* opendir = SvPV_const(dir, len);
+        
+        int handle = FindFirstFileW(opendir, &file_info);
+        
+        HV* h = (HV*)SvRV(self);
+        hv_store(h, __HANDLE, strlen(__HANDLE), newSViv(handle), 0);
+        hv_store(h, __FIRST, strlen(__FIRST), newSVpv(file_info.cFileName, wcslen(file_info.cFileName) * 2), 0);
+        
+SV*
+find_next_file(SV* self)
+    CODE:
+        WIN32_FIND_DATAW file_info;
+        
+        HV* h = (HV*)SvRV(self);
+        int handle = SvIV(*hv_fetch(h, __HANDLE, strlen(__HANDLE), 0));
+        
+        if(FindNextFileW(handle, &file_info)) {
+            RETVAL = newSVpv(file_info.cFileName, wcslen(file_info.cFileName) * 2);
+        } else {
+            XSRETURN_EMPTY;
+        }
+    OUTPUT:
+        RETVAL
+
