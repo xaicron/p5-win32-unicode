@@ -5,11 +5,7 @@
 
 #include "ppport.h"
 
-#define UNICODE
-#define _UNICODE
-
 #include <windows.h>
-#include <tchar.h>
 
 #define __HANDLE    "handle"
 #define __FIRST     "first"
