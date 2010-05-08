@@ -32,6 +32,4 @@ isa_ok $wfile, 'Win32::Unicode::File';
     ok close $wfile;
 };
 
-local $^W; # -w switch off ( Win32::API::Struct evil warnings stop!! )
-
 Win32::Unicode::Dir::rmtreeW($dir);

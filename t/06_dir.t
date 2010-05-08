@@ -3,8 +3,6 @@ use warnings;
 use Test::More;
 use Test::Exception;
 
-local $^W; # -w switch off ( Win32::API::Struct evil warnings stop!! )
-
 close STDERR; # warnings to be quiet
 
 use Win32::Unicode::Dir;
