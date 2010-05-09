@@ -63,3 +63,27 @@ move_file(SV* from, SV* to)
         RETVAL = MoveFileW(from_name, to_name);
     OUTPUT:
         RETVAL
+
+SV*
+set_file_pointer(long handle, long lpos, long hpos, int whence)
+    CODE:
+        STRLEN len;
+        LARGE_INTEGER mv;
+        LARGE_INTEGER st;
+        
+        mv.LowPart  = lpos;
+        mv.HighPart = hpos;
+        
+        if (SetFilePointerEx(handle, mv, &st, whence) == 0) {
+            XSRETURN_EMPTY;
+        }
+        
+        SV* sv = newSV(0);
+        HV* hv = newHV();
+        sv_setsv(sv, sv_2mortal(newRV_noinc((SV*)hv)));
+        hv_store(hv, "high", strlen("high"), newSVnv(st.HighPart), 0);
+        hv_store(hv, "low", strlen("low"), newSVnv(st.LowPart), 0);
+        
+        RETVAL = sv;
+    OUTPUT:
+        RETVAL

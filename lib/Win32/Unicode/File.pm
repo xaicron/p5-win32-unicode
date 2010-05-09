@@ -290,6 +290,7 @@ sub SEEK {
     my $low = shift;
     my $whence = shift;
     
+    my $result;
     if (is64int($low)) {
         my ($pos_low, $pos_high);
         if ($low > 0) {
@@ -300,13 +301,14 @@ sub SEEK {
             $pos_low  = $low % _S32INT;
             $pos_high = $low / _S32INT;
         }
-        my $res_low = Win32API::File::SetFilePointer($self->win32_handle, $pos_low, $pos_high, $whence);
-        return to64int($pos_high, $pos_low);
+        my $st = set_file_pointer($self->win32_handle, $pos_low, $pos_high, $whence) or return Win32::Unicode::Error::_set_errno;
+        return $st->{high} ? to64int($st->{high}, $st->{low}) : $st->{low};
     }
     else {
         my $high = 0;
         $high = ~0 if $low < 0;
-        return Win32API::File::SetFilePointer($self->win32_handle, $low, $high, $whence);
+        my $st = set_file_pointer($self->win32_handle, $low, $high, $whence) or return Win32::Unicode::Error::_set_errno;
+        return $st->{high} ? to64int($st->{high}, $st->{low}) : $st->{low};
     }
 }
 
