@@ -5,7 +5,7 @@ use warnings;
 use Carp ();
 use Exporter 'import';
 
-our $VERISON = '0.18';
+our $VERISON = '0.19';
 our @EXPORT = grep { !/import|BEGIN|EXPORT/ && Win32::Unicode::Constant->can($_) } keys %Win32::Unicode::Constant::;
 
 use constant CYGWIN  => $^O eq 'cygwin';
