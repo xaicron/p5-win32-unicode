@@ -53,3 +53,14 @@ copy_file(SV* from, SV* to, int over)
         RETVAL = CopyFileW(from_name, to_name, over);
     OUTPUT:
         RETVAL
+
+int
+move_file(SV* from, SV* to)
+    CODE:
+        STRLEN len;
+        const WCHAR* from_name = SvPV_const(from, len);
+        const WCHAR* to_name   = SvPV_const(to  , len);
+        
+        RETVAL = MoveFileW(from_name, to_name);
+    OUTPUT:
+        RETVAL

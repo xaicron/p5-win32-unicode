@@ -546,7 +546,7 @@ sub moveW {
     my ($from, $to) = _file_name_validete(shift, shift);
     my $over = shift || 0;
     
-    unless (MoveFile->Call(utf8_to_utf16($from) . NULL, utf8_to_utf16($to) . NULL)) {
+    unless (move_file(utf8_to_utf16($from) . NULL, utf8_to_utf16($to) . NULL)) {
         return unless copyW($from, $to, $over);
         return unless unlinkW($from);
     };
