@@ -51,7 +51,7 @@ find_first_file(SV* self, SV* dir)
         STRLEN len;
         const WCHAR* opendir = SvPV_const(dir, len);
         
-        int handle = FindFirstFileW(opendir, &file_info);
+        HANDLE handle = FindFirstFileW(opendir, &file_info);
         
         HV* h = (HV*)SvRV(self);
         hv_store(h, __HANDLE, strlen(__HANDLE), newSViv(handle), 0);
@@ -63,7 +63,7 @@ find_next_file(SV* self)
         WIN32_FIND_DATAW file_info;
         
         HV* h = (HV*)SvRV(self);
-        int handle = SvIV(*hv_fetch(h, __HANDLE, strlen(__HANDLE), 0));
+        HANDLE handle = SvIV(*hv_fetch(h, __HANDLE, strlen(__HANDLE), 0));
         
         if(FindNextFileW(handle, &file_info)) {
             RETVAL = newSVpv(file_info.cFileName, wcslen(file_info.cFileName) * 2);
@@ -77,7 +77,7 @@ int
 find_close(SV* self)
     CODE:
         HV* h = (HV*)SvRV(self);
-        int handle = SvIV(*hv_fetch(h, __HANDLE, strlen(__HANDLE), 0));
+        HANDLE handle = SvIV(*hv_fetch(h, __HANDLE, strlen(__HANDLE), 0));
         RETVAL = FindClose(handle);
     OUTPUT:
         RETVAL
