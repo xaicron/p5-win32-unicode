@@ -7,13 +7,14 @@ use Win32::API ();
 use Carp ();
 use Exporter 'import';
 
-our $VERSION = '0.18';
+our $VERSION = '0.19';
 
 use Errno qw/:POSIX/;
 
 use Win32::Unicode::Constant;
 use Win32::Unicode::Util;
 use Win32::Unicode::Define;
+use Win32::Unicode::XS;
 
 # export subs
 our @EXPORT    = qw/errorW/;
@@ -29,7 +30,7 @@ sub errorW {
     my $result = FormatMessage->Call(
         FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
         NULL,
-        GetLastError->Call,
+        get_last_error(),
         LANG_USER_DEFAULT,
         $buff,
         length($buff),
@@ -41,7 +42,7 @@ sub errorW {
 }
 
 sub _set_errno {
-    my $errno = GetLastError->Call;
+    my $errno = get_last_error();
     $! = $ERROR_TABLE{$errno} || $errno;
     return;
 }
