@@ -11,6 +11,10 @@ use Exporter 'import';
 use Win32::Unicode::Util;
 use Win32::Unicode::Define;
 use Win32::Unicode::Constant;
+use Win32::Unicode::XS qw{
+    get_std_handle
+    write_console
+};
 
 # export subs
 our @EXPORT = qw/printW printfW warnW sayW dieW/;
@@ -21,8 +25,8 @@ our $VERSION = '0.19';
 
 # default std handle
 my $STD_HANDLE = {
-    STD_OUTPUT_HANDLE, GetStdHandle->Call(STD_OUTPUT_HANDLE),
-    STD_ERROR_HANDLE,  GetStdHandle->Call(STD_ERROR_HANDLE)
+    STD_OUTPUT_HANDLE, get_std_handle(STD_OUTPUT_HANDLE),
+    STD_ERROR_HANDLE,  get_std_handle(STD_ERROR_HANDLE)
 };
 
 # ConsoleOut
@@ -52,7 +56,7 @@ sub _ConsoleOut {
         substr($str, 0, MAX_BUFFER_SIZE) = '';
         
         my $buff = 0;
-        WriteConsole->Call($handle, utf8_to_utf16($tmp_str), length($tmp_str), $buff, NULL);
+        write_console($handle, utf8_to_utf16($tmp_str) . NULL);
     }
 };
 

@@ -11,8 +11,6 @@ use constant +{
     GetFileInformationByHandle => Win32::API->new('kernel32', 'GetFileInformationByHandle', 'NS'        , 'N'),
     GetLastError               => Win32::API->new('kernel32', 'GetLastError'              , ''          , 'I'),
     FormatMessage              => Win32::API->new('kernel32', 'FormatMessageW'            , 'IPIIPIP'   , 'I'),
-    GetStdHandle               => Win32::API->new('kernel32', 'GetStdHandle'              , 'N'         , 'N'),
-    WriteConsole               => Win32::API->new('kernel32', 'WriteConsoleW'             , 'NPNNP'     , 'I'),
     CreateProcess              => Win32::API->new('kernel32', 'CreateProcessW'            , 'PPPPNNPPSS', 'I'),
     WaitForSingleObject        => Win32::API->new('kernel32', 'WaitForSingleObject'       , 'NN'        , 'N'),
     WaitForInputIdle           => Win32::API->new('user32'  , 'WaitForInputIdle'          , 'NN'        , 'N'),
