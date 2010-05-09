@@ -537,7 +537,7 @@ sub copyW {
     $from = utf8_to_utf16($from) . NULL;
     $to   = utf8_to_utf16($to) . NULL;
     
-    return CopyFile->Call($from, $to, !$over) ? 1 : Win32::Unicode::Error::_set_errno;
+    return copy_file($from, $to, !$over) ? 1 : Win32::Unicode::Error::_set_errno;
 }
 
 # move file

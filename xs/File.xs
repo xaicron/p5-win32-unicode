@@ -42,3 +42,14 @@ get_file_size(SV* win32_handle)
         RETVAL = sv;
     OUTPUT:
         RETVAL
+
+int
+copy_file(SV* from, SV* to, int over)
+    CODE:
+        STRLEN len;
+        const WCHAR* from_name = SvPV_const(from, len);
+        const WCHAR* to_name   = SvPV_const(to  , len);
+        
+        RETVAL = CopyFileW(from_name, to_name, over);
+    OUTPUT:
+        RETVAL
