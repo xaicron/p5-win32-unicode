@@ -26,18 +26,7 @@ my %ERROR_TABLE = (
 );
 
 sub errorW {
-    my $buff = BUFF;
-    my $result = FormatMessage->Call(
-        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL,
-        get_last_error(),
-        LANG_USER_DEFAULT,
-        $buff,
-        length($buff),
-        NULL,
-    );
-    
-    $buff = unpack "A520", $buff;
+    my $buff = foramt_message();
     return utf16_to_utf8($buff);
 }
 
