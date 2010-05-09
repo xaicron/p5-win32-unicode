@@ -20,9 +20,10 @@ get_std_handle(long handle)
 
 void
 write_console(long handle, SV* str)
-    CODE:
+    PPCODE:
         STRLEN len;
         const WCHAR* buff = SvPV_const(str, len);
         DWORD write_size;
         
         WriteConsoleW(handle, buff, wcslen(buff), &write_size, NULL);
+
