@@ -168,6 +168,8 @@ sub BINMODE {
     # TODO...?
 }
 
+sub FILENO {}
+
 1;
 __END__
 =head1 NAME
