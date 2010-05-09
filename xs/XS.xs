@@ -4,11 +4,12 @@
 #include "XSUB.h"
 
 #include "ppport.h"
+#include "win32_unicode.h"
 
 MODULE = Win32::Unicode
 
 BOOT:
-    boot_Win32__Unicode__Dir(aTHX_ cv);
-    boot_Win32__Unicode__File(aTHX_ cv);
-    boot_Win32__Unicode__Console(aTHX_ cv);
+    WIN32_UNICODE_CALL_BOOT(Win32__Unicode__Dir);
+    WIN32_UNICODE_CALL_BOOT(Win32__Unicode__File);
+    WIN32_UNICODE_CALL_BOOT(Win32__Unicode__Console);
 
