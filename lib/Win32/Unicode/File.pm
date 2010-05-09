@@ -467,17 +467,13 @@ sub file_type {
     return 1;
 }
 
-my $FILE_SIZE_LARGE_INTEGER = Win32::API::Struct->new('LARGE_INTEGER');
-
 sub file_size {
     my $file = shift;
     _croakW('Usage: file_size(filename)') unless defined $file;
     
-    my $st = $FILE_SIZE_LARGE_INTEGER;
-    
     if (ref $file eq __PACKAGE__) {
         my $self = "$file" =~ /GLOB/ ? tied *$file : $file;
-        GetFileSizeEx->Call($self->win32_handle, $st) or return Win32::Unicode::Error::_set_errno;
+        my $st = get_file_size($self->win32_handle) or return Win32::Unicode::Error::_set_errno;
         return $st->{high} ? to64int($st->{high}, $st->{low}) : $st->{low};
     }
     
@@ -497,7 +493,7 @@ sub file_size {
     );
     return Win32::Unicode::Error::_set_errno if $handle == INVALID_VALUE;
     
-    GetFileSizeEx->Call($handle, $st) or return Win32::Unicode::Error::_set_errno;
+    my $st = get_file_size($handle) or return Win32::Unicode::Error::_set_errno;
     Win32API::File::CloseHandle($handle) or return Win32::Unicode::Error::_set_errno;
     
     return $st->{high} ? to64int($st->{high}, $st->{low}) : $st->{low};

@@ -8,7 +8,6 @@ use Exporter 'import';
 our @EXPORT = grep { !/import|BEGIN|EXPORT/ && Win32::Unicode::Define->can($_) } keys %Win32::Unicode::Define::;
 
 use constant +{
-    GetFileSizeEx              => Win32::API->new('kernel32', 'GetFileSizeEx'             , 'NS'        , 'I'),
     CopyFile                   => Win32::API->new('kernel32', 'CopyFileW'                 , 'PPI'       , 'I'),
     MoveFile                   => Win32::API->new('kernel32', 'MoveFileW'                 , 'PP'        , 'I'),
     GetFileInformationByHandle => Win32::API->new('kernel32', 'GetFileInformationByHandle', 'NS'        , 'N'),
@@ -21,11 +20,6 @@ use constant +{
     WaitForInputIdle           => Win32::API->new('user32'  , 'WaitForInputIdle'          , 'NN'        , 'N'),
     SetFilePointerEx           => Win32::API->new('kernel32', 'SetFilePointerEx'          , 'NSSN'      , 'I'),
 };
-
-Win32::API::Struct->typedef('LARGE_INTEGER', qw(
-    DWORD low;
-    DWORD high;
-));
 
 Win32::API::Struct->typedef('FILETIME', qw(
     DWORD dwLowDateTime;
