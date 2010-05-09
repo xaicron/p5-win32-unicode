@@ -24,10 +24,9 @@ get_file_attributes(SV* file)
         RETVAL
 
 SV*
-get_file_size(SV* win32_handle)
+get_file_size(long handle)
     CODE:
         LARGE_INTEGER st;
-        HANDLE handle = SvIV(win32_handle);
         
         if (GetFileSizeEx(handle, &st) == 0) {
             XSRETURN_EMPTY;
