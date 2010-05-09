@@ -17,9 +17,7 @@ use Win32::Unicode::Error;
 use Win32::Unicode::Constant;
 use Win32::Unicode::Define;
 use Win32::Unicode::Console;
-use Win32::Unicode::XS qw{
-    get_file_attributes
-};
+use Win32::Unicode::XS;
 
 our @EXPORT = qw/file_type file_size copyW moveW unlinkW touchW renameW statW/;
 our @EXPORT_OK = qw/filename_normalize slurp/;

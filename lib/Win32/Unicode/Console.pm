@@ -11,10 +11,7 @@ use Exporter 'import';
 use Win32::Unicode::Util;
 use Win32::Unicode::Define;
 use Win32::Unicode::Constant;
-use Win32::Unicode::XS qw{
-    get_std_handle
-    write_console
-};
+use Win32::Unicode::XS;
 
 # export subs
 our @EXPORT = qw/printW printfW warnW sayW dieW/;
