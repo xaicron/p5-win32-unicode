@@ -11,6 +11,7 @@ use Exporter 'import';
 use Win32::Unicode::Util;
 use Win32::Unicode::Constant;
 use Win32::Unicode::Define;
+use Win32::Unicode::XS;
 
 # export subs
 our @EXPORT    = qw/systemW execW/;
@@ -29,7 +30,7 @@ sub systemW {
     my $pi = _create_process(@_) or return 1;
     Win32API::File::CloseHandle($pi->{hThread});
     WaitForInputIdle->Call($pi->{hProcess}, INFINITE);
-    WaitForSingleObject->Call($pi->{hProcess}, INFINITE);
+    wait_for_single_object($pi->{hProcess});
     Win32API::File::CloseHandle($pi->{hProcess});
     
     return 0;
