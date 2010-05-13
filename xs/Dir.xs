@@ -65,11 +65,11 @@ find_next_file(SV* self)
         HV* h = (HV*)SvRV(self);
         HANDLE handle = SvIV(*hv_fetch(h, __HANDLE, strlen(__HANDLE), 0));
         
-        if(FindNextFileW(handle, &file_info)) {
-            RETVAL = newSVpv(file_info.cFileName, wcslen(file_info.cFileName) * 2);
-        } else {
+        if(FindNextFileW(handle, &file_info) == 0) {
             XSRETURN_EMPTY;
         }
+        
+        RETVAL = newSVpv(file_info.cFileName, wcslen(file_info.cFileName) * 2);
     OUTPUT:
         RETVAL
 
