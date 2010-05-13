@@ -10,7 +10,6 @@ our @EXPORT = grep { !/import|BEGIN|EXPORT/ && Win32::Unicode::Define->can($_) }
 use constant +{
     GetFileInformationByHandle => Win32::API->new('kernel32', 'GetFileInformationByHandle', 'NS'        , 'N'),
     CreateProcess              => Win32::API->new('kernel32', 'CreateProcessW'            , 'PPPPNNPPSS', 'I'),
-    WaitForInputIdle           => Win32::API->new('user32'  , 'WaitForInputIdle'          , 'NN'        , 'N'),
 };
 
 Win32::API::Struct->typedef('FILETIME', qw(

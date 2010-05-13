@@ -29,7 +29,7 @@ my $SHELL = do {
 sub systemW {
     my $pi = _create_process(@_) or return 1;
     Win32API::File::CloseHandle($pi->{hThread});
-    WaitForInputIdle->Call($pi->{hProcess}, INFINITE);
+    wait_for_input_idle($pi->{hProcess});
     wait_for_single_object($pi->{hProcess});
     Win32API::File::CloseHandle($pi->{hProcess});
     

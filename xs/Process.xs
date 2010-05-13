@@ -17,3 +17,10 @@ wait_for_single_object(long handle)
         RETVAL = WaitForSingleObject(handle, INFINITE);
     OUTPUT:
         RETVAL
+
+long
+wait_for_input_idle(long handle)
+    CODE:
+        RETVAL = WaitForInputIdle(handle, INFINITE);
+    OUTPUT:
+        RETVAL
