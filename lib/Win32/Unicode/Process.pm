@@ -28,18 +28,18 @@ my $SHELL = do {
 
 sub systemW {
     my $pi = _create_process(@_) or return 1;
-    Win32API::File::CloseHandle($pi->{hThread});
-    wait_for_input_idle($pi->{hProcess});
-    wait_for_single_object($pi->{hProcess});
-    Win32API::File::CloseHandle($pi->{hProcess});
+    Win32API::File::CloseHandle($pi->{thread_handle});
+    wait_for_input_idle($pi->{process_handle});
+    wait_for_single_object($pi->{process_handle});
+    Win32API::File::CloseHandle($pi->{process_handle});
     
     return 0;
 }
 
 sub execW {
     my $pi = _create_process(@_) or return 1;
-    Win32API::File::CloseHandle($pi->{hThread});
-    Win32API::File::CloseHandle($pi->{hProcess});
+    Win32API::File::CloseHandle($pi->{thread_handle});
+    Win32API::File::CloseHandle($pi->{process_handle});
     
     return 0;
 }
@@ -56,23 +56,7 @@ sub _create_process {
     
     $cmd = utf8_to_utf16("/x /c $cmd " . join q{ }, @args) . NULL; # mybe security hole :-(
     
-    my $si = Win32::API::Struct->new('STARTUPINFO');
-    my $pi = Win32::API::Struct->new('PROCESS_INFORMATION');
-    
-    CreateProcess->Call(
-        $SHELL,
-        $cmd,
-        0,
-        0,
-        FALSE,
-        NORMAL_PRIORITY_CLASS,
-        0,
-        0,
-        $si,
-        $pi,
-    ) or return;
-    
-    return $pi;
+    return create_process($SHELL, $cmd);
 }
 
 1;
