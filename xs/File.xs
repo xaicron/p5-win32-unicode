@@ -67,7 +67,6 @@ move_file(SV* from, SV* to)
 SV*
 set_file_pointer(long handle, long lpos, long hpos, int whence)
     CODE:
-        STRLEN len;
         LARGE_INTEGER mv;
         LARGE_INTEGER st;
         
