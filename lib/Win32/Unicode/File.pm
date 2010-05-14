@@ -332,9 +332,8 @@ sub slurp {
     my $self = shift;
     $self = tied(*$self);
     
-    my $size = Win32API::File::getFileSize($self->win32_handle) + 0;
     $self->SEEK(0, 0);
-    $self->READ(my $buff, $size);
+    $self->READ(my $buff, $self->file_size);
     return $buff;
 }
 
