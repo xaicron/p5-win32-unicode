@@ -14,7 +14,7 @@ use Win32::Unicode::Constant qw/CYGWIN _32INT _S32INT/;
 File::Basename::fileparse_set_fstype('MSWIN32');
 
 # export subs
-our @EXPORT = qw/utf16_to_utf8 utf8_to_utf16 cygpathw to64int is64int catfile splitdir/;
+our @EXPORT = qw/utf16_to_utf8 utf8_to_utf16 cygpathw to64int is64int catfile splitdir rel2abs/;
 
 # Unicode decoder
 my $utf16 = Encode::find_encoding 'utf16-le';
@@ -73,6 +73,15 @@ sub catfile {
 
 sub splitdir {
     return File::Spec::Win32->splitdir(@_);
+}
+
+sub rel2abs {
+    require Win32::Unicode::Dir;
+    my $path = shift;
+    my $base = shift || Win32::Unicode::Dir::getcwdW() || return;
+    my $abs = File::Spec->rel2abs($path, $base);
+    $abs = File::Spec::Cygwin->catfile($abs) if CYGWIN;
+    return $abs;
 }
 
 1;
