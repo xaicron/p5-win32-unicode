@@ -33,7 +33,7 @@ do {
             elsif ($script eq '-') {
                 $flag++ if $argv eq '-';
             }
-            elsif ($script eq $argv) {
+            elsif (rel2abs($script) eq rel2abs($argv)) {
                 $0 = $script;
                 $flag++;
             }
