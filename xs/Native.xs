@@ -7,9 +7,6 @@
 
 #include <windows.h>
 #include <shellapi.h>
-#define UNICODE
-#define _UNICODE
-#include <tchar.h>
 
 MODULE = Win32::Unicode::Native  PACKAGE = Win32::Unicode::Native
 
