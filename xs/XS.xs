@@ -14,4 +14,5 @@ BOOT:
     WIN32_UNICODE_CALL_BOOT(Win32__Unicode__Error);
     WIN32_UNICODE_CALL_BOOT(Win32__Unicode__Console);
     WIN32_UNICODE_CALL_BOOT(Win32__Unicode__Process);
+    WIN32_UNICODE_CALL_BOOT(Win32__Unicode__Native);
 
