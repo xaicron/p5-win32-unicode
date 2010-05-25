@@ -61,3 +61,14 @@ create_process(SV* shell, SV* cmd)
         RETVAL = sv;
     OUTPUT:
         RETVAL
+
+long
+get_exit_code(long handle)
+    CODE:
+        DWORD exit_code;
+        if (GetExitCodeProcess(handle, &exit_code) == 0) {
+            XSRETURN_EMPTY;
+        }
+        RETVAL = exit_code;
+    OUTPUT:
+        RETVAL

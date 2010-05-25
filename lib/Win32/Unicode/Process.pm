@@ -31,9 +31,10 @@ sub systemW {
     Win32API::File::CloseHandle($pi->{thread_handle});
     wait_for_input_idle($pi->{process_handle});
     wait_for_single_object($pi->{process_handle});
+    my $exit_code = get_exit_code($pi->{process_handle});
     Win32API::File::CloseHandle($pi->{process_handle});
     
-    return 0;
+    return defined $exit_code ? $exit_code : 1;
 }
 
 sub execW {
