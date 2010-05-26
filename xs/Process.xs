@@ -33,6 +33,8 @@ create_process(SV* shell, SV* cmd)
         WCHAR*              ccmd = SvPV(cmd, len);
         STARTUPINFOW        si;
         PROCESS_INFORMATION pi;
+        SV* sv = newSV(0);
+        HV* hv = newHV();
         
         ZeroMemory(&si,sizeof(si));
         si.cb=sizeof(si);
@@ -52,8 +54,6 @@ create_process(SV* shell, SV* cmd)
             XSRETURN_EMPTY;
         }
         
-        SV* sv = newSV(0);
-        HV* hv = newHV();
         sv_setsv(sv, sv_2mortal(newRV_noinc((SV*)hv)));
         hv_store(hv, "thread_handle", strlen("thread_handle"), newSViv(pi.hThread), 0);
         hv_store(hv, "process_handle", strlen("process_handle"), newSViv(pi.hProcess), 0);

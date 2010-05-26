@@ -27,13 +27,13 @@ SV*
 get_file_size(long handle)
     CODE:
         LARGE_INTEGER st;
+        SV* sv = newSV(0);
+        HV* hv = newHV();
         
         if (GetFileSizeEx(handle, &st) == 0) {
             XSRETURN_EMPTY;
         }
         
-        SV* sv = newSV(0);
-        HV* hv = newHV();
         sv_setsv(sv, sv_2mortal(newRV_noinc((SV*)hv)));
         hv_store(hv, "high", strlen("high"), newSVnv(st.HighPart), 0);
         hv_store(hv, "low", strlen("low"), newSVnv(st.LowPart), 0);
@@ -69,6 +69,8 @@ set_file_pointer(long handle, long lpos, long hpos, int whence)
     CODE:
         LARGE_INTEGER mv;
         LARGE_INTEGER st;
+        SV* sv = newSV(0);
+        HV* hv = newHV();
         
         mv.LowPart  = lpos;
         mv.HighPart = hpos;
@@ -77,8 +79,6 @@ set_file_pointer(long handle, long lpos, long hpos, int whence)
             XSRETURN_EMPTY;
         }
         
-        SV* sv = newSV(0);
-        HV* hv = newHV();
         sv_setsv(sv, sv_2mortal(newRV_noinc((SV*)hv)));
         hv_store(hv, "high", strlen("high"), newSVnv(st.HighPart), 0);
         hv_store(hv, "low", strlen("low"), newSVnv(st.LowPart), 0);
