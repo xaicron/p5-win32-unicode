@@ -10,6 +10,7 @@ nytprof*
 ppport.h
 xs/*c
 xs/*o
+xs/*obj
 *.bs
 *.def
 *.old
