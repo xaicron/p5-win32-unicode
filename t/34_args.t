@@ -6,7 +6,7 @@ use File::Temp qw/tempdir tempfile/;
 use Win32::Unicode::Constant qw/CYGWIN/;
 use Encode;
 
-my $tmpdir = tempdir;
+my $tmpdir = tempdir CLEANUP => 1;
 my ($tfh, $exe) = tempfile('tempXXXX', DIR => $tmpdir);
 
 my $code = do {
