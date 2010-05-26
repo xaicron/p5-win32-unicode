@@ -12,13 +12,14 @@ use Win32::Unicode::File    ':all';
 use Win32::Unicode::Dir     ':all';
 use Win32::Unicode::Process ':all';
 use Win32::Unicode::Error ();
+use Win32::Unicode::Constant qw/CYGWIN/;
 use Win32::Unicode::Util;
 use Win32::Unicode::XS;
 
 do {
     @main::ARGV = ();
-    my $cp932 = Encode::find_encoding('cp932');
-    my $script = $cp932->decode($0);
+    my $enc = Encode::find_encoding(CYGWIN ? 'utf8' : 'cp932');
+    my $script = $enc->decode($0);
     my @args = @{parse_argv()};
     my $flag = 0;
     while (@args) {
