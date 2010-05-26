@@ -41,7 +41,7 @@ sub to64int {
 }
 
 sub is64int {
-    $_[0] > _32INT or $_[0] < _S32INT;
+    $_[0] >= _32INT or $_[0] <= _S32INT;
 }
 
 sub cygpathw {
