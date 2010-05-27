@@ -1,5 +1,5 @@
 use strict;
-use Test::More tests => 26;
+use Test::More;
 use Test::Exception;
 
 use Win32::Unicode;
@@ -55,6 +55,54 @@ close STDERR; # warnings to be quiet
     ok unlinkW;
 }
 
+# stat
+{
+    my $tmpdir = tempdir( CLEANUP => 1 ) or die $!;
+    my $file = "$tmpdir/test";
+    touchW $file;
+    
+    my @stat = CORE::stat $file;
+    my @statW = statW $file;
+    
+    is $statW[1],  $stat[1];
+    is $statW[4],  $stat[4];
+    is $statW[5],  $stat[5];
+    is $statW[7],  $stat[7];
+    is $statW[8],  $stat[8];
+    is $statW[9],  $stat[9];
+    is $statW[10], $stat[10];
+    is $statW[11], $stat[11];
+    is $statW[12], $stat[12];
+    
+    TODO: {
+        local $TODO = 'Unimplemented';
+        is $statW[0], $stat[0];
+        is $statW[2], $stat[2];
+        is $statW[3], $stat[3];
+        is $statW[6], $stat[6];
+    };
+    
+    my $statW = statW $file;
+    
+    is $statW->{ino},     $stat[1];
+    is $statW->{uid},     $stat[4];
+    is $statW->{gid},     $stat[5];
+    is $statW->{size},    $stat[7];
+    is $statW->{atime},   $stat[8];
+    is $statW->{mtime},   $stat[9];
+    is $statW->{ctime},   $stat[10];
+    is $statW->{blksize}, $stat[11];
+    is $statW->{blocks},  $stat[12];
+    
+    TODO: {
+        local $TODO = 'Unimplemented';
+        is $statW->{dev},   $stat[0];
+        is $statW->{mode},  $stat[2];
+        is $statW->{nlink}, $stat[3];
+        is $statW->{rdev},  $stat[6];
+    };
+}
+
 # exeption
 {
     dies_ok { file_type() };
@@ -66,3 +114,5 @@ close STDERR; # warnings to be quiet
     dies_ok { renameW() };
     dies_ok { renameW('test') };
 }
+
+done_testing;

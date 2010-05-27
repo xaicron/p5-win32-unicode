@@ -411,10 +411,14 @@ sub statW {
     
     # uid guid (really?)
     $result->{uid} = 0;
-    $result->{gud} = 0;
+    $result->{gid} = 0;
     
     # inode (really?)
     $result->{ino} = 0;
+    
+    # block (really?)
+    $result->{blksize} = '';
+    $result->{blocks}  = '';
     
     # size
     $result->{size} = $fi->{size_high} ? to64int($fi->{size_high}, $fi->{size_low}) : $fi->{size_low};
