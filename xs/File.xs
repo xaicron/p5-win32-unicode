@@ -86,3 +86,47 @@ set_file_pointer(long handle, long lpos, long hpos, int whence)
         RETVAL = sv;
     OUTPUT:
         RETVAL
+
+SV*
+get_file_information_by_handle(long handle)
+    CODE:
+        BY_HANDLE_FILE_INFORMATION fi;
+        SV* hr  = newSV(0);
+        HV* hv  = newHV();
+        SV* chr = newSV(0);
+        HV* chv = newHV();
+        SV* ahr = newSV(0);
+        HV* ahv = newHV();
+        SV* mhr = newSV(0);
+        HV* mhv = newHV();
+        
+        if (GetFileInformationByHandle(handle, &fi) == 0) {
+            XSRETURN_EMPTY;
+        }
+        
+        /* set ctime */
+        sv_setsv(chr, sv_2mortal(newRV_noinc((SV*)chv)));
+        hv_store(chv, "high", strlen("high"), newSVnv(fi.ftCreationTime.dwHighDateTime), 0);
+        hv_store(chv, "low", strlen("low"), newSVnv(fi.ftCreationTime.dwLowDateTime), 0);
+        
+        /* set atime */
+        sv_setsv(ahr, sv_2mortal(newRV_noinc((SV*)ahv)));
+        hv_store(ahv, "high", strlen("high"), newSVnv(fi.ftLastAccessTime.dwHighDateTime), 0);
+        hv_store(ahv, "low", strlen("low"), newSVnv(fi.ftLastAccessTime.dwLowDateTime), 0);
+        
+        /* set mtime */
+        sv_setsv(mhr, sv_2mortal(newRV_noinc((SV*)mhv)));
+        hv_store(mhv, "high", strlen("high"), newSVnv(fi.ftLastWriteTime.dwHighDateTime), 0);
+        hv_store(mhv, "low", strlen("low"), newSVnv(fi.ftLastWriteTime.dwLowDateTime), 0);
+        
+        sv_setsv(hr, sv_2mortal(newRV_noinc((SV*)hv)));
+        hv_store(hv, "size_high", strlen("size_high"), newSVnv(fi.nFileSizeHigh), 0);
+        hv_store(hv, "size_low", strlen("size_low"), newSVnv(fi.nFileSizeLow), 0);
+        hv_store(hv, "ctime", strlen("ctime"), chr, 0);
+        hv_store(hv, "atime", strlen("atime"), ahr, 0);
+        hv_store(hv, "mtime", strlen("mtime"), mhr, 0);
+        hv_store(hv, "dev", strlen("dev"), newSVnv(fi.dwVolumeSerialNumber), 0);
+        
+        RETVAL = hr;
+    OUTPUT:
+        RETVAL

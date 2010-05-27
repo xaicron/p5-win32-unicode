@@ -384,10 +384,9 @@ sub statW {
     _croakW('Usage: statW(filename)') unless defined $file;
     my $wantarray = wantarray;
     
-    my $fi = Win32::API::Struct->new('BY_HANDLE_FILE_INFORMATION');
-    
+    my $fi;
     if (ref $file eq __PACKAGE__) {
-        GetFileInformationByHandle->Call(tied(*$file)->win32_handle, $fi) or return Win32::Unicode::Error::_set_errno;
+        $fi = get_file_information_by_handle(tied(*$file)->win32_handle) or return Win32::Unicode::Error::_set_errno;
     }
     else {
         $file = cygpathw($file) or return if CYGWIN;
@@ -405,7 +404,7 @@ sub statW {
         );
         return Win32::Unicode::Error::_set_errno if $handle == INVALID_VALUE;
         
-        GetFileInformationByHandle->Call($handle, $fi) or return Win32::Unicode::Error::_set_errno;
+        $fi = get_file_information_by_handle($handle) or return Win32::Unicode::Error::_set_errno;
         Win32API::File::CloseHandle($handle) or return Win32::Unicode::Error::_set_errno;
     }
     
@@ -415,13 +414,16 @@ sub statW {
     $result->{uid} = 0;
     $result->{gud} = 0;
     
+    # inode (really?)
+    $result->{ino} = 0;
+    
     # size
     $result->{size} = $fi->{size_high} ? to64int($fi->{size_high}, $fi->{size_low}) : $fi->{size_low};
     
     # ctime atime mtime
     for my $key (qw/ctime atime mtime/) {
         use bigint;
-        my $etime = ($fi->{$key}{dwHighDateTime} << 32) + $fi->{$key}{dwLowDateTime};
+        my $etime = ($fi->{$key}{high} << 32) + $fi->{$key}{low};
         $result->{$key} = ($etime - 116444736000000000) / 10000000; # to epoch
     }
     
