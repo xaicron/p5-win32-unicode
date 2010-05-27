@@ -13,7 +13,6 @@ use Errno qw/:POSIX/;
 
 use Win32::Unicode::Constant;
 use Win32::Unicode::Util;
-use Win32::Unicode::Define;
 use Win32::Unicode::XS;
 
 # export subs

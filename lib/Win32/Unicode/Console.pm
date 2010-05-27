@@ -9,7 +9,6 @@ use Win32::API ();
 use Exporter 'import';
 
 use Win32::Unicode::Util;
-use Win32::Unicode::Define;
 use Win32::Unicode::Constant;
 use Win32::Unicode::XS;
 

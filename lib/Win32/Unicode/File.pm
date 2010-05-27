@@ -15,7 +15,6 @@ use base qw/Tie::Handle/;
 use Win32::Unicode::Util;
 use Win32::Unicode::Error;
 use Win32::Unicode::Constant;
-use Win32::Unicode::Define;
 use Win32::Unicode::Console;
 use Win32::Unicode::XS;
 
