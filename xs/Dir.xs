@@ -7,9 +7,6 @@
 
 #include <windows.h>
 
-#define __HANDLE    "handle"
-#define __FIRST     "first"
-
 MODULE = Win32::Unicode::Dir    PACKAGE  = Win32::Unicode::Dir
 
 PROTOTYPES: DISABLE
@@ -54,8 +51,8 @@ find_first_file(SV* self, SV* dir)
         HANDLE handle = FindFirstFileW(opendir, &file_info);
         
         HV* h = (HV*)SvRV(self);
-        hv_store(h, __HANDLE, strlen(__HANDLE), newSViv(handle), 0);
-        hv_store(h, __FIRST, strlen(__FIRST), newSVpv(file_info.cFileName, wcslen(file_info.cFileName) * 2), 0);
+        hv_stores(h, "handle", newSViv(handle));
+        hv_stores(h, "first", newSVpv(file_info.cFileName, wcslen(file_info.cFileName) * 2));
         
 SV*
 find_next_file(SV* self)
@@ -63,7 +60,7 @@ find_next_file(SV* self)
         WIN32_FIND_DATAW file_info;
         
         HV* h = (HV*)SvRV(self);
-        HANDLE handle = SvIV(*hv_fetch(h, __HANDLE, strlen(__HANDLE), 0));
+        HANDLE handle = SvIV(*hv_fetchs(h, "handle", strlen("handle")));
         
         if(FindNextFileW(handle, &file_info) == 0) {
             XSRETURN_EMPTY;
@@ -77,7 +74,7 @@ int
 find_close(SV* self)
     CODE:
         HV* h = (HV*)SvRV(self);
-        HANDLE handle = SvIV(*hv_fetch(h, __HANDLE, strlen(__HANDLE), 0));
+        HANDLE handle = SvIV(*hv_fetchs(h, "handle", strlen("handle")));
         RETVAL = FindClose(handle);
     OUTPUT:
         RETVAL

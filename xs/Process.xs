@@ -55,8 +55,8 @@ create_process(SV* shell, SV* cmd)
         }
         
         sv_setsv(sv, sv_2mortal(newRV_noinc((SV*)hv)));
-        hv_store(hv, "thread_handle", strlen("thread_handle"), newSViv(pi.hThread), 0);
-        hv_store(hv, "process_handle", strlen("process_handle"), newSViv(pi.hProcess), 0);
+        hv_stores(hv, "thread_handle", newSViv(pi.hThread));
+        hv_stores(hv, "process_handle", newSViv(pi.hProcess));
         
         RETVAL = sv;
     OUTPUT:
