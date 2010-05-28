@@ -17,8 +17,7 @@ PROTOTYPES: DISABLE
 long
 get_file_attributes(SV* file)
     CODE:
-        STRLEN len;
-        const WCHAR* file_name = SvPV_const(file, len);
+        const WCHAR* file_name = SvPV_nolen(file);
         RETVAL = GetFileAttributesW(file_name);
     OUTPUT:
         RETVAL
@@ -45,9 +44,8 @@ get_file_size(long handle)
 int
 copy_file(SV* from, SV* to, int over)
     CODE:
-        STRLEN len;
-        const WCHAR* from_name = SvPV_const(from, len);
-        const WCHAR* to_name   = SvPV_const(to  , len);
+        const WCHAR* from_name = SvPV_nolen(from);
+        const WCHAR* to_name   = SvPV_nolen(to);
         
         RETVAL = CopyFileW(from_name, to_name, over);
     OUTPUT:
@@ -56,9 +54,8 @@ copy_file(SV* from, SV* to, int over)
 int
 move_file(SV* from, SV* to)
     CODE:
-        STRLEN len;
-        const WCHAR* from_name = SvPV_const(from, len);
-        const WCHAR* to_name   = SvPV_const(to  , len);
+        const WCHAR* from_name = SvPV_nolen(from);
+        const WCHAR* to_name   = SvPV_nolen(to);
         
         RETVAL = MoveFileW(from_name, to_name);
     OUTPUT:

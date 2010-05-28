@@ -28,9 +28,8 @@ wait_for_input_idle(long handle)
 SV*
 create_process(SV* shell, SV* cmd)
     CODE:
-        STRLEN              len;
-        const WCHAR*        cshell = SvPV_const(shell, len);
-        WCHAR*              ccmd = SvPV(cmd, len);
+        const WCHAR*        cshell = SvPV_nolen(shell);
+        WCHAR*              ccmd = SvPV_nolen(cmd);
         STARTUPINFOW        si;
         PROCESS_INFORMATION pi;
         SV* sv = newSV(0);

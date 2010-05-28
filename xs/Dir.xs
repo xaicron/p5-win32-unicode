@@ -24,8 +24,7 @@ get_current_directory()
 int
 set_current_directory(SV* dir)
     CODE:
-        STRLEN len;
-        const WCHAR* chdir = SvPV_const(dir, len);
+        const WCHAR* chdir = SvPV_nolen(dir);
         
         RETVAL = SetCurrentDirectoryW(chdir);
     OUTPUT:
@@ -34,8 +33,7 @@ set_current_directory(SV* dir)
 int
 remove_directory(SV* dir)
     CODE:
-        STRLEN len;
-        const WCHAR* rmdir = SvPV_const(dir, len);
+        const WCHAR* rmdir = SvPV_nolen(dir);
         
         RETVAL = RemoveDirectoryW(rmdir);
     OUTPUT:
@@ -45,8 +43,7 @@ void
 find_first_file(SV* self, SV* dir)
     CODE:
         WIN32_FIND_DATAW file_info;
-        STRLEN len;
-        const WCHAR* opendir = SvPV_const(dir, len);
+        const WCHAR* opendir = SvPV_nolen(dir);
         
         HANDLE handle = FindFirstFileW(opendir, &file_info);
         
