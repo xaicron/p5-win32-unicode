@@ -18,3 +18,5 @@
 ^[^/]+\.pl$
 ^\.shipit$
 ^\.git
+ppport.h
+^_
