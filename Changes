@@ -1,5 +1,28 @@
 Revision history for Perl extension Win32::Unicode
 
+0.20    Sat Jun  5 00:52:31 2010 (+900)
+        - Whole
+            - Win32::API to eliminate, XS changed.
+              Added Win32::Unicode::XS.
+        
+        - Win32::Unicode::Process
+            - to receive the exit code (thanks Chris Pirazzi)
+        
+        - Win32::Unicode::Console
+            - Fixed a bug that can not be `0` print.
+            - $SIG{__WARN__} and $SIG{__DIE__} compatible.
+            - When I was trailing newline, the number of lines not to print.
+        
+        - Win32::Unicode::File
+            - `seek`, `file_size` work with big file.
+        
+        - Win32::Unicode::Native
+            - can use Unicode, including arguments.
+              @ARGV contains the characters in the utf8 decode.
+        
+        - Win32::Unicode::Define
+            - deleted.
+
 0.19    Fri May  7 00:31:59 2010 (+900)
         - Whole
             - Supported for cygwin.
