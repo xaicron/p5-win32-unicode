@@ -5,7 +5,6 @@ use warnings;
 use 5.008003;
 use utf8;
 use Carp ();
-use Win32::API ();
 use Exporter 'import';
 
 use Win32::Unicode::Util;
@@ -235,9 +234,5 @@ Like die.
 =head1 AUTHOR
 
 Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
-
-=head1 SEE ALSO
-
-L<Win32::API>
 
 =cut

@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use 5.008003;
 use Win32 ();
-use Win32::API ();
 use Carp ();
 use File::Basename qw/basename dirname/;
 use Exporter 'import';
@@ -548,7 +547,6 @@ Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
 =head1 SEE ALSO
 
 L<Win32>
-L<Win32::API>
 L<Win32API::File>
 L<Win32::Unicode>
 L<Win32::Unicode::File>

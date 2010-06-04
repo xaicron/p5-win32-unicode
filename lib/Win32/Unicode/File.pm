@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use utf8;
 use 5.008003;
-use Win32::API ();
 use Win32API::File ();
 use Carp ();
 use File::Basename qw/basename/;
@@ -831,7 +830,6 @@ Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
 =head1 SEE ALSO
 
 L<Win32>
-L<Win32::API>
 L<Win32API::File>
 L<Win32::Unicode>
 L<Win32::Unicode::File>

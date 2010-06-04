@@ -137,7 +137,6 @@ L<Win32::Unicode::Dir>
 L<Win32::Unicode::File>
 L<Win32::Unicode::Error>
 L<Win32>
-L<Win32::API>
 
 =head1 LICENSE
 

@@ -3,7 +3,6 @@ package Win32::Unicode::Process;
 use strict;
 use warnings;
 use 5.008003;
-use Win32::API ();
 use Win32API::File ();
 use Carp ();
 use Exporter 'import';
