@@ -1,5 +1,4 @@
 use inc::Module::Install;
-use Module::Install::XSUtil 0.21;
 
 name 'Win32-Unicode';
 all_from 'lib/Win32/Unicode.pm';
