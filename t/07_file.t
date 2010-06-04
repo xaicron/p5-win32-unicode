@@ -64,15 +64,19 @@ close STDERR; # warnings to be quiet
     my @stat = CORE::stat $file;
     my @statW = statW $file;
     
-    is $statW[1],  $stat[1];
-    is $statW[4],  $stat[4];
-    is $statW[5],  $stat[5];
     is $statW[7],  $stat[7];
     is $statW[8],  $stat[8];
     is $statW[9],  $stat[9];
     is $statW[10], $stat[10];
-    is $statW[11], $stat[11];
-    is $statW[12], $stat[12];
+    
+    TODO: {
+        local $TODO = 'Unimplemented' if Win32::Unicode::Constant::CYGWIN;
+        is $statW[1],  $stat[1];
+        is $statW[4],  $stat[4];
+        is $statW[5],  $stat[5];
+        is $statW[11], $stat[11];
+        is $statW[12], $stat[12];
+    };
     
     TODO: {
         local $TODO = 'Unimplemented';
@@ -84,15 +88,19 @@ close STDERR; # warnings to be quiet
     
     my $statW = statW $file;
     
-    is $statW->{ino},     $stat[1];
-    is $statW->{uid},     $stat[4];
-    is $statW->{gid},     $stat[5];
     is $statW->{size},    $stat[7];
     is $statW->{atime},   $stat[8];
     is $statW->{mtime},   $stat[9];
     is $statW->{ctime},   $stat[10];
-    is $statW->{blksize}, $stat[11];
-    is $statW->{blocks},  $stat[12];
+    
+    TODO: {
+        local $TODO = 'Unimplemented' if Win32::Unicode::Constant::CYGWIN;
+        is $statW->{ino},     $stat[1];
+        is $statW->{uid},     $stat[4];
+        is $statW->{gid},     $stat[5];
+        is $statW->{blksize}, $stat[11];
+        is $statW->{blocks},  $stat[12];
+    };
     
     TODO: {
         local $TODO = 'Unimplemented';
