@@ -66,12 +66,6 @@ sub file_path {
     return tied(*$self)->{_file_path};
 }
 
-sub win32_handle {
-    my $self = shift;
-    _croakW("do not open filehandle") unless defined $self->{_handle};
-    return $self->{_handle};
-}
-
 sub open {
     CORE::open($_[0], $_[1], $_[2]);
 }
@@ -185,7 +179,7 @@ sub READ {
 #    my $offset = shift;
     
     Win32API::File::ReadFile(
-        $self->win32_handle,
+        $self->{_handle},
         my $data,
         $len,
         my $bytes_read_num,
@@ -272,7 +266,7 @@ sub WRITE {
     
     use bytes;
     Win32API::File::WriteFile(
-        $self->win32_handle,
+        $self->{_handle},
         $buff,
         length($buff),
         my $write_size,
@@ -302,13 +296,13 @@ sub SEEK {
             $pos_low  = $low % _S32INT;
             $pos_high = $low / _S32INT;
         }
-        my $st = set_file_pointer($self->win32_handle, $pos_low, $pos_high, $whence) or return Win32::Unicode::Error::_set_errno;
+        my $st = set_file_pointer($self->{_handle}, $pos_low, $pos_high, $whence) or return Win32::Unicode::Error::_set_errno;
         return $st->{high} ? to64int($st->{high}, $st->{low}) : $st->{low};
     }
     else {
         my $high = 0;
         $high = ~0 if $low < 0;
-        my $st = set_file_pointer($self->win32_handle, $low, $high, $whence) or return Win32::Unicode::Error::_set_errno;
+        my $st = set_file_pointer($self->{_handle}, $low, $high, $whence) or return Win32::Unicode::Error::_set_errno;
         return $st->{high} ? to64int($st->{high}, $st->{low}) : $st->{low};
     }
 }
@@ -387,7 +381,7 @@ sub statW {
     
     my $fi;
     if (ref $file eq __PACKAGE__) {
-        $fi = get_file_information_by_handle(tied(*$file)->win32_handle) or return Win32::Unicode::Error::_set_errno;
+        $fi = get_file_information_by_handle(tied(*$file)->{_handle}) or return Win32::Unicode::Error::_set_errno;
     }
     else {
         $file = cygpathw($file) or return if CYGWIN;
@@ -485,7 +479,7 @@ sub file_size {
     
     if (ref $file eq __PACKAGE__) {
         my $self = "$file" =~ /GLOB/ ? tied *$file : $file;
-        my $st = get_file_size($self->win32_handle) or return Win32::Unicode::Error::_set_errno;
+        my $st = get_file_size($self->{_handle}) or return Win32::Unicode::Error::_set_errno;
         return $st->{high} ? to64int($st->{high}, $st->{low}) : $st->{low};
     }
     
