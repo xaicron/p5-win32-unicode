@@ -163,8 +163,11 @@ sub close {
 
 sub CLOSE {
     my $self = shift;
-    Win32API::File::CloseHandle($self->win32_handle) or return Win32::Unicode::Error::_set_errno;
+    if (exists $self->{_handle}) {
+        Win32API::File::CloseHandle($self->{_handle}) or return Win32::Unicode::Error::_set_errno;
+    }
     delete $self->{_handle};
+    return 1;
 }
 
 sub getc {
@@ -444,6 +447,12 @@ sub statW {
         $result->{blksize}, # 11 blksize  preferred block size for file system I/O
         $result->{blocks},  # 12 blocks   actual number of blocks allocated
     ) : $result;
+}
+
+sub DESTROY {
+    my $self = shift;
+    $self->close if $self =~ /GLOB/;
+    return;
 }
 
 sub file_type {
