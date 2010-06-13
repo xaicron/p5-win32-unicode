@@ -5,10 +5,11 @@ use Test::Exception;
 use Win32::Unicode;
 use utf8;
 use File::Temp qw/tempdir tempfile/;
+use File::Spec;
 
-close STDERR; # warnings to be quiet
+open STDERR, '>', File::Spec->devnull;
 
-{
+subtest file_type => sub {
     my $dir = 't/07_files';
     my $cmd = 'attrib';
     
@@ -16,26 +17,32 @@ close STDERR; # warnings to be quiet
     ok file_type(f => "$dir/file.txt"), "file";
     ok file_type(d => "$dir/dir"), "dir";
     
-    {
+    subtest hidden => sub {
         system $cmd, '+H', "$dir/hidden.txt" and die "Oops!!";
         system $cmd, '+H', "$dir/hidden" and die "Oops!!";
         ok file_type(hf => "$dir/hidden.txt"), "hidden file";
         ok file_type(hd => "$dir/hidden"), "hidden dir";
-    }
+        
+        done_testing;
+    };
     
-    {
+    subtest readonly => sub {
         system $cmd, '+R', "$dir/read_only.txt" and die "Oops!!";
         system $cmd, '+R', "$dir/read_only" and die "Oops!!";
         ok file_type(rf => "$dir/read_only.txt"), "read only file";
         ok file_type(rd => "$dir/read_only"), "read only dir";
-    }
+        
+        done_testing;
+    };
     
     is file_size("$dir/10byte.txt"), 10;
     ok not file_size("$dir");
     ok not file_type(t => '');
-}
+    
+    done_testing;
+};
 
-{
+subtest simple => sub {
     my $tmpdir = tempdir( CLEANUP => 1 ) or die $!;
     my $filename = '森鷗外';
     
@@ -45,18 +52,20 @@ close STDERR; # warnings to be quiet
     ok moveW "$tmpdir/$filename.txt", "$tmpdir/$filename";
     ok renameW "$tmpdir/$filename", "$tmpdir/$filename.txt";
     ok unlinkW "$tmpdir/$filename.txt";
-}
+    
+    done_testing;
+};
 
-# $_ tests
-{
+subtest '$_' => sub {
     my $tmpdir = tempdir( CLEANUP => 1 ) or die $!;
     local $_ = "$tmpdir/ほげ";
     ok touchW;
     ok unlinkW;
-}
+    
+    done_testing;
+};
 
-# stat
-{
+subtest 'stat' => sub {
     my $tmpdir = tempdir( CLEANUP => 1 ) or die $!;
     my $file = "$tmpdir/test";
     touchW $file;
@@ -109,10 +118,11 @@ close STDERR; # warnings to be quiet
         is $statW->{nlink}, $stat[3];
         is $statW->{rdev},  $stat[6];
     };
-}
+    
+    done_testing;
+};
 
-# exeption
-{
+subtest exeption => sub {
     dies_ok { file_type() };
     dies_ok { file_type('t') };
     dies_ok { copyW() };
@@ -121,6 +131,8 @@ close STDERR; # warnings to be quiet
     dies_ok { moveW('test') };
     dies_ok { renameW() };
     dies_ok { renameW('test') };
-}
+    
+    done_testing;
+};
 
 done_testing;
