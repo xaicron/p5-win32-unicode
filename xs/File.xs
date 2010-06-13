@@ -127,3 +127,30 @@ get_file_information_by_handle(long handle)
         RETVAL = hr;
     OUTPUT:
         RETVAL
+
+int
+lock_file(long handle, int flag)
+    CODE:
+        long option = 0;
+        OVERLAPPED ol;
+        ol.Offset = 0;
+        ol.OffsetHigh = 0;
+        
+        if (flag) {
+            option = LOCKFILE_FAIL_IMMEDIATELY;
+        }
+        
+        RETVAL = LockFileEx(handle, option | LOCKFILE_EXCLUSIVE_LOCK, 0, 0xFFFFFFFF, 0xFFFFFFFF, &ol);
+    OUTPUT:
+        RETVAL
+
+int
+unlock_file(long handle)
+    CODE:
+        OVERLAPPED ol;
+        ol.Offset = 0;
+        ol.OffsetHigh = 0;
+        
+        RETVAL = UnlockFileEx(handle, 0, 0xFFFFFFFF, 0xFFFFFFFF, &ol);
+    OUTPUT:
+        RETVAL

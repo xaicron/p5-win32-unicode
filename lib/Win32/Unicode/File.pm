@@ -156,11 +156,12 @@ sub close {
 }
 
 sub CLOSE {
+    Carp::carp("CLOSE");
     my $self = shift;
     if (exists $self->{_handle}) {
         Win32API::File::CloseHandle($self->{_handle}) or return Win32::Unicode::Error::_set_errno;
+        delete $self->{_handle};
     }
-    delete $self->{_handle};
     return 1;
 }
 
@@ -315,13 +316,33 @@ sub TELL {
     return $_[0]->SEEK(0, 1);
 }
 
-#sub flock {
-#
-#}
-#
-#sub unlock {
-#
-#}
+sub flock {
+    my $self = shift;
+    $self = tied(*$self);
+    my $ope = shift;
+    
+    _croakW('Usage: flock $fh, $operation') unless defined $ope;
+    
+    if ($ope == 1 or $ope == 2) {
+        return lock_file($self->{_handle}, 1);
+    }
+    elsif ($ope == 5 or $ope == 6) {
+        return lock_file($self->{_handle}, 0);
+    }
+    elsif ($ope == 8) {
+        return unlock_file($self->{_handle});
+    }
+    else {
+        require Errno;
+        $! = Errno::EINVAL;
+        return;
+    }
+}
+*flockW = \&flock;
+
+sub unlock {
+    shift->flock(8);
+}
 
 sub slurp {
     my $self = shift;
