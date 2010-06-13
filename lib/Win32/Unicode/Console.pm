@@ -111,7 +111,7 @@ sub warnW {
     my $str = join q{}, @_;
     $str .= $str =~ s/\n$// ? "\n" : Carp::shortmess('');
     
-    if ($SIG{__WARN__} && ref $SIG{__WARN__} eq 'CODE') {
+    if (ref $SIG{__WARN__} eq 'CODE') {
         return $SIG{__WARN__}->($str);
     }
     
@@ -124,7 +124,7 @@ sub dieW {
     my $str = join q{}, @_;
     $str .= $str =~ s/\n$// ? "\n" : Carp::shortmess('');
     
-    if ($SIG{__DIE__} && ref $SIG{__DIE__} eq 'CODE') {
+    if (ref $SIG{__DIE__} eq 'CODE') {
         $SIG{__DIE__}->($str);
     }
     local $SIG{__DIE__};
