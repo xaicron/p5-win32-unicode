@@ -62,7 +62,7 @@ use File::Temp qw/tempdir/;
     if ($pid == 0) {
         my $fh2 = Win32::Unicode::File->new;
         $fh2->open(r => "$tmpdir/wait") or die $!;
-        ok tied(*$fh2)->{_handle} ne tied(*$fh)->{_hanlde}, 'child handle';
+        ok *$fh2->{_handle} ne *$fh->{_handle}, 'child handle';
         ok !$fh2->flock(1), 'child flock 1';
         ok !$fh2->readline, 'child readline';
         ok !$fh2->unlock, 'child unlock';

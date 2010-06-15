@@ -8,11 +8,12 @@ cc_warnings;
 
 requires 'Win32API::File';
 requires 'File::Spec';
+requires 'parent';
 
 tests 't/*.t';
 author_tests 'xt';
 
-build_requires 'Test::More';
+build_requires 'Test::More', '0.88';
 test_requires 'Test::Output';
 test_requires 'Test::Exception';
 
