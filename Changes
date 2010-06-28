@@ -1,5 +1,21 @@
 Revision history for Perl extension Win32::Unicode
 
+0.21    Mon Jun 28 23:49:12 2010 (+900)
+        [BUG FIXES]
+        - Fixed the test fails.
+        
+        [CHANGES]
+        - Win32::Unicode::Constant
+            - Remove unused constants.
+        - Win32::Unicode::File
+            - Implemented DESTROY
+            - Changed this object to IO::Scalar like.
+              But api do not change.
+        
+        [NEW FEATUERS]
+        - Win32::Unicode::File
+            - Added flock function. But alpha level.
+
 0.20    Sat Jun  5 00:52:31 2010 (+900)
         - Whole
             - Win32::API to eliminate, XS changed.
