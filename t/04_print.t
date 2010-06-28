@@ -5,8 +5,9 @@ use Test::More;
 use Test::Exception;
 use Test::Output;
 use Win32::Unicode;
+use File::Spec;
 
-close STDERR; # warnings to be quiet
+open STDERR, '>', File::Spec->devnull or die $!;
 
 my $str = " I \x{2665} Perl";
 

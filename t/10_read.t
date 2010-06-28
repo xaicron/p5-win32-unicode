@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use utf8;
-use Test::More tests => 29;
+use Test::More;
 use Test::Exception;
 
 use Win32::Unicode::File ':all';
@@ -12,9 +12,7 @@ my $read_file = File::Spec->catfile("$dir/test.txt");
 ok my $wfile = Win32::Unicode::File->new;
 isa_ok $wfile, 'Win32::Unicode::File';
 
-use Data::Dumper;
-# OO test
-{
+subtest OO => sub {
     ok $wfile->open(r => $read_file);
     is $wfile->file_path, File::Spec->catfile(Win32::Unicode::Dir::getcwdW() . "/$read_file");
     ok $wfile->binmode(':utf8');
@@ -34,10 +32,11 @@ use Data::Dumper;
         is length($data), file_size($wfile);
     }
     ok $wfile->close;
-}
+    
+    done_testing;
+};
 
-# tie test
-{
+subtest tie => sub {
     ok open $wfile, '<:raw', $read_file;
     ok binmode $wfile, ':utf8';
     cmp_ok read($wfile, my $buff, 10), '==', 10;
@@ -54,4 +53,8 @@ use Data::Dumper;
         is length($data), file_size($wfile);
     }
     ok close $wfile;
-}
+    
+    done_testing;
+};
+
+done_testing;

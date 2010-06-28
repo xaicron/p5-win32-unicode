@@ -1,5 +1,5 @@
 use strict;
-use Test::More tests => 6;
+use Test::More;
 
 use Win32::Unicode;
 
@@ -53,3 +53,5 @@ can_ok 'Win32::Unicode::Process', qw(
     systemW
     execW
 );
+
+done_testing;

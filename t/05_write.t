@@ -1,13 +1,13 @@
 use strict;
 use warnings;
 use utf8;
-use Test::More tests => 6;
+use Test::More;
 use Win32::Unicode;
 use File::Temp qw/tempdir tempfile/;
 
 my $str = 'ぁぃぅぇぉ';
-{
-    # print
+
+subtest print => sub {
     my ($fh, $filename) = tempfile("tempXXXX", DIR => tempdir(CLEANUP => 1)) or die "$!";
     binmode $fh, ":utf8";
     ok printW $fh, $str;
@@ -17,10 +17,11 @@ my $str = 'ぁぃぅぇぉ';
     my $buff = do { local $/; <$fh> };
     is $buff, $str;
     close $fh;
-}
+    
+    done_testing;
+};
 
-{
-    # printf
+subtest printf => sub {
     my ($fh, $filename) = tempfile("tempXXXX", DIR => tempdir(CLEANUP => 1)) or die "$!";
     binmode $fh, ":utf8";
     ok printfW $fh, $str;
@@ -30,10 +31,11 @@ my $str = 'ぁぃぅぇぉ';
     my $buff = do { local $/; <$fh> };
     is $buff, $str;
     close $fh;
-}
+    
+    done_testing;
+};
 
-{
-    # say
+subtest say => sub {
     my ($fh, $filename) = tempfile("tempXXXX", DIR => tempdir(CLEANUP => 1)) or die "$!";
     binmode $fh, ":utf8";
     ok sayW $fh, $str;
@@ -43,4 +45,8 @@ my $str = 'ぁぃぅぇぉ';
     my $buff = do { local $/; <$fh> };
     is $buff, "$str\n";
     close $fh;
-}
+    
+    done_testing;
+};
+
+done_testing;

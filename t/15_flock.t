@@ -7,7 +7,7 @@ use Win32::Unicode;
 use utf8;
 use File::Temp qw/tempdir/;
 
-{
+subtest read => sub {
     my $tmpdir = tempdir CLEANUP => 1;
     
     touchW "$tmpdir/read" or die $!;
@@ -24,9 +24,11 @@ use File::Temp qw/tempdir/;
     ok $fh->flock(8);
     
     $fh->close;
+    
+    done_testing;
 };
 
-{
+subtest write => sub {
     my $tmpdir = tempdir CLEANUP => 1;
     
     touchW "$tmpdir/write" or die $!;
@@ -43,10 +45,12 @@ use File::Temp qw/tempdir/;
     ok $fh->flock(8);
     
     $fh->close;
+    
+    done_testing;
 };
 
 # うごかん＞＜
-{
+subtest fork => sub {
     my $tmpdir = tempdir CLEANUP => 1;
     
     touchW "$tmpdir/wait" or die $!;
@@ -74,6 +78,8 @@ use File::Temp qw/tempdir/;
     else {
         die $!;
     }
-}
+    
+    done_testing;
+};
 
 done_testing;
