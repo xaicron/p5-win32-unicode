@@ -1,5 +1,9 @@
 Revision history for Perl extension Win32::Unicode
 
+0.22    Tue Jul 20 01:29:37 2010 (+900)
+        [BUG FIXES]
+        - Fixed the test fails.
+
 0.21    Mon Jun 28 23:49:12 2010 (+900)
         [BUG FIXES]
         - Fixed the test fails.

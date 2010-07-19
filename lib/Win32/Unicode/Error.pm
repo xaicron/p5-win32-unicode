@@ -6,7 +6,7 @@ use 5.008003;
 use Carp ();
 use Exporter 'import';
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 
 use Errno qw/:POSIX/;
 
