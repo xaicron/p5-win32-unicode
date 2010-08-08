@@ -10,6 +10,7 @@ use Win32::Unicode::File;
 use utf8;
 use File::Temp qw/tempdir tempfile/;
 use File::Basename qw/fileparse/;
+use Cwd qw/getcwd/;
 
 use constant CYGWIN => $^O eq 'cygwin';
 
@@ -128,7 +129,8 @@ touchW "ふが";
 is_deeply [file_list $tmpdir], ['ふが'];
 is_deeply [dir_list $tmpdir], ['ほげ'];
 
-chdir '/'; # CLEANUP tempdir
+$tmpdir = tempdir(CLEANUP => 1);
+chdir $tmpdir;
 
 # Exeption Tests
 dies_ok { rmtreeW() };
@@ -152,3 +154,5 @@ dies_ok { dir_size() };
 dies_ok { findW(sub {}, 'aaa') };
 
 done_testing;
+
+chdir '/'; # CLEANUP tempdir
