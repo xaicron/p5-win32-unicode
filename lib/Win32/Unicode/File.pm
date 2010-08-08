@@ -277,20 +277,16 @@ sub flock {
     
     _croakW('Usage: flock $fh, $operation') unless defined $ope;
     
-    if ($ope == 1 or $ope == 2) {
-        return lock_file(*$self->{_handle}, 1);
-    }
-    elsif ($ope == 5 or $ope == 6) {
-        return lock_file(*$self->{_handle}, 0);
-    }
-    elsif ($ope == 8) {
-        return unlock_file(*$self->{_handle});
-    }
-    else {
+    return unlock_file(*$self->{_handle}) if $ope == 8;
+    
+    my $result = lock_file(*$self->{_handle}, $ope);
+    unless (defined $result) {
         require Errno;
         $! = Errno::EINVAL;
         return;
     }
+    
+    return $result;
 }
 *flockW = \&flock;
 

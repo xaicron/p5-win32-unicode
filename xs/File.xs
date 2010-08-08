@@ -129,18 +129,31 @@ get_file_information_by_handle(long handle)
         RETVAL
 
 int
-lock_file(long handle, int flag)
+lock_file(long handle, int ope)
     CODE:
         long option = 0;
         OVERLAPPED ol;
         ol.Offset = 0;
         ol.OffsetHigh = 0;
         
-        if (flag) {
-            option = LOCKFILE_FAIL_IMMEDIATELY;
+        switch(ope) {
+            case 1:
+                break;
+            case 2:
+                option = LOCKFILE_EXCLUSIVE_LOCK;
+                break;
+            case 5:
+                option = LOCKFILE_FAIL_IMMEDIATELY;
+                break;
+            case 6:
+                option = LOCKFILE_FAIL_IMMEDIATELY | LOCKFILE_EXCLUSIVE_LOCK;
+                break;
+            default:
+                XSRETURN_EMPTY;
+                break;
         }
         
-        RETVAL = LockFileEx(handle, option | LOCKFILE_EXCLUSIVE_LOCK, 0, 0xFFFFFFFF, 0xFFFFFFFF, &ol);
+        RETVAL = LockFileEx(handle, option, 0, 0xFFFFFFFF, 0xFFFFFFFF, &ol);
     OUTPUT:
         RETVAL
 
