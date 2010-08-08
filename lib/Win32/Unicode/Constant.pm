@@ -9,8 +9,8 @@ our $VERISON = '0.22';
 our @EXPORT = grep { !/import|BEGIN|EXPORT/ && Win32::Unicode::Constant->can($_) } keys %Win32::Unicode::Constant::;
 
 use constant CYGWIN  => $^O eq 'cygwin';
-use constant _32INT  => do { use bigint; 1 << 32 };
-use constant _S32INT => do { use bigint; -1 << 32 };
+use constant _32INT  => 4294967296;
+use constant _S32INT => -4294967296;
 
 sub NULL     () { "\x00" }
 sub NULLP    () { [] }
