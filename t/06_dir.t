@@ -123,9 +123,8 @@ ok mkdirW;
 ok rmdirW;
 
 my $tmpdir = tempdir(CLEANUP => 1);
-chdir $tmpdir;
-mkdirW "ほげ";
-touchW "ふが";
+mkdirW "$tmpdir/ほげ";
+touchW "$tmpdir/ふが";
 is_deeply [file_list $tmpdir], ['ふが'];
 is_deeply [dir_list $tmpdir], ['ほげ'];
 
