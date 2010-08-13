@@ -4,7 +4,7 @@ name 'Win32-Unicode';
 all_from 'lib/Win32/Unicode.pm';
 
 use_ppport 3.19;
-#cc_warnings;
+cc_warnings;
 
 requires 'Win32API::File';
 requires 'File::Spec';
