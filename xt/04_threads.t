@@ -8,7 +8,13 @@ my @threads;
 for (1..20) {
     push @threads, threads->create(sub{
         note "spawned thread : " . threads->tid;
-        find sub {}, '.';
+        my $tid = threads->tid;
+        find +{
+            wanted => sub {
+                note sprintf 'spawned thread : %02d ( file: %s )', $tid, $_[0]->{path};
+            },
+            no_chdir => 1,
+        }, '.';
     });
 }
 
