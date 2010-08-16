@@ -23,7 +23,7 @@ our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 our $VERSION = '0.22';
 
 my %FILE_TYPE_ATTRIBUTES = (
-    s => FILE_ATTRIBUTE_SYSTEM,
+    S => FILE_ATTRIBUTE_SYSTEM,
     r => FILE_ATTRIBUTE_READONLY,
     h => FILE_ATTRIBUTE_HIDDEN,
     d => FILE_ATTRIBUTE_DIRECTORY,
@@ -33,7 +33,7 @@ my %FILE_TYPE_ATTRIBUTES = (
     c => FILE_ATTRIBUTE_COMPRESSED,
     o => FILE_ATTRIBUTE_OFFLINE,
     i => FILE_ATTRIBUTE_NOT_CONTENT_INDEXED,
-    e => FILE_ATTRIBUTE_ENCRYPTED,
+    E => FILE_ATTRIBUTE_ENCRYPTED,
 );
 
 sub new {
@@ -421,6 +421,10 @@ sub file_type {
     my $get_attr = _get_file_type($file);
     return unless defined $get_attr;
     for (split //, $attr) {
+        if ($_ eq 'e') {
+            next;
+        }
+        
         if ($_ eq 'f') {
             return if $get_attr & $FILE_TYPE_ATTRIBUTES{d};
             next;
@@ -771,7 +775,8 @@ Get windows file type
   # attributes
   f => file
   d => directory
-  s => system
+  e => exists
+  S => system
   r => readonly
   h => hidden
   a => archive
@@ -780,7 +785,7 @@ Get windows file type
   c => compressed
   o => offline
   i => not content indexed
-  e => encrypted
+  E => encrypted
   
   if (file_type d => $file_ro_dir) {
      # hogehoge

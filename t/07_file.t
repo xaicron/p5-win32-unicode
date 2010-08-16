@@ -13,9 +13,13 @@ subtest file_type => sub {
     my $dir = 't/07_files';
     my $cmd = 'attrib';
     
-    ok file_type(d => $dir), "dir";
-    ok file_type(f => "$dir/file.txt"), "file";
-    ok file_type(d => "$dir/dir"), "dir";
+    ok file_type(d => $dir), "$dir is dir";
+    ok file_type(f => "$dir/file.txt"), "$dir/file.txt is file";
+    ok file_type(d => "$dir/dir"), "$dir/dir is dir";
+    
+    ok file_type(e => $dir), "$dir exists";
+    ok file_type(e => "$dir/file.txt"), "$dir/file.txt exists";
+    ok file_type(e => "$dir/dir"), "$dir/dir exists";
     
     subtest hidden => sub {
         system $cmd, '+H', "$dir/hidden.txt" and die "Oops!!";
