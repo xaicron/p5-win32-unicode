@@ -12,11 +12,13 @@ use Test::More;
 
 use constant CYGWIN => $^O eq 'cygwin';
 
-our @EXPORT = qw/safe_dir CYGWIN/;
+our @EXPORT = qw/safe_dir dump_tree CYGWIN/;
 
 use Win32::Unicode::Console;
 tie *Foo, 'Win32::Unicode::Console::Tie';
 Test::More->builder->$_(\*Foo) for qw/output failure_output todo_output/;
+
+use Win32::Unicode::Dir;
 
 sub safe_dir(&) {
     my $code = shift;
@@ -28,6 +30,13 @@ sub safe_dir(&) {
     eval { $code->($tmpdir) };
     chdir $cwd;
     croak $@ if $@;
+}
+
+sub dump_tree {
+    my $dir = shift;
+    unless ($ENV{HARNESS_ACTIVE}) {
+        findW +{ wanted => sub { note $_ }, no_chdir => 1 }, $dir;
+    }
 }
 
 1;

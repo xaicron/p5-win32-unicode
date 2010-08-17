@@ -279,7 +279,7 @@ subtest 'cptreeW - content copy' => sub {
         
         ok cptreeW($dirname, $target), 'cptreeW will be success';
         
-        dump_tree($target);
+        dump_tree $target;
         
         for (@$names) {
             s|$dirname[/\\]||;
@@ -300,7 +300,7 @@ subtest 'cptreeW - whole copy' => sub {
         
         ok cptreeW($dirname, "$target/"), 'cptreeW will be success';
         
-        dump_tree($target);
+        dump_tree $target;
         
         for (@$names) {
             ok file_type(e => catfile $target, $_), 'file exists';
@@ -319,7 +319,7 @@ subtest 'cptreeW - force copy' => sub {
         mkdirW $target;
         
         ok cptreeW($dirname, $target), 'cptreeW will be success';
-        dump_tree($target);
+        dump_tree $target;
         
         is dir_size($target), 0, 'dir_size ok';
         
@@ -338,7 +338,7 @@ subtest 'cptreeW - force copy' => sub {
         
         ok cptreeW($dirname, $target, 1), 'force coping tree';
         
-        dump_tree($target);
+        dump_tree $target;
         
         for (@$names) {
             s|$dirname[/\\]||;
@@ -381,7 +381,7 @@ subtest 'mvtreeW - content move' => sub {
         
         ok mvtreeW("$dirname/", $target), 'mvtreeW will be success';
         
-        dump_tree('.');
+        dump_tree '.';
         
         for my $name (@$names) {
             ok !file_type(e => $name), 'orginal file not exists';
@@ -423,7 +423,7 @@ subtest 'mvtreeW - force move' => sub {
         
         ok mvtreeW($dirname, $target, 1), 'force moving tree';
         
-        dump_tree($target);
+        dump_tree $target;
         
         for my $name (@$names) {
             ok !file_type(e => $name), 'file not exists';
@@ -479,12 +479,3 @@ subtest 'exceptions' => sub {
 };
 
 done_testing;
-
-sub dump_tree {
-    my $dir = shift;
-    unless ($ENV{HARNESS_ACTIVE}) {
-        findW +{ wanted => sub { note $_ }, no_chdir => 1 }, $dir;
-    }
-}
-
-__END__
