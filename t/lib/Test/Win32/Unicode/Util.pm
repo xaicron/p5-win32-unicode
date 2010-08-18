@@ -16,6 +16,7 @@ our @EXPORT = qw/safe_dir dump_tree CYGWIN/;
 
 use Win32::Unicode::Console;
 tie *Foo, 'Win32::Unicode::Console::Tie';
+binmode STDOUT => ':utf8';
 Test::More->builder->$_(\*Foo) for qw/output failure_output todo_output/;
 
 use Win32::Unicode::Dir;
