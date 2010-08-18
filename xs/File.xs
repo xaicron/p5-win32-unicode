@@ -5,7 +5,15 @@
 
 #include "ppport.h"
 
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <windows.h>
+
+#ifdef __CYGWIN__
+#define _STAT(file, st) stat(file, st)
+#else
+#define _STAT(file, st) _wstat(file, st)
+#endif
 
 WINBASEAPI BOOL WINAPI GetFileSizeEx(HANDLE,PLARGE_INTEGER);
 
@@ -85,44 +93,39 @@ set_file_pointer(long handle, long lpos, long hpos, int whence)
         RETVAL
 
 SV*
-get_file_information_by_handle(long handle)
+get_stat_data(SV* file, long handle)
     CODE:
+        struct stat st;
         BY_HANDLE_FILE_INFORMATION fi;
-        SV* hr  = newSV(0);
-        HV* hv  = newHV();
-        SV* chr = newSV(0);
-        HV* chv = newHV();
-        SV* ahr = newSV(0);
-        HV* ahv = newHV();
-        SV* mhr = newSV(0);
-        HV* mhv = newHV();
+        SV* hr = newSV(0);
+        HV* hv = newHV();
+        const WCHAR* file_name = SvPV_nolen(file);
+        
+        if (_STAT(file_name, &st) != 0) {
+            XSRETURN_EMPTY;
+        }
         
         if (GetFileInformationByHandle(handle, &fi) == 0) {
             XSRETURN_EMPTY;
         }
         
-        /* set ctime */
-        sv_setsv(chr, sv_2mortal(newRV_noinc((SV*)chv)));
-        hv_stores(chv, "high", newSVnv(fi.ftCreationTime.dwHighDateTime));
-        hv_stores(chv, "low", newSVnv(fi.ftCreationTime.dwLowDateTime));
-        
-        /* set atime */
-        sv_setsv(ahr, sv_2mortal(newRV_noinc((SV*)ahv)));
-        hv_stores(ahv, "high", newSVnv(fi.ftLastAccessTime.dwHighDateTime));
-        hv_stores(ahv, "low", newSVnv(fi.ftLastAccessTime.dwLowDateTime));
-        
-        /* set mtime */
-        sv_setsv(mhr, sv_2mortal(newRV_noinc((SV*)mhv)));
-        hv_stores(mhv, "high", newSVnv(fi.ftLastWriteTime.dwHighDateTime));
-        hv_stores(mhv, "low", newSVnv(fi.ftLastWriteTime.dwLowDateTime));
-        
         sv_setsv(hr, sv_2mortal(newRV_noinc((SV*)hv)));
+        hv_stores(hv, "dev", newSVnv(st.st_dev));
+        hv_stores(hv, "ino", newSVnv(st.st_ino));
+        hv_stores(hv, "mode", newSViv(st.st_mode));
+        hv_stores(hv, "nlink", newSViv(st.st_nlink));
+        hv_stores(hv, "uid", newSVnv(st.st_uid));
+        hv_stores(hv, "gid", newSVnv(st.st_gid));
+        hv_stores(hv, "rdev", newSVnv(st.st_rdev));
+        hv_stores(hv, "atime", newSVnv(st.st_atime));
+        hv_stores(hv, "mtime", newSVnv(st.st_mtime));
+        hv_stores(hv, "ctime", newSVnv(st.st_ctime));
+#ifdef __CYGWIN__
+        hv_stores(hv, "blksize", newSVnv(st.st_blksize));
+        hv_stores(hv, "blocks", newSVnv(st.st_blocks));
+#endif
         hv_stores(hv, "size_high", newSVnv(fi.nFileSizeHigh));
         hv_stores(hv, "size_low", newSVnv(fi.nFileSizeLow));
-        hv_stores(hv, "ctime", chr);
-        hv_stores(hv, "atime", ahr);
-        hv_stores(hv, "mtime", mhr);
-        hv_stores(hv, "dev", newSVnv(fi.dwVolumeSerialNumber));
         
         RETVAL = hr;
     OUTPUT:

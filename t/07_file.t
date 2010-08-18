@@ -7,8 +7,6 @@ use utf8;
 use File::Temp qw/tempdir tempfile/;
 use File::Spec;
 
-open STDERR, '>', File::Spec->devnull;
-
 subtest file_type => sub {
     my $dir = 't/07_files';
     my $cmd = 'attrib';
@@ -75,58 +73,54 @@ subtest 'stat' => sub {
     touchW $file;
     
     my @stat = CORE::stat $file;
-    my @statW = statW $file;
     
-    is $statW[7],  $stat[7];
-    is $statW[8],  $stat[8];
-    is $statW[9],  $stat[9];
-    is $statW[10], $stat[10];
-    
-    TODO: {
-        local $TODO = 'Unimplemented' if Win32::Unicode::Constant::CYGWIN;
-        is $statW[1],  $stat[1];
-        is $statW[4],  $stat[4];
-        is $statW[5],  $stat[5];
-        is $statW[11], $stat[11];
-        is $statW[12], $stat[12];
-    };
-    
-    TODO: {
-        local $TODO = 'Unimplemented';
-        is $statW[0], $stat[0];
-        is $statW[2], $stat[2];
-        is $statW[3], $stat[3];
-        is $statW[6], $stat[6];
-    };
-    
-    my $statW = statW $file;
-    
-    is $statW->{size},    $stat[7];
-    is $statW->{atime},   $stat[8];
-    is $statW->{mtime},   $stat[9];
-    is $statW->{ctime},   $stat[10];
-    
-    TODO: {
-        local $TODO = 'Unimplemented' if Win32::Unicode::Constant::CYGWIN;
-        is $statW->{ino},     $stat[1];
-        is $statW->{uid},     $stat[4];
-        is $statW->{gid},     $stat[5];
-        is $statW->{blksize}, $stat[11];
-        is $statW->{blocks},  $stat[12];
-    };
-    
-    TODO: {
-        local $TODO = 'Unimplemented';
-        is $statW->{dev},   $stat[0];
-        is $statW->{mode},  $stat[2];
-        is $statW->{nlink}, $stat[3];
-        is $statW->{rdev},  $stat[6];
-    };
+    my $fh = Win32::Unicode::File->new(r => $file) or die $!;
+    for my $data (
+        +{ file => $file, desc => 'filename' },
+        +{ file => $fh, desc => 'filehandle' }
+    ) {
+        subtest $data->{desc} => sub {
+            my @statW = statW $data->{file};
+            
+            is $statW[0],  $stat[0],  'dev';
+            is $statW[1],  $stat[1],  'ino';
+            is $statW[2],  $stat[2],  'mode';
+            is $statW[3],  $stat[3],  'nlink';
+            is $statW[4],  $stat[4],  'uid';
+            is $statW[5],  $stat[5],  'gid';
+            is $statW[6],  $stat[6],  'rdev';
+            is $statW[7],  $stat[7],  'size';
+            is $statW[8],  $stat[8],  'atime';
+            is $statW[9],  $stat[9],  'mtime';
+            is $statW[10], $stat[10], 'ctime';
+            is $statW[11], $stat[11], 'blksize';
+            is $statW[12], $stat[12], 'blocks';
+            
+            my $statW = statW $data->{file};
+            
+            is $statW->{dev},     $stat[0],  'dev';
+            is $statW->{ino},     $stat[1],  'ino';
+            is $statW->{mode},    $stat[2],  'mode';
+            is $statW->{nlink},   $stat[3],  'nlink';
+            is $statW->{uid},     $stat[4],  'uid';
+            is $statW->{gid},     $stat[5],  'gid';
+            is $statW->{rdev},    $stat[6],  'rdev';
+            is $statW->{size},    $stat[7],  'size';
+            is $statW->{atime},   $stat[8],  'atime';
+            is $statW->{mtime},   $stat[9],  'mtime';
+            is $statW->{ctime},   $stat[10], 'ctime';
+            is $statW->{blksize}, $stat[11], 'blksize';
+            is $statW->{blocks},  $stat[12], 'blocks';
+            
+            done_testing;
+        };
+    }
     
     done_testing;
 };
 
 subtest exeption => sub {
+    open STDERR, '>', File::Spec->devnull;
     dies_ok { file_type() };
     dies_ok { file_type('t') };
     dies_ok { copyW() };

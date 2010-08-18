@@ -341,7 +341,6 @@ sub file_path {
     return *$self->{_file_path};
 }
 
-# Unimplemented
 sub statW {
     my $file = shift;
     _croakW('Usage: statW(filename)') unless defined $file;
@@ -349,7 +348,9 @@ sub statW {
     
     my $fi;
     if (ref $file eq __PACKAGE__) {
-        $fi = get_file_information_by_handle(tied(*$file)->{_handle}) or return Win32::Unicode::Error::_set_errno;
+        my $fh = *$file;
+        my $file = CYGWIN ? Encode::encode_utf8($fh->{_file_path}) : utf8_to_utf16($fh->{_file_path}) . NULL;
+        $fi = get_stat_data($file, $fh->{_handle}) or return Win32::Unicode::Error::_set_errno;
     }
     else {
         $file = cygpathw($file) or return if CYGWIN;
@@ -366,33 +367,19 @@ sub statW {
             NULLP,
         );
         return Win32::Unicode::Error::_set_errno if $handle == INVALID_VALUE;
-        
-        $fi = get_file_information_by_handle($handle) or return Win32::Unicode::Error::_set_errno;
+        $file = CYGWIN ? Encode::encode_utf8($file) : utf8_to_utf16($file) . NULL;
+        $fi = get_stat_data($file, $handle) or return Win32::Unicode::Error::_set_errno;
         Win32API::File::CloseHandle($handle) or return Win32::Unicode::Error::_set_errno;
     }
     
-    my $result = +{};
-    
-    # uid guid (really?)
-    $result->{uid} = 0;
-    $result->{gid} = 0;
-    
-    # inode (really?)
-    $result->{ino} = 0;
-    
-    # block (really?)
-    $result->{blksize} = '';
-    $result->{blocks}  = '';
-    
-    # size
-    $result->{size} = $fi->{size_high} ? to64int($fi->{size_high}, $fi->{size_low}) : $fi->{size_low};
-    
-    # ctime atime mtime
-    for my $key (qw/ctime atime mtime/) {
-        use bigint;
-        my $etime = ($fi->{$key}{high} << 32) + $fi->{$key}{low};
-        $result->{$key} = ($etime - 116444736000000000) / 10000000; # to epoch
+    my $result = $fi;
+    unless (CYGWIN) {
+        $result->{blksize} = '';
+        $result->{blocks}  = '';
     }
+    $result->{size} = $fi->{size_high} ? to64int($fi->{size_high}, $fi->{size_low}) : $fi->{size_low};
+    delete $result->{size_high};
+    delete $result->{size_low};
     
     return $wantarray ? (
         $result->{dev},     #  0 dev      device number of filesystem
