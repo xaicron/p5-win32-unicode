@@ -195,7 +195,6 @@ Win32::Unicode::Console.pm - Unicode string to console out
 =head1 DESCRIPTION
 
 Win32::Unicode::Console provides Unicode String to console out.
-This module is by default C<printW> and C<warnW> export functions.
 
 This module PerlIO-proof.
 However, when the file is redirected to the C<CORE:: print> and C<CORE:: warn> switches.
@@ -234,5 +233,16 @@ Like die.
 =head1 AUTHOR
 
 Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
+
+=head1 SEE ALSO
+
+L<Win32::Unicode::File>
+
+L<Win32::Unicode::Error>
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =cut

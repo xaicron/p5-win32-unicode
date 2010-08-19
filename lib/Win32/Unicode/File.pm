@@ -596,7 +596,7 @@ sub DESTROY  { shift->close       }
 __END__
 =head1 NAME
 
-Win32::Unicode::File.pm - Unicode string file utility.
+Win32::Unicode::File - Unicode string file utility.
 
 =head1 SYNOPSIS
 
@@ -604,16 +604,16 @@ Win32::Unicode::File.pm - Unicode string file utility.
   
   my $file = "I \x{2665} Perl";
   
-  unlinkW $file or dieW errorW;
-  copyW $from, $to or dieW errorW;
-  moveW $from, $to or dieW errorW;
-  file_type f => $file ? 'ok' : 'no file';
+  unlinkW $file or die $!;
+  copyW $from, $to or die $!;
+  moveW $from, $to or die $!;
+  file_type f => $file ? "$file is file" : "$file is not file";
   my $size = file_size $file;
   touchW $new_file;
 
 =head1 DESCRIPTION
 
-Win32::Unicode::Dir is Unicode string file utility.
+Win32::Unicode::File is Unicode string file utility.
 
 =head1 METHODS
 
@@ -621,16 +621,23 @@ Win32::Unicode::Dir is Unicode string file utility.
 
 =item B<new([$mode, $file_name])>
 
+Crate a new Win32::Unicode::File instance. At the same time you can open the file to create an instance.
+
   my $fh = Win32::Unicode::File->new;
-  my $fh = Win32::Unicode::File->new($mode, $file_name); # open $file_name;
+  my $fh = Win32::Unicode::File->new($mode, $file_name); # create an instance and open the file
 
 =item B<open($mode, $file_name)>
 
-  $fh->open('<', $file_name) or dieW errorW;
-  
-  open $fh, '<', $file_name or dieW errorW;
+like CORE::open, but compatibility is not an argument. can not be pipe open.
 
-  # be useful mode
+  $fh->open('<', $file_name) or die $!;
+
+or
+
+  open $fh, '<', $file_name or die $!;
+
+Be useful mode
+
   <   = r   = rb
   >   = w   = wb
   >>  = a
@@ -640,56 +647,88 @@ Win32::Unicode::Dir is Unicode string file utility.
 
 =item B<close()>
 
+like CORE::close.
+
   $fh->close;
+
+or
 
   close $fh;
 
 =item B<read($buff, $len)>
 
-  $fh->read(my $buff, $len) or dieW errorW;
-  print $buff;
-  
+Like CORE::read.
+
+  $fh->read(my $buff, $len) or die $!;
+
+or
+
   read $fh, my $buff, $len;
 
 =item B<readline()>
 
+Like CORE::readline.
+
   my $line = $fh->readline;
   my @line = $fh->readline;
-  
+
+or
   my $line = readline $fh;
   my @line = <$fh>;
-  
+
+=item B<getc()>
+
+Like CORE::getc.
+
+  my $char = $fh->getc;
+
+or
+
+  my $char = getc $fh;
+
 =item B<print(@str)>
+
+Data write to file.
 
   $fh->print(@str);
   print $fh @str;
-  
+
 =item B<printf($format, @str)>
+
+Formatted data write to file.
 
   $fh->printf('[%s]', $str);
   printf $fh '%d', $str;
 
 =item B<write(@str)>
 
+Data write to file. alias of $fh->print
+
   $fh->write(@str);
-  
+
 =item B<seek($ofset, $whence)>
 
+Like CORE::seek.
+
   $fh->seek(10, 1);
-  
+
+or
+
   seek $fh, 1024, 2;
-  
+
 =item B<tell()>
 
-  my $current = $fh->tell();
-  
+Like CORE::tell.
+
+  my $current = $fh->tell;
+
+or
+
   my $current = tell $fh;
 
-=item B<slurp()>
-
-  my $data = $fh->slurp;
-  
 =item B<eof()>
+
+Like CORE::eof.
 
   if ($fh->eof) {
      # ...snip
@@ -701,19 +740,37 @@ or
      # ...snip
   }
 
+=item B<slurp()>
+
+Read all data from the file.
+
+  my $data = $fh->slurp;
+
 =item B<binmode($layer)>
 
   $fh->binmode(':encoding(cp932)')
-  
+
 or
 
   binmode $fh, ':raw :utf8';
-  
+
 Currently available now is only the layer below.
 
   :raw
   :utf8
   :encoding(foo)
+
+=item B<flock>
+
+Like CORE::flock
+
+  $fh->flock(2);
+
+=item B<unlock>
+
+equals to
+
+  $fh->flock(8);
 
 =item B<error()>
 
@@ -729,21 +786,21 @@ get error message.
 
 =item B<unlinkW($file)>
 
-Like unlink.
+Like CORE::unlink.
 
-  unlinkW $file or dieW errorW;
+  unlinkW $file or die $!;
 
 =item B<copyW($from, $to)>
 
 Like File::Copy::copy.
 
-  copyW $from, $to or dieW errorW;
+  copyW $from, $to or die $!;
 
 =item B<moveW($from, $to)>
 
 Like File::Copy::move.
 
-  moveW $from, $to or dieW errorW;
+  moveW $from, $to or die $!;
 
 =item B<renameW($from, $to)>
 
@@ -751,9 +808,24 @@ Alias of moveW.
 
 =item B<touchW($file)>
 
-Like shell command touch.
+Like shell command C<touch>.
 
-  touchW $file or dieW errorW;
+  touchW $file or die $!;
+
+=item B<statW($file || $fh)>
+
+Like CORE::stat.
+
+  my @stat = statW $file or die $!;
+  my $stat = statW $file or die $!;
+
+or
+
+  my $fh = Win32::Unicode::File->new(r => $file);
+  my @stat = statW $fh or die $!;
+  my $stat = statW $fh or die $!;
+
+If the array context, CORE:: stat like. However, scalar context case in hashref received.
 
 =item B<file_type('attribute', $file_or_dir)>
 
@@ -773,13 +845,12 @@ Get windows file type
   o => offline
   i => not content indexed
   E => encrypted
-  
+
   if (file_type d => $file_ro_dir) {
-     # hogehoge
+     # snip
   }
-  
   elsif (file_type fr => $file_or_dir) { # file type 'file' and 'readonly'
-     # fugagufa
+     # snip
   }
 
 =item B<file_size($file)>
@@ -787,12 +858,14 @@ Get windows file type
 Get file size.
 near C<-s $file>
 
-  my $size = file_size $file or dieW errorW;
+  my $size = file_size $file;
+  die $! unless defined $size;
 
 =item B<filename_normalize($filename)>
 
-Normalize the characters are not allowed in the file name.
+Normalize the characters are not allowed in the file name. not export.
 
+  use Win32::Unicode::File qw(filename_normalize);
   my $nomalized_file_name = filename_normalize($filename);
 
 =back
@@ -804,9 +877,13 @@ Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
 =head1 SEE ALSO
 
 L<Win32>
+
 L<Win32API::File>
+
 L<Win32::Unicode>
+
 L<Win32::Unicode::File>
+
 L<Win32::Unicode::Error>
 
 =head1 LICENSE

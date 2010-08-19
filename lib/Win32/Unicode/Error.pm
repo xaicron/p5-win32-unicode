@@ -47,9 +47,8 @@ Win32::Unicode::Error.pm - return error message.
 
   use Win32::Unicode;
   
-  # stdout unicode string
-  mkdirW($exists_dir) or die errorW
-  
+  mkdirW($exists_dir) or dieW errorW
+
 =head1 DESCRIPTION
 
 Wn32::Unicode::Error is retrun to Win32API error message.
@@ -58,9 +57,9 @@ Wn32::Unicode::Error is retrun to Win32API error message.
 
 =over
 
-=item errorW
+=item B<errorW()>
 
-function.
+get last error message.
 
 =back
 
@@ -71,7 +70,9 @@ Yuji Shimada E<lt>xaicron@gmail.comE<gt>
 =head1 SEE ALSO
 
 L<Win32::Unicode>
+
 L<Win32::Unicode::Dir>
+
 L<Win32::Unicode::File>
 
 =head1 LICENSE

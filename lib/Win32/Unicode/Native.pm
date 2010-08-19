@@ -169,7 +169,7 @@ Win32::Unicode::Native.pm - override some default method
   open my $fh, '<', $unicode_file_name or die error;
   
   opendir my $dh, $unicode_dir_name or die error;
-  
+
 =head1 DESCRIPTION
 
 Wn32::Unicode is a perl unicode-friendly wrapper for win32api.

@@ -69,23 +69,24 @@ Win32::Unicode.pm - perl unicode-friendly wrapper for win32api.
 
 =head1 SYNOPSIS
 
-  use Win32::Unicode;
   use utf8;
+  use Win32::Unicode;
   
   # unicode console out
   printW "I \x{2665} Perl";
   
   # unicode file util
-  unlinkW $file or dieW errorW;
-  copyW $from, $to or dieW errorW;
-  moveW $from, $to or dieW errorW;
+  unlinkW $file or die $!;
+  copyW $from, $to or die $!;
+  moveW $from, $to or die $!;
   file_type f => $file ? 'ok' : 'no file';
   my $size = file_size $file;
   touchW $new_file;
+  my @stat = statW $file;
   
   # unicode directory util
-  mkdirW $dir or dieW errorW;
-  rmdirW $dir or dieW errorW;
+  mkdirW $dir or die $!;
+  rmdirW $dir or die $!;
   my $cwd = getcwdW;
   chdirW $change_dir;
   findW sub { sayW $_ }, $dir;
@@ -95,10 +96,12 @@ Win32::Unicode.pm - perl unicode-friendly wrapper for win32api.
   cptreeW $from, $to
   mvtreeW $from, $to;
   my $dir_size = dir_size $dir;
+  my @file_list = file_list $dir;
+  my @dir_list = dir_list $dir;
   
   # opendir
   my $wdir = Win32::Unicode::Dir->new;
-  $wdir->open($dir) || die $wdir->error;
+  $wdir->open($dir) or die $!;
   for ($wdir->fetch) {
       next if /^\.{1,2}$/;
       
@@ -106,12 +109,11 @@ Win32::Unicode.pm - perl unicode-friendly wrapper for win32api.
       if (file_type('f', $full_path)) {
           # $_ is file
       }
-      
       elsif (file_type('d', $full_path))
           # $_ is directory
       }
   }
-  $wdir->close || die $wdir->error;
+  $wdir->close or die $!;
 
 =head1 DESCRIPTION
 
@@ -132,10 +134,18 @@ Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
 
 =head1 SEE ALSO
 
-L<Win32::Unicode::Console>
-L<Win32::Unicode::Dir>
 L<Win32::Unicode::File>
+
+L<Win32::Unicode::Dir>
+
+L<Win32::Unicode::Console>
+
+L<Win32::Unicode::Process>
+
 L<Win32::Unicode::Error>
+
+L<Win32::Unicode::Native>
+
 L<Win32>
 
 =head1 LICENSE

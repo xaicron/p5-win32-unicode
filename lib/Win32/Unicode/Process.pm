@@ -63,7 +63,7 @@ sub _create_process {
 __END__
 =head1 NAME
 
-Win32::Unicode::Process.pm - manipulate processes.
+Win32::Unicode::Process - manipulate processes.
 
 =head1 SYNOPSIS
 
@@ -74,7 +74,7 @@ Win32::Unicode::Process.pm - manipulate processes.
   
   execW "echo $flagged_utf8_string";
   execW 'perl', '-e', 'print "ok"';
-  
+
 =head1 DESCRIPTION
 
 B<THIS MODULE IS ALPHA LEVEL AND MANY BUGS>.

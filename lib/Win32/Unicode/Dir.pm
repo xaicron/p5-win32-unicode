@@ -416,8 +416,8 @@ Win32::Unicode::Dir.pm - Unicode string directory utility.
 
 =head1 SYNOPSIS
 
-  use Win32::Unicode::Console;
   use Win32::Unicode::Dir;
+  use Win32::Unicode::Console;
   
   my $dir = "I \x{2665} Perl";
   
@@ -430,7 +430,6 @@ Win32::Unicode::Dir.pm - Unicode string directory utility.
       if (file_type('f', $full_path)) {
           # $_ is file
       }
-      
       elsif (file_type('d', $full_path))
           # $_ is directory
       }
@@ -453,33 +452,41 @@ Win32::Unicode::Dir is Unicode string directory utility.
 
 =item B<new>
 
+Create a Win32::Unicode::Dir instance.
+
   my $wdir = Win32::Unicode::Dir->new;
 
 =item B<open($dir)>
 
-Like opendir.
+Like CORE::opendir.
 
-  $wdir->open($dir) or dieW $wdir->error;
+  $wdir->open($dir) or die $!
 
 =item B<fetch()>
 
-Like readdir.
+Like CORE::readdir.
 
   while (my $file = $wdir->fetch) {
-     # hogehoge
+     # snip
   }
-  
+
 or
 
   for my $file ($wdir->fetch) {
-     $ hogehoge
+     # snip
   }
-  
-C<read> and C<readdir> is alias of fetch.
+
+=item B<read()>
+
+Alias of C<fetch()>.
+
+=item B<readdir()>
+
+Alias of C<fetch()>.
 
 =item B<close()>
 
-Like closedir.
+Like CORE::closedir.
 
   $wdir->close or dieW $wdir->error
 
@@ -495,57 +502,57 @@ get error message.
 
 =item B<getcwdW>
 
-Like Cwd::getcwd.
+Like Cwd::getcwd. get current directory.
 
   my $cwd = getcwdW;
 
 =item B<chdirW($dir)>
 
-Like chdir.
+Like CORE::chdir.
 
-  chdirW($dir) or dieW errroW;
+  chdirW $dir or die $!;
 
 =item B<mkdirW($new_dir)>
 
-Like mkdir.
+Like CORE::mkdir.
 
-  mkdirW($new_dir) or dieW errorW;
+  mkdirW $new_dir or die $!;
 
 =item B<rmdirW($del_dir)>
 
-Like rmdir.
+Like CORE::rmdir.
 
-  rmdirW($del_dir) or dieW errorW;
+  rmdirW($del_dir) or die $!;
 
 =item B<rmtreeW($del_dir)>
 
 Like File::Path::rmtree.
 
-  rmtreeW($del_dir) or dieW errorW;
+  rmtreeW $del_dir or die $!;
 
 =item B<mkpathW($make_long_dir_name)>
 
 Like File::Path::mkpath.
 
-  mkpathW($make_long_dir_name) or dieW errorW
+  mkpathW $make_long_dir_name or die $!
 
 =item B<cptreeW($from, $to [, $over])>
 
 copy directory tree.
 
-  cptreeW $from, $to or dieW errorW;
+  cptreeW $from, $to or die $!;
 
 =item B<mvtreeW($from, $to [, $over]))>
 
 move directory tree.
 
-  mvtreeW $from, $to or dieW errorW;
+  mvtreeW $from, $to or die $!;
 
 =item B<findW($code, $dir)>
 
 like File::Find::find.
 
-  findW(\&wanted, $dir);
+  findW \&wanted, $dir;
   sub wanted {
       my $file = $_;
       my $name = $Win32::Unicode::Dir::name;
@@ -555,7 +562,7 @@ like File::Find::find.
 
 or
 
-  findW(\&wanted, @dirs);
+  findW \&wanted, @dirs;
   sub wanted{
       my $arg = shift;
       print $args->{file}; # eq $_
@@ -564,10 +571,10 @@ or
       print $args->{dir};  # eq $Win32::Unicode::Dir::dir
       print $args->{path}; # full path
   }
-  
+
 or
 
-  findW(\%options, @dirs);
+  findW \%options, @dirs;
 
 =back
 
@@ -603,16 +610,19 @@ Like File::Find#no_chdir
 =item B<finddepthW($code, $dir)>
 
 like File::Find::finddepth.
+
+  finddepthW \&wanted, $driname;
+
 equals to
 
-  findW({ wanted => \&wanted, bydepth => 1 }, $dirname);
+  findW { wanted => \&wanted, bydepth => 1 }, $dirname;
 
 =item B<dir_size($dir)>
 
 get directory size.
 this function are slow.
 
-  my $dir_size = dir_size($dir) or dieW errorW
+  my $dir_size = dir_size($dir) or die $!
 
 =item B<file_list($dir)>
 
@@ -635,9 +645,13 @@ Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
 =head1 SEE ALSO
 
 L<Win32>
+
 L<Win32API::File>
+
 L<Win32::Unicode>
+
 L<Win32::Unicode::File>
+
 L<Win32::Unicode::Error>
 
 =head1 LICENSE
