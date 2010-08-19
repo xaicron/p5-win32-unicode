@@ -1,11 +1,14 @@
 use strict;
+use warnings;
+use utf8;
+use lib 't/lib';
 use Test::More;
 use Test::Exception;
+use Test::Win32::Unicode::Util;
 
-use Win32::Unicode;
-use utf8;
 use File::Temp qw/tempdir tempfile/;
 use File::Spec;
+use Win32::Unicode;
 
 subtest file_type => sub {
     my $dir = 't/07_files';
@@ -83,8 +86,11 @@ subtest 'stat' => sub {
             my @statW = statW $data->{file};
             
             is $statW[0],  $stat[0],  'dev';
-            is $statW[1],  $stat[1],  'ino';
-            is $statW[2],  $stat[2],  'mode';
+            TODO : {
+                local $TODO = 'CYGWIN' if CYGWIN;
+                is $statW[1],  $stat[1],  'ino';
+                is $statW[2],  $stat[2],  'mode';
+            }
             is $statW[3],  $stat[3],  'nlink';
             is $statW[4],  $stat[4],  'uid';
             is $statW[5],  $stat[5],  'gid';
@@ -99,8 +105,11 @@ subtest 'stat' => sub {
             my $statW = statW $data->{file};
             
             is $statW->{dev},     $stat[0],  'dev';
-            is $statW->{ino},     $stat[1],  'ino';
-            is $statW->{mode},    $stat[2],  'mode';
+            TODO : {
+                local $TODO = 'CYGWIN' if CYGWIN;
+                is $statW->{ino},     $stat[1],  'ino';
+                is $statW->{mode},    $stat[2],  'mode';
+            }
             is $statW->{nlink},   $stat[3],  'nlink';
             is $statW->{uid},     $stat[4],  'uid';
             is $statW->{gid},     $stat[5],  'gid';

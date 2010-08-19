@@ -198,7 +198,6 @@ sub _cptree {
         $to = catfile $to, basename($from);
     }
     
-    $from = cygpathw($from) or return if CYGWIN;
     $from = catfile $from;
     
     if ($to =~ $is_drive) {
@@ -288,7 +287,6 @@ sub _find_wrap {
     local ($dir, $name, $cwd);
     
     for my $arg (@args) {
-        $arg = cygpathw($arg) or return if CYGWIN;
         $arg = catfile $arg;
        _croakW("$arg: no such directory") unless file_type(d => $arg);
         
