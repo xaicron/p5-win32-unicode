@@ -56,9 +56,11 @@ our @EXPORT = qw{
     opendir
     closedir
     readdir
+    flock
     file_list
     dir_list
     __FILE__
+    filename_normalize
 };
 
 my $sub_export = sub {
@@ -90,6 +92,8 @@ $sub_export->(qw{
     touchW
     statW
 });
+
+*flock = \&Win32::Unicode::File::flock;
 
 sub open {
     local $Carp::CarpLevel = 1;
