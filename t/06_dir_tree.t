@@ -85,6 +85,7 @@ sub wanted {
     };
 }
 
+=pod
 subtest 'findW coderef' => sub {
     safe_dir {
         my ($dirname, $wanted_files, $names, $dirs) = create_tree;
@@ -270,8 +271,9 @@ subtest 'mkpathW' => sub {
         rmtreeW $_ for @$names;
     };
 };
+=cut
 
-subtest 'cptreeW - content copy' => sub {
+subtest 'cptreeW - whole copy' => sub {
     safe_dir {
         my ($dirname, undef, $names) = create_tree;
         my $target = "\x{2603}";
@@ -279,10 +281,9 @@ subtest 'cptreeW - content copy' => sub {
         
         ok cptreeW($dirname, $target), 'cptreeW will be success';
         
-        dump_tree $target;
+        dump_tree '.';
         
         for (@$names) {
-            s|$dirname[/\\]||;
             ok file_type(e => catfile $target, $_), 'file exists';
         }
         
@@ -292,17 +293,18 @@ subtest 'cptreeW - content copy' => sub {
     done_testing;
 };
 
-subtest 'cptreeW - whole copy' => sub {
+subtest 'cptreeW - content copy' => sub {
     safe_dir {
         my ($dirname, undef, $names) = create_tree;
         my $target = "\x{2603}";
         mkdirW $target;
         
-        ok cptreeW($dirname, "$target/"), 'cptreeW will be success';
+        ok cptreeW("$dirname/", $target), 'cptreeW will be success';
         
-        dump_tree $target;
+        dump_tree '.';
         
         for (@$names) {
+            s|$dirname[/\\]||;
             ok file_type(e => catfile $target, $_), 'file exists';
         }
         
@@ -319,7 +321,7 @@ subtest 'cptreeW - force copy' => sub {
         mkdirW $target;
         
         ok cptreeW($dirname, $target), 'cptreeW will be success';
-        dump_tree $target;
+        dump_tree '.';
         
         is dir_size($target), 0, 'dir_size ok';
         
@@ -330,18 +332,15 @@ subtest 'cptreeW - force copy' => sub {
         my $write_length = 10;
         findW sub {
             return unless file_type f => $_;
-            my $fh = Win32::Unicode::File->new(w => $_);
-            $fh->write('0' x $write_length);
-            $fh->close;
+            Win32::Unicode::File->new(w => $_)->write('0' x $write_length);
             $count++;
         }, $dirname;
         
         ok cptreeW($dirname, $target, 1), 'force coping tree';
         
-        dump_tree $target;
+        dump_tree '.';
         
         for (@$names) {
-            s|$dirname[/\\]||;
             ok file_type(e => catfile $target, $_), 'file exists';
         }
         

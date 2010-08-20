@@ -189,26 +189,22 @@ sub _cptree {
     my $to           = shift;
     my $over         = shift || 0;
     my $bymove       = shift || 0;
-    my $content_move = 1;
+    my $content_only = 0;
     
     _croakW("$from: no such directory") unless file_type d => $from;
     
-    if ($bymove && $from !~ $in_dir) {
-        $content_move = 0;
-        $to = catfile $to, basename($from);
-    }
-    
+    $content_only = 1 if $from =~ $in_dir;
     $from = catfile $from;
     
     if ($to =~ $is_drive) {
-        $to = catfile $to, $to =~ $in_dir ? basename($from) : ();
+        $to = catfile $to, !$content_only ? basename($from) : ();
     }
     else {
-        $to = catfile getcwdW(), $to, $to =~ $in_dir ? basename($from) : ();
+        $to = catfile getcwdW(), $to, !$content_only ? basename($from) : ();
     }
     
     unless (file_type d => $to) {
-        mkdirW $to or _croakW("$to " . errorW);
+        mkdirW $to or _croakW("$to: " . $!);
     }
     
     my $replace_from = quotemeta $from;
@@ -238,7 +234,7 @@ sub _cptree {
     };
     
     finddepthW($code, $from);
-    if ($bymove && !$content_move) {
+    if ($bymove && !$content_only) {
         return unless rmdirW $from;
     }
     return 1;
@@ -542,11 +538,95 @@ copy directory tree.
 
   cptreeW $from, $to or die $!;
 
+If C<$from> delimiter of directory is a terminator, move the contents of C<$from> to C<$to>.
+
+  cptreeW 'foo/', 'hoge';
+  
+  # before current directory tree
+  # ----------------------------
+  # foo
+  # foo/bar
+  # foo/bar/baz
+  # hoge
+  # ----------------------------
+  
+  # before current directory tree
+  # ----------------------------
+  # foo
+  # foo/bar
+  # foo/bar/baz
+  # hoge/
+  # hoge/bar
+  # hoge/bar/baz
+  # ----------------------------
+
+If just a directory name, is as follows
+
+  cptreeW 'foo', 'hoge';
+  
+  # before current directory tree
+  # ----------------------------
+  # foo
+  # foo/bar
+  # foo/bar/baz
+  # hoge
+  # ----------------------------
+  
+  # before current directory tree
+  # ----------------------------
+  # foo
+  # foo/bar
+  # foo/bar/baz
+  # hoge/foo
+  # hoge/foo/bar
+  # hoge/foo/bar/baz
+  # ----------------------------
+
 =item B<mvtreeW($from, $to [, $over]))>
 
 move directory tree.
 
   mvtreeW $from, $to or die $!;
+
+If C<$from> delimiter of directory is a terminator, move the contents of C<$from> to C<$to>.
+
+  mvtreeW 'foo/', 'hoge';
+  
+  # before current directory tree
+  # ----------------------------
+  # foo
+  # foo/bar
+  # foo/bar/baz
+  # hoge
+  # ----------------------------
+  
+  # after current directory tree
+  # ----------------------------
+  # foo
+  # hoge
+  # hoge/bar
+  # hoge/bar/baz
+  # ----------------------------
+
+If just a directory name, is as follows
+
+  mvtreeW 'foo', 'hoge';
+  
+  # before current directory tree
+  # ----------------------------
+  # foo
+  # foo/bar
+  # foo/bar/baz
+  # hoge
+  # ----------------------------
+  
+  # after current directory tree
+  # ----------------------------
+  # hoge
+  # hoge/foo
+  # hoge/foo/bar
+  # hoge/foo/bar/baz
+  # ----------------------------
 
 =item B<findW($code, $dir)>
 
