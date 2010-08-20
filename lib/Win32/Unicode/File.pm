@@ -23,7 +23,7 @@ our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 our $VERSION = '0.22';
 
 my %FILE_TYPE_ATTRIBUTES = (
-    S => FILE_ATTRIBUTE_SYSTEM,
+    s => FILE_ATTRIBUTE_SYSTEM,
     r => FILE_ATTRIBUTE_READONLY,
     h => FILE_ATTRIBUTE_HIDDEN,
     d => FILE_ATTRIBUTE_DIRECTORY,
@@ -835,7 +835,7 @@ Get windows file type
   f => file
   d => directory
   e => exists
-  S => system
+  s => system
   r => readonly
   h => hidden
   a => archive
