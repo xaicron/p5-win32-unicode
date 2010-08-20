@@ -158,7 +158,7 @@ $sub_export->(qw{
 __END__
 =head1 NAME
 
-Win32::Unicode::Native.pm - override some default method
+Win32::Unicode::Native - override some default method
 
 =head1 SYNOPSIS
 

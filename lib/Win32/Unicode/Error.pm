@@ -40,7 +40,7 @@ sub _set_errno {
 __END__
 =head1 NAME
 
-Win32::Unicode::Error.pm - return error message.
+Win32::Unicode::Error - return error message.
 
 
 =head1 SYNOPSIS

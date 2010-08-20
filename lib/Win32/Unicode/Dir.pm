@@ -408,7 +408,7 @@ sub DESTROY {
 __END__
 =head1 NAME
 
-Win32::Unicode::Dir.pm - Unicode string directory utility.
+Win32::Unicode::Dir - Unicode string directory utility.
 
 =head1 SYNOPSIS
 

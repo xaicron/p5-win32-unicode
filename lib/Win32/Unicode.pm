@@ -65,7 +65,7 @@ sub import {
 __END__
 =head1 NAME
 
-Win32::Unicode.pm - perl unicode-friendly wrapper for win32api.
+Win32::Unicode - perl unicode-friendly wrapper for win32api.
 
 =head1 SYNOPSIS
 

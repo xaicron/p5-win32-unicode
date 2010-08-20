@@ -173,7 +173,7 @@ sub FILENO {}
 __END__
 =head1 NAME
 
-Win32::Unicode::Console.pm - Unicode string to console out
+Win32::Unicode::Console - Unicode string to console out
 
 =head1 SYNOPSIS
 
