@@ -1,5 +1,27 @@
 Revision history for Perl extension Win32::Unicode
 
+0.23    Sat Aug 21 03:11:10 2010
+        [BUG FIXES]
+        - Win32::Unicode::File
+            - Fixed flock not working.
+        - Win32::Unicode::Dir
+            - dir_list and file_list, If the current directory is not specified, it did not work.
+        
+        [CHANGES]
+        - Win32::Unicode::Util
+            - Removed use bigint (thanks gfx)
+        - Win32::Unicide::Dir
+            - cptreeW and mvtreeW changed behavior.
+        
+        [NEW FEATURES]
+        - Win32::Unicode::Dir
+            - Added $Win32::Unicide::Dir::dir global valiable.
+            - findW supported `bydepth`, `no_chdir`, `preprocess` and `postprocess` options.
+        - Win32::Unicode::File
+            - Implemented statW.
+        - Win32::Unicode::Native
+            - Added flock and filename_normalize functions.
+
 0.22    Tue Jul 20 01:29:37 2010 (+900)
         [BUG FIXES]
         - Fixed the test fails.
