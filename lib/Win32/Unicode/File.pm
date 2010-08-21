@@ -8,7 +8,7 @@ use Win32API::File ();
 use Carp ();
 use File::Basename qw/basename/;
 use Exporter 'import';
-use parent qw/IO::Handle/;
+use base qw/IO::Handle/;
 
 use Win32::Unicode::Util;
 use Win32::Unicode::Error;
