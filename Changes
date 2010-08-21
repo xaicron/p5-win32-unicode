@@ -1,5 +1,12 @@
 Revision history for Perl extension Win32::Unicode
 
+0.24    Sat Aug 21 16:07:24 2010
+        [BUG FIXES]
+        - Fixed the test failture was likely.
+        
+        [CHANGES]
+        - Remove Test::SharedFork and parent dependence.
+
 0.23    Sat Aug 21 03:11:10 2010
         [BUG FIXES]
         - Win32::Unicode::File
