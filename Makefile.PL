@@ -16,7 +16,6 @@ author_tests 'xt';
 build_requires 'Test::More', '0.88';
 test_requires 'Test::Output';
 test_requires 'Test::Exception';
-test_requires 'Test::SharedFork';
 
 cc_src_paths qw(xs);
 
