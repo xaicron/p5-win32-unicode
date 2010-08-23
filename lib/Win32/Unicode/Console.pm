@@ -109,7 +109,7 @@ sub sayW {
 # warn Unicode to Console
 sub warnW {
     my $str = join q{}, @_;
-    $str .= $str =~ s/\n$// ? "\n" : Carp::shortmess('');
+    $str .= $str =~ s/\n$// ? "\n" : _shortmess();
     
     if (ref $SIG{__WARN__} eq 'CODE') {
         return $SIG{__WARN__}->($str);
@@ -122,7 +122,7 @@ sub warnW {
 # die Unicode to Console
 sub dieW {
     my $str = join q{}, @_;
-    $str .= $str =~ s/\n$// ? "\n" : Carp::shortmess('');
+    $str .= $str =~ s/\n$// ? "\n" : _shortmess();
     
     if (ref $SIG{__DIE__} eq 'CODE') {
         $SIG{__DIE__}->($str);
@@ -133,6 +133,10 @@ sub dieW {
     _row_warn($str);
     CORE::die("\n");
     return;
+}
+
+sub _shortmess {
+    CYGWIN ? Encode::decode_utf8(Carp::shortmess('')) : Encode::decode(cp932 => Carp::shortmess(''));
 }
 
 sub _row_warn {
