@@ -19,6 +19,14 @@ get_last_error()
     OUTPUT:
         RETVAL
 
+long
+set_last_error(long error_code)
+    CODE:
+        SetLastError(error_code);
+        RETVAL = error_code;
+    OUTPUT:
+        RETVAL
+
 SV*
 foramt_message()
     CODE:

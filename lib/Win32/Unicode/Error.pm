@@ -29,7 +29,7 @@ sub errorW {
 }
 
 sub _set_errno {
-    my $errno = get_last_error();
+    my $errno = $_[0] ? set_last_error($_[0]) : get_last_error();
     $! = $ERROR_TABLE{$errno} || $errno;
     return;
 }
