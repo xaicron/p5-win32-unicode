@@ -25,7 +25,9 @@ my %ERROR_TABLE = (
 
 sub errorW {
     my $buff = foramt_message();
-    return utf16_to_utf8($buff);
+    $buff = utf16_to_utf8($buff);
+    $buff =~ s/\r\n$//;
+    return $buff;
 }
 
 sub _set_errno {
