@@ -6,7 +6,7 @@
 #include "ppport.h"
 
 #include <windows.h>
-#define BUFF_SIZE 520
+#define BUFF_SIZE 1024
 
 MODULE = Win32::Unicode::Error  PACKAGE = Win32::Unicode::Error
 
@@ -42,6 +42,6 @@ foramt_message()
             NULL
         );
         
-        RETVAL = newSVpv(buff, wcslen(buff) * 2);
+        RETVAL = newSVpv(buff, wcslen(buff) * sizeof(WCHAR));
      OUTPUT:
         RETVAL
