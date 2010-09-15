@@ -14,7 +14,7 @@ for (1..20) {
                 note sprintf 'spawned thread : %02d ( file: %s )', $tid, $_[0]->{path};
             },
             no_chdir => 1,
-        }, '.';
+        }, 'lib';
     });
 }
 
