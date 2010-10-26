@@ -53,7 +53,7 @@ Win32::Unicode::Error - return error message.
 
 =head1 DESCRIPTION
 
-Wn32::Unicode::Error is retrun to Win32API error message.
+Wn32::Unicode::Error is return to Win32API error message.
 
 =head1 FUNCTIONS
 

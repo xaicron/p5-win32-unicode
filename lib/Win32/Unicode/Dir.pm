@@ -712,7 +712,7 @@ get files from $dir
 
 =item B<dir_list($dir)>
 
-get directorys from $dir
+get directories from $dir
 
   my @dirs = dir_list $dir;
 
