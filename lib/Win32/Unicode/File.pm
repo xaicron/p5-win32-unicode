@@ -139,6 +139,11 @@ sub close {
     return 1;
 }
 
+sub fileno {
+    my $self = shift;
+    return *$self->{_handle};
+}
+
 sub getc {
     my $self = shift;
     $self->read(my $buf, 1);
@@ -338,8 +343,10 @@ sub eof {
 
 sub file_path {
     my $self = shift;
-    return *$self->{_file_path};
+    return *$self->{_file_path} unless @_;
+    *$self->{_file_path} = shift;
 }
+*path = \&file_path;
 
 sub statW {
     my $file = shift;
@@ -590,6 +597,7 @@ sub GETC     { shift->getc        }
 sub SEEK     { shift->seek(@_)    }
 sub TELL     { shift->tell        }
 sub EOF      { shift->eof         }
+sub FILENO   { shift->fileno      }
 sub DESTROY  { shift->close       }
 
 1;

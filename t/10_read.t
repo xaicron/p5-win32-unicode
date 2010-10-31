@@ -26,6 +26,9 @@ subtest OO => sub {
     is scalar @{[$wfile->readline()]}, 2;
     ok not $wfile->getc();
     ok $wfile->eof();
+    ok $wfile->fileno();
+    ok $wfile->path;
+    is $wfile->path('foo'), 'foo';
     my $data = $wfile->slurp;
     {
         use bytes;
@@ -47,6 +50,7 @@ subtest tie => sub {
     is tell($wfile), file_size $wfile->file_path;
     ok not getc($wfile);
     ok eof($wfile);
+    ok fileno($wfile);
     my $data = slurp($wfile);
     {
         use bytes;
