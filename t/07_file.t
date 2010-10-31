@@ -8,7 +8,7 @@ use Test::Win32::Unicode::Util;
 
 use File::Temp qw/tempdir tempfile/;
 use File::Spec;
-use Win32::Unicode;
+use Win32::Unicode qw/:all/;
 
 subtest file_type => sub {
     my $dir = 't/07_files';
@@ -43,6 +43,7 @@ subtest file_type => sub {
     is file_size("$dir/10byte.txt"), 10;
     ok not file_size("$dir");
     ok not file_type(t => '');
+    is slurp("$dir/10byte.txt"), '1234567890';
     
     done_testing;
 };

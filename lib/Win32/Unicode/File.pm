@@ -301,6 +301,12 @@ sub unlock {
 
 sub slurp {
     my $self = shift;
+    
+    if (file_type(f => $self)) {
+        my $fh = __PACKAGE__->new(r => $self) or die "Can't read $self";
+        return $fh->slurp;
+    }
+    
     $self = tied(*$self);
     
     $self->seek(0, 0);
