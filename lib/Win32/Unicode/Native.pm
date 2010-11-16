@@ -61,6 +61,7 @@ our @EXPORT = qw{
     dir_list
     __FILE__
     filename_normalize
+    slurp
 };
 
 my $sub_export = sub {
