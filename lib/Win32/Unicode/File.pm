@@ -302,7 +302,7 @@ sub unlock {
 sub slurp {
     my $self = shift;
     
-    if (file_type(f => $self)) {
+    if (!ref $self && file_type(f => $self)) {
         my $fh = __PACKAGE__->new(r => $self) or die "Can't read $self";
         return $fh->slurp;
     }
