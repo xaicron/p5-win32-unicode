@@ -11,7 +11,7 @@ requires 'Win32API::File', '0.1101';
 tests 't/*.t';
 author_tests 'xt';
 
-build_requires 'Test::More', '0.88';
+test_requires 'Test::More', '0.96';
 test_requires 'Test::Output';
 test_requires 'Test::Exception';
 
