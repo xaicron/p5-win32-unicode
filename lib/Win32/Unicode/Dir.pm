@@ -244,16 +244,16 @@ sub _cptree {
 sub findW {
     _croakW('Usage: findW(code_ref, dir)') unless @_ >= 2;
     my $opts = shift;
-    _find_wrap($opts, 0, @_);
-    return 1;
+    @_ = ($opts, 0, @_);
+    goto &_find_wrap;
 }
 
 # like File::Find::finddepth
 sub finddepthW {
     _croakW('Usage: finddepthW(code_ref, dir)') unless @_ >= 2;
     my $opts = shift;
-    _find_wrap($opts, 1, @_);
-    return 1;
+    @_ = ($opts, 1, @_);
+    goto &_find_wrap;
 }
 
 sub _find_wrap {
@@ -294,6 +294,8 @@ sub _find_wrap {
         
         $name = $cwd = $dir = undef;
     }
+    
+    return 1;
 }
 
 sub _find {
