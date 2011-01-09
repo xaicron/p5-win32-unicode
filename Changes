@@ -1,5 +1,17 @@
 Revision history for Perl extension Win32::Unicode
 
+0.25    Sun Jan  9 17:51:14 2011
+        [BUG FIXES]
+        - Win32::Unicode::Error
+            - Some minor bug fixes.
+        
+        [CHANGES]
+        - slurp() now works as a function.
+        
+        [NEW FEATURES]
+        - Win32::Unicode::File
+            - Added fileno() and path() method.
+
 0.24    Sat Aug 21 16:07:24 2010
         [BUG FIXES]
         - Fixed the test failture was likely.
