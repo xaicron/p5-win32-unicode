@@ -33,7 +33,7 @@ sub _ConsoleOut {
     
     unless ($console_handle->{$handle}) {
         return warn @_ if $handle == $STD_HANDLE->{&STD_ERROR_HANDLE};
-        if (tied *STDOUT and ref tied *STDOUT eq 'Win32::Unicode::Console::Tie') {
+        if (ref tied *STDOUT eq 'Win32::Unicode::Console::Tie') {
             no warnings 'untie';
             untie *STDOUT;
             print @_;
