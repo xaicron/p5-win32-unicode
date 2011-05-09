@@ -29,7 +29,7 @@ sub _ConsoleOut {
     my $out_handle = shift;
     my $handle = $STD_HANDLE->{$out_handle};
     my $console_handle = shift;
-    return unless @_;
+    @_ = ($_) unless @_;
     
     unless ($console_handle->{$handle}) {
         return warn @_ if $handle == $STD_HANDLE->{&STD_ERROR_HANDLE};
@@ -43,15 +43,19 @@ sub _ConsoleOut {
         return print @_;
     }
     
-    my $separator = defined $\ ? $\ : '';
-    my $str = join '', @_, $separator;
+    local $Carp::CarpLevel = $Carp::CarpLevel + 1;
     
-    while (length $str) {
-        my $tmp_str = substr($str, 0, MAX_BUFFER_SIZE);
-        substr($str, 0, MAX_BUFFER_SIZE) = '';
-        
-        my $buff = 0;
-        write_console($handle, utf8_to_utf16($tmp_str) . NULL);
+    my $separator = defined $\ ? $\ : '';
+    for (@_, $separator) {
+        Carp::carp 'Use of uninitialized value in print' unless defined $_;
+        my $str = $_;
+        while (length $str) {
+            my $tmp_str = substr($str, 0, MAX_BUFFER_SIZE);
+            substr($str, 0, MAX_BUFFER_SIZE) = '';
+            
+            my $buff = 0;
+            write_console($handle, utf8_to_utf16($tmp_str) . NULL);
+        }
     }
 };
 
