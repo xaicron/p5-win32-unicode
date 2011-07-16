@@ -46,9 +46,9 @@ sub _ConsoleOut {
     local $Carp::CarpLevel = $Carp::CarpLevel + 1;
     
     my $separator = defined $\ ? $\ : '';
-    for (@_, $separator) {
-        Carp::carp 'Use of uninitialized value in print' unless defined $_;
-        my $str = $_;
+    for my $stuff (@_, $separator) {
+        Carp::carp 'Use of uninitialized value in print', next unless defined $stuff;
+        my $str = "$stuff"; # stringify
         while (length $str) {
             my $tmp_str = substr($str, 0, MAX_BUFFER_SIZE);
             substr($str, 0, MAX_BUFFER_SIZE) = '';
