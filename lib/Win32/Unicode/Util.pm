@@ -36,8 +36,8 @@ sub utf8_to_utf16 {
 sub to64int {
     my ($high, $low) = @_;
     
-    use bigint;
-    return (($high << 32) + $low);
+    require Math::BigInt;
+    return ((Math::BigInt->new($high) << 32) + $low);
 }
 
 sub is64int {

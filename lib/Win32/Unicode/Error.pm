@@ -3,12 +3,9 @@ package Win32::Unicode::Error;
 use strict;
 use warnings;
 use 5.008003;
-use Carp ();
 use Exporter 'import';
 
 our $VERSION = '0.25';
-
-use Errno qw/:POSIX/;
 
 use Win32::Unicode::Constant;
 use Win32::Unicode::Util;
@@ -19,9 +16,7 @@ our @EXPORT    = qw/errorW/;
 our @EXPORT_OK = qw/error/;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
-my %ERROR_TABLE = (
-    &ERROR_FILE_EXISTS => EEXIST,
-);
+my %ERROR_TABLE = ();
 
 sub errorW {
     my $buff = foramt_message();
@@ -31,6 +26,12 @@ sub errorW {
 }
 
 sub _set_errno {
+    unless ($INC{'Errno.pm'}) {
+        require Errno;
+        %ERROR_TABLE = (
+            &Errno::ERROR_FILE_EXISTS => Errno::EEXIST(),
+        );
+    }
     my $errno = $_[0] ? set_last_error($_[0]) : get_last_error();
     $! = $ERROR_TABLE{$errno} || $errno;
     return;

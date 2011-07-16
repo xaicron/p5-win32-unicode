@@ -287,7 +287,7 @@ sub flock {
     my $result = lock_file(*$self->{_handle}, $ope);
     unless (defined $result) {
         require Errno;
-        $! = Errno::EINVAL;
+        $! = Errno::EINVAL();
         return;
     }
     
