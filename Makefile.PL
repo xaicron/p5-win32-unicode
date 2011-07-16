@@ -18,6 +18,6 @@ test_requires 'Test::Exception';
 cc_src_paths qw(xs);
 
 auto_include;
-auto_set_repository;
+repository 'https://github.com/xaicron/p5-win32-unicode';
 
 WriteAll;
