@@ -15,3 +15,5 @@ xs/*obj
 *.def
 *.old
 dll*
+MANIFEST.bak
+MYMETA.*
