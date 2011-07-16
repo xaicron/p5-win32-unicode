@@ -25,15 +25,15 @@ wait_for_input_idle(long handle)
     OUTPUT:
         RETVAL
 
-SV*
+void
 create_process(SV* shell, SV* cmd)
     CODE:
         const WCHAR*        cshell = SvPV_nolen(shell);
         WCHAR*              ccmd = SvPV_nolen(cmd);
         STARTUPINFOW        si;
         PROCESS_INFORMATION pi;
-        SV* sv = newSV(0);
-        HV* hv = newHV();
+        SV* sv = sv_2mortal(newSV(0));
+        HV* hv = sv_2mortal(newHV());
         
         ZeroMemory(&si,sizeof(si));
         si.cb=sizeof(si);
@@ -53,13 +53,12 @@ create_process(SV* shell, SV* cmd)
             XSRETURN_EMPTY;
         }
         
-        sv_setsv(sv, sv_2mortal(newRV_noinc((SV*)hv)));
+        sv_setsv(sv, newRV_noinc((SV*)hv));
         hv_stores(hv, "thread_handle", newSViv(pi.hThread));
         hv_stores(hv, "process_handle", newSViv(pi.hProcess));
         
-        RETVAL = sv;
-    OUTPUT:
-        RETVAL
+        ST(0) = sv;
+        XSRETURN(1);
 
 long
 get_exit_code(long handle)

@@ -30,24 +30,23 @@ get_file_attributes(SV* file)
     OUTPUT:
         RETVAL
 
-SV*
+void
 get_file_size(long handle)
     CODE:
         LARGE_INTEGER st;
-        SV* sv = newSV(0);
-        HV* hv = newHV();
+        SV* sv = sv_2mortal(newSV(0));
+        HV* hv = sv_2mortal(newHV());
         
         if (GetFileSizeEx(handle, &st) == 0) {
             XSRETURN_EMPTY;
         }
         
-        sv_setsv(sv, sv_2mortal(newRV_noinc((SV*)hv)));
+        sv_setsv(sv, newRV_noinc((SV*)hv));
         hv_stores(hv, "high", newSVnv(st.HighPart));
         hv_stores(hv, "low", newSVnv(st.LowPart));
         
-        RETVAL = sv;
-    OUTPUT:
-        RETVAL
+        ST(0) = sv;
+        XSRETURN(1);
 
 int
 copy_file(SV* from, SV* to, int over)
@@ -69,13 +68,13 @@ move_file(SV* from, SV* to)
     OUTPUT:
         RETVAL
 
-SV*
+void
 set_file_pointer(long handle, long lpos, long hpos, int whence)
     CODE:
         LARGE_INTEGER mv;
         LARGE_INTEGER st;
-        SV* sv = newSV(0);
-        HV* hv = newHV();
+        SV* sv = sv_2mortal(newSV(0));
+        HV* hv = sv_2mortal(newHV());
         
         mv.LowPart  = lpos;
         mv.HighPart = hpos;
@@ -84,21 +83,20 @@ set_file_pointer(long handle, long lpos, long hpos, int whence)
             XSRETURN_EMPTY;
         }
         
-        sv_setsv(sv, sv_2mortal(newRV_noinc((SV*)hv)));
+        sv_setsv(sv, newRV_noinc((SV*)hv));
         hv_stores(hv, "high", newSVnv(st.HighPart));
         hv_stores(hv, "low", newSVnv(st.LowPart));
         
-        RETVAL = sv;
-    OUTPUT:
-        RETVAL
+        ST(0) = sv;
+        XSRETURN(1);
 
-SV*
+void
 get_stat_data(SV* file, long handle)
     CODE:
         struct stat st;
         BY_HANDLE_FILE_INFORMATION fi;
-        SV* hr = newSV(0);
-        HV* hv = newHV();
+        SV* sv = sv_2mortal(newSV(0));
+        HV* hv = sv_2mortal(newHV());
         const WCHAR* file_name = SvPV_nolen(file);
         
         if (_STAT(file_name, &st) != 0) {
@@ -109,7 +107,7 @@ get_stat_data(SV* file, long handle)
             XSRETURN_EMPTY;
         }
         
-        sv_setsv(hr, sv_2mortal(newRV_noinc((SV*)hv)));
+        sv_setsv(sv, newRV_noinc((SV*)hv));
         hv_stores(hv, "dev", newSVnv(st.st_dev));
         hv_stores(hv, "ino", newSVnv(st.st_ino));
         hv_stores(hv, "mode", newSViv(st.st_mode));
@@ -127,9 +125,8 @@ get_stat_data(SV* file, long handle)
         hv_stores(hv, "size_high", newSVnv(fi.nFileSizeHigh));
         hv_stores(hv, "size_low", newSVnv(fi.nFileSizeLow));
         
-        RETVAL = hr;
-    OUTPUT:
-        RETVAL
+        ST(0) = sv;
+        XSRETURN(1);
 
 int
 lock_file(long handle, int ope)
