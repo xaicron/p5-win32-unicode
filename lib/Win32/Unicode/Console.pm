@@ -101,7 +101,7 @@ sub _is_file_handle {
 }
 
 sub _syntax_error {
-    local $Carp::CarpLevel = 1;
+    local $Carp::CarpLevel = $Carp::CarpLevel + 1;
     Carp::croak "No comma allowed after filehandle";
 }
 
