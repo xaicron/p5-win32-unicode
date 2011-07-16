@@ -129,6 +129,61 @@ subtest 'stat' => sub {
     done_testing;
 };
 
+subtest 'stat on dir' => sub {
+    my $tmpdir = tempdir( CLEANUP => 1 ) or die $!;
+    my @stat = CORE::stat $tmpdir;
+    
+    my $dh = Win32::Unicode::Dir->new->open($tmpdir) or die $!;
+    for my $data (
+        +{ dir => $tmpdir, desc => 'dirname' },
+        +{ dir => $dh, desc => 'dirhandle' }
+    ) {
+        subtest $data->{desc} => sub {
+            my @statW = statW $data->{dir};
+            
+            is $statW[0],  $stat[0],  'dev';
+            TODO : {
+                local $TODO = 'CYGWIN' if CYGWIN;
+                is $statW[1],  $stat[1],  'ino';
+                is $statW[2],  $stat[2],  'mode';
+            }
+            is $statW[3],  $stat[3],  'nlink';
+            is $statW[4],  $stat[4],  'uid';
+            is $statW[5],  $stat[5],  'gid';
+            is $statW[6],  $stat[6],  'rdev';
+            is $statW[7],  $stat[7],  'size';
+            is $statW[8],  $stat[8],  'atime';
+            is $statW[9],  $stat[9],  'mtime';
+            is $statW[10], $stat[10], 'ctime';
+            is $statW[11], $stat[11], 'blksize';
+            is $statW[12], $stat[12], 'blocks';
+            
+            my $statW = statW $data->{dir};
+            
+            is $statW->{dev},     $stat[0],  'dev';
+            TODO : {
+                local $TODO = 'CYGWIN' if CYGWIN;
+                is $statW->{ino},     $stat[1],  'ino';
+                is $statW->{mode},    $stat[2],  'mode';
+            }
+            is $statW->{nlink},   $stat[3],  'nlink';
+            is $statW->{uid},     $stat[4],  'uid';
+            is $statW->{gid},     $stat[5],  'gid';
+            is $statW->{rdev},    $stat[6],  'rdev';
+            is $statW->{size},    $stat[7],  'size';
+            is $statW->{atime},   $stat[8],  'atime';
+            is $statW->{mtime},   $stat[9],  'mtime';
+            is $statW->{ctime},   $stat[10], 'ctime';
+            is $statW->{blksize}, $stat[11], 'blksize';
+            is $statW->{blocks},  $stat[12], 'blocks';
+            
+            done_testing;
+        };
+    }
+    
+    done_testing;
+};
+
 subtest exeption => sub {
     open STDERR, '>', File::Spec->devnull;
     dies_ok { file_type() };

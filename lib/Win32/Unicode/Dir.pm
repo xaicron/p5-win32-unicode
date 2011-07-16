@@ -41,8 +41,8 @@ sub open {
     
     $dir = cygpathw($dir) or return if CYGWIN;
     
-    $self->{dir} = catfile $dir, '*';
-    $dir = utf8_to_utf16($self->{dir}) . NULL;
+    $self->{dir} = $dir;
+    $dir = utf8_to_utf16(catfile $dir, '*') . NULL;
     
     $self->find_first_file($dir);
     return Win32::Unicode::Error::_set_errno if $self->{handle} == INVALID_HANDLE_VALUE;

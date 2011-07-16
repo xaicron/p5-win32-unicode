@@ -91,7 +91,7 @@ set_file_pointer(long handle, long lpos, long hpos, int whence)
         XSRETURN(1);
 
 void
-get_stat_data(SV* file, long handle)
+get_stat_data(SV* file, long handle, int is_dir)
     CODE:
         struct stat st;
         BY_HANDLE_FILE_INFORMATION fi;
@@ -103,8 +103,10 @@ get_stat_data(SV* file, long handle)
             XSRETURN_EMPTY;
         }
         
-        if (GetFileInformationByHandle(handle, &fi) == 0) {
-            XSRETURN_EMPTY;
+        if (!is_dir) {
+            if (GetFileInformationByHandle(handle, &fi) == 0) {
+                XSRETURN_EMPTY;
+            }
         }
         
         sv_setsv(sv, newRV_noinc((SV*)hv));
@@ -122,8 +124,14 @@ get_stat_data(SV* file, long handle)
         hv_stores(hv, "blksize", newSVnv(st.st_blksize));
         hv_stores(hv, "blocks", newSVnv(st.st_blocks));
 #endif
-        hv_stores(hv, "size_high", newSVnv(fi.nFileSizeHigh));
-        hv_stores(hv, "size_low", newSVnv(fi.nFileSizeLow));
+        if (is_dir) {
+            hv_stores(hv, "size_high", newSVnv(0));
+            hv_stores(hv, "size_low", newSVnv(0));
+        }
+        else {
+            hv_stores(hv, "size_high", newSVnv(fi.nFileSizeHigh));
+            hv_stores(hv, "size_low", newSVnv(fi.nFileSizeLow));
+        }
         
         ST(0) = sv;
         XSRETURN(1);
