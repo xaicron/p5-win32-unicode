@@ -1,5 +1,14 @@
 Revision history for Perl extension Win32::Unicode
 
+0.26    Sun Jul 17 01:49:50 2011
+        [BUG FIXES]
+        - Win32::Unicode::Console
+            - fixed warnings message.
+        
+        [CHANGES]
+        - Win32::Unicode::File
+            - statW() supported directory. (request by ManInBlack)
+        
 0.25    Sun Jan  9 17:51:14 2011
         [BUG FIXES]
         - Win32::Unicode::Error

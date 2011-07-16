@@ -16,7 +16,7 @@ our @EXPORT    = qw/systemW execW/;
 our @EXPORT_OK = qw//;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
-our $VERSION = '0.25';
+our $VERSION = '0.26';
 
 # cmd path
 my $SHELL = do {
