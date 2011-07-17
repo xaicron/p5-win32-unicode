@@ -858,7 +858,7 @@ Like shell command C<touch>.
 
   touchW $file or die $!;
 
-=item B<statW($file || $fh)>
+=item B<statW($file || $fh || $dir || $dh)>
 
 Like CORE::stat.
 
@@ -870,6 +870,17 @@ or
   my $fh = Win32::Unicode::File->new(r => $file);
   my @stat = statW $fh or die $!;
   my $stat = statW $fh or die $!;
+
+or
+
+  my @stat = statW $dir or die $!;
+  my $stat = statW $dir or die $!;
+
+or
+
+  my $dh = Win32::Unicode::Dir->new->open($dir);
+  my @stat = statW $dh or die $!;
+  my $stat = statW $dh or die $!;
 
 If the array context, CORE:: stat like. However, scalar context case in hashref received.
 
