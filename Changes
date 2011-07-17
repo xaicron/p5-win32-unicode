@@ -1,5 +1,10 @@
 Revision history for Perl extension Win32::Unicode
 
+0.27    Sun Jul 17 16:40:25 2011
+        [NEW FEATURES]
+        - Win32::Unicode::File
+            - Added utimeW() method.
+
 0.26    Sun Jul 17 01:49:50 2011
         [BUG FIXES]
         - Win32::Unicode::Console
