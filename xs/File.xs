@@ -10,9 +10,11 @@
 #include <windows.h>
 
 #ifdef __CYGWIN__
-#define _STAT(file, st) stat(file, st)
+    #define _STAT(file, st) stat(file, st)
+    #define _UTIME(file, st) utime(file, st)
 #else
-#define _STAT(file, st) _wstat(file, st)
+    #define _STAT(file, st) _wstat(file, st)
+    #define _UTIME(file, st) _wutime(file, st)
 #endif
 
 WINBASEAPI BOOL WINAPI GetFileSizeEx(HANDLE,PLARGE_INTEGER);
@@ -173,5 +175,22 @@ unlock_file(long handle)
         ol.OffsetHigh = 0;
         
         RETVAL = UnlockFileEx(handle, 0, 0xFFFFFFFF, 0xFFFFFFFF, &ol);
+    OUTPUT:
+        RETVAL
+
+int
+update_time(long atime, long mtime, SV* file)
+    CODE:
+        struct _utimbuf ut;
+        const WCHAR* file_name = SvPV_nolen(file);
+        
+        ut.actime  = atime;
+        ut.modtime = mtime;
+        
+        if (_UTIME(file_name, &ut) == -1) {
+            XSRETURN_EMPTY;
+        }
+        
+        RETVAL = 1;
     OUTPUT:
         RETVAL

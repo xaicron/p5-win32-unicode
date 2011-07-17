@@ -92,6 +92,7 @@ $sub_export->(qw{
     moveW
     touchW
     statW
+    utimeW
 });
 
 *flock = \&Win32::Unicode::File::flock;

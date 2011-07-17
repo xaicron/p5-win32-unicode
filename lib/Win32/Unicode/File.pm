@@ -17,7 +17,7 @@ use Win32::Unicode::Constant;
 use Win32::Unicode::Console;
 use Win32::Unicode::XS;
 
-our @EXPORT = qw/file_type file_size copyW moveW unlinkW touchW renameW statW/;
+our @EXPORT = qw/file_type file_size copyW moveW unlinkW touchW renameW statW utimeW/;
 our @EXPORT_OK = qw/filename_normalize slurp/;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
@@ -427,6 +427,20 @@ sub statW {
         $result->{blksize}, # 11 blksize  preferred block size for file system I/O
         $result->{blocks},  # 12 blocks   actual number of blocks allocated
     ) : $result;
+}
+
+sub utimeW {
+    my ($atime, $mtime, @files) = @_;
+    $atime = $mtime = time if !defined $atime && !defined $mtime;
+    my $ret = 0;
+    for my $file (@files) {
+        $file = *$file->{_file_path} if blessed($file) && $file->isa('Win32::Unicode::File') && *$file->{_handle};
+        $file = cygpathw($file) or return if CYGWIN;
+        $file = catfile $file;
+        my $file_path = CYGWIN ? Encode::encode_utf8($file) : utf8_to_utf16($file) . NULL;
+        ++$ret if update_time($atime, $mtime, $file_path);
+    }
+    return $ret;
 }
 
 sub file_type {
@@ -858,6 +872,12 @@ or
   my $stat = statW $fh or die $!;
 
 If the array context, CORE:: stat like. However, scalar context case in hashref received.
+
+=item B<utimeW($atime, $mtime, $file || $fh)>
+
+Like CORE::utime.
+
+  my $rc = utime($atime, $mtime, $file, $fh);
 
 =item B<file_type('attribute', $file_or_dir)>
 

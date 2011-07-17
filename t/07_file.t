@@ -184,6 +184,33 @@ subtest 'stat on dir' => sub {
     done_testing;
 };
 
+subtest utime => sub {
+    my $tmpdir = tempdir( CLEANUP => 1 ) or die $!;
+    my $file = "$tmpdir/test";
+    touchW $file;
+    my ($org_atime, $org_mtime) = (statW $file)[8, 9];
+    is utimeW($org_atime - 1000, $org_mtime - 1000, $file), 1, 'utime ok';
+    my ($new_atime, $new_mtime) = (statW $file)[8, 9];
+    
+    is $org_atime - 1000, $new_atime, 'atime ok';
+    is $org_mtime - 1000, $new_mtime, 'atime ok';
+};
+
+subtest 'utime on file handle' => sub {
+    my $tmpdir = tempdir( CLEANUP => 1 ) or die $!;
+    my $file = "$tmpdir/test";
+    touchW $file;
+    
+    my $fh = Win32::Unicode::File->new(r => $file);
+    
+    my ($org_atime, $org_mtime) = (statW $fh)[8, 9];
+    is utimeW($org_atime - 1000, $org_mtime - 1000, $fh), 1, 'utime ok';
+    my ($new_atime, $new_mtime) = (statW $fh)[8, 9];
+    
+    is $org_atime - 1000, $new_atime, 'atime ok';
+    is $org_mtime - 1000, $new_mtime, 'atime ok';
+};
+
 subtest exeption => sub {
     open STDERR, '>', File::Spec->devnull;
     dies_ok { file_type() };
