@@ -11,11 +11,10 @@ my $tmpdir = tempdir CLEANUP => 1;
 my $script = "$tmpdir/args.pl";
 copy 't/34_args/args.pl', $script or die $!;
 
-my $argv = "てすと";
-my $enc = CYGWIN ? 'utf8' : 'cp932';
-ok !system $^X, "$script", "$tmpdir/out", encode($enc => $argv);
+my $argv = 'test';
+ok !system $^X, "$script", "$tmpdir/out", $argv;
 
-open my $fh, '<:utf8', "$tmpdir/out" or die $!;
+open my $fh, '<', "$tmpdir/out" or die $!;
 is <$fh>, $argv;
 close $fh;
 
