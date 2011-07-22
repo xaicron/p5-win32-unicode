@@ -107,6 +107,7 @@ sub _syntax_error {
 
 # say Unicode to Console
 sub sayW {
+    @_ = ($_) unless @_;
     printW(@_, "\n");
 }
 
