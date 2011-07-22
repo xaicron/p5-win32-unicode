@@ -1,5 +1,11 @@
 Revision history for Perl extension Win32::Unicode
 
+0.28    Sat Jul 23 01:05:59 2011
+        [BUG FIXES]
+        - Win32::Unicode::Console
+            - fixed a problem that did not use $_ in sayW. 
+        - maybe fixed test
+
 0.27    Sun Jul 17 16:40:25 2011
         [NEW FEATURES]
         - Win32::Unicode::File
