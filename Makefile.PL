@@ -5,11 +5,9 @@ name 'Win32-Unicode';
 all_from 'lib/Win32/Unicode.pm';
 
 configure_requires 'ExtUtils::ParseXS' => 2.21;
-if (eval { require Extuils::ParseXS; $Extutils::ParseXS::VERION >= 2.21 ? 1 :0 }) {
-    use_ppport 3.19;
-    cc_warnings;
-    cc_src_paths 'xs';
-}
+use_ppport 3.19;
+cc_warnings;
+cc_src_paths 'xs';
 
 requires 'Win32API::File' => 0.1101;
 
