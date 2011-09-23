@@ -1,22 +1,23 @@
 use inc::Module::Install;
+use Module::Install::XSUtil 0.39;
 
 name 'Win32-Unicode';
 all_from 'lib/Win32/Unicode.pm';
 
 use_ppport 3.19;
 cc_warnings;
+cc_src_paths 'xs';
 
-requires 'Win32API::File', '0.1101';
+requires 'Win32API::File' => 0.1101;
 
 tests 't/*.t';
 author_tests 'xt';
 
-test_requires 'Test::More', '0.96';
-test_requires 'Test::Output';
-test_requires 'Test::Exception';
-
-cc_src_paths qw(xs);
+test_requires 'Test::More'      => 0.98;
+test_requires 'Test::Output'    => 1.01;
+test_requires 'Test::Exception' => 0.31;
 
 repository 'https://github.com/xaicron/p5-win32-unicode';
+bugtracker 'https://github.com/xaicron/p5-win32-unicode/issues';
 
 WriteAll;
