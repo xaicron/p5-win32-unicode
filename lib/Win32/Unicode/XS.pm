@@ -2,7 +2,7 @@ package Win32::Unicode::XS;
 use strict;
 use warnings;
 
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 
 use XSLoader;
 XSLoader::load('Win32::Unicode', $VERSION);

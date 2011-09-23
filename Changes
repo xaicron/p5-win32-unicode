@@ -1,5 +1,8 @@
 Revision history for Perl extension Win32::Unicode
 
+0.31    Fri Sep 23 19:20:19 2011
+        - oops! packing miss!
+
 0.30    Fri Sep 23 19:07:49 2011
         [BUG FIXES]
         - ExtUtils::ParseXS is required at configure time
