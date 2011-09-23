@@ -16,6 +16,7 @@ author_tests 'xt';
 test_requires 'Test::More'      => 0.98;
 test_requires 'Test::Output'    => 1.01;
 test_requires 'Test::Exception' => 0.31;
+test_requires 'Test::Flatten'   => 0.04;
 
 repository 'https://github.com/xaicron/p5-win32-unicode';
 bugtracker 'https://github.com/xaicron/p5-win32-unicode/issues';

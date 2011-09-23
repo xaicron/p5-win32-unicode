@@ -4,6 +4,7 @@ use utf8;
 use lib 't/lib';
 use Test::More;
 use Test::Exception;
+use Test::Flatten;
 use Test::Win32::Unicode::Util;
 
 use File::Temp qw/tempdir tempfile/;
