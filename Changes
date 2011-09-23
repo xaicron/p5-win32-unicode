@@ -1,5 +1,9 @@
 Revision history for Perl extension Win32::Unicode
 
+0.30    Fri Sep 23 19:07:49 2011
+        [BUG FIXES]
+        - ExtUtils::ParseXS is required at configure time
+
 0.29    Fri Sep 23 16:34:04 2011
         [BUG FIXES]
         - removed auto_include in Makefile.PL (rt: 69719)
