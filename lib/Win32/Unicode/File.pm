@@ -635,6 +635,7 @@ sub OPEN     { shift->open(@_)    }
 sub CLOSE    { shift->close       }
 sub BINMODE  { shift->binmode(@_) }
 sub PRINT    { shift->print(@_)   }
+sub PRINTF   { shift->printf(@_)  }
 sub WRITE    { shift->write(@_)   }
 sub READ     { shift->read(@_)    }
 sub READLINE { shift->readline    }
