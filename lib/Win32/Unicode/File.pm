@@ -112,7 +112,7 @@ sub open {
     require Win32::Unicode::Dir;
     *$self->{_file_path} = File::Spec->rel2abs($file, Win32::Unicode::Dir::getcwdW());
     
-    return 1;
+    return $self;
 }
 
 sub _create_file {
