@@ -81,8 +81,10 @@ $sub_export->(qw{
     sayW
 });
 
-binmode STDOUT => ':encoding(utf-8)';
-tie *STDOUT, 'Win32::Unicode::Console::Tie';
+for my $stdh (*STDOUT, *STDERR) {
+    binmode $stdh => ':encoding(utf-8)';
+    tie $stdh, 'Win32::Unicode::Console::Tie';
+}
 
 # Win32::Unicode::File
 $sub_export->(qw{
