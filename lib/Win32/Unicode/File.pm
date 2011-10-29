@@ -217,7 +217,7 @@ sub readline {
 
 sub print {
     my $self = shift;
-    $self->write(@_);
+    $self->write(join '', @_);
 }
 
 sub printf {
