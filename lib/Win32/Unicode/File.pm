@@ -215,8 +215,15 @@ sub readline {
     }
 }
 
+# no fearture 'say' or $wfh->say(@_);
+sub say {
+    my $self = shift;
+    $self->write(join '', @_, "\n");
+}
+
 sub print {
     my $self = shift;
+    push @_, $\ if $\; # maybe use feature 'say'
     $self->write(join '', @_);
 }
 
