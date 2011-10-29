@@ -6,34 +6,141 @@ use Test::Exception;
 use Test::Flatten;
 use File::Temp qw/tempdir tempfile/;
 use Win32::Unicode::File;
+use Win32::Unicode::Dir;
 
 my $dir = tempdir() or die $!;
 my $write_file = File::Spec->catfile("$dir/森鷗外.txt");
 
-ok my $wfile = Win32::Unicode::File->new;
-isa_ok $wfile, 'Win32::Unicode::File';
+ok my $fh = Win32::Unicode::File->new;
+isa_ok $fh, 'Win32::Unicode::File';
 
-# OO test
-subtest OO => sub {
-    ok $wfile->open(w => $write_file);
-    ok $wfile->binmode(':utf8');
-    ok $wfile->write('0123456789');
-    ok $wfile->seek(0, 2);
-    is $wfile->tell, 10;
-    ok $wfile->close;
-    
-    done_testing;
+sub newfh {
+    Win32::Unicode::File->new(w => $write_file);
+}
+
+sub slurp {
+    Win32::Unicode::File->new(r => shift)->slurp;
+}
+
+{
+    subtest 'OOish basic' => sub {
+        my $fh = newfh();
+        ok $fh->open(w => $write_file);
+        ok $fh->binmode(':utf8');
+        ok $fh->write('0123456789');
+        ok $fh->seek(0, 2);
+        is $fh->tell, 10;
+        ok $fh->close;
+        is slurp($write_file), '0123456789';
+    };
+
+    subtest 'OOish print' => sub {
+        my $fh = newfh();
+        ok $fh->open(w => $write_file);
+        ok $fh->print(qw/foo bar/);
+        ok $fh->seek(0, 2);
+        is $fh->tell, 6;
+        ok $fh->close;
+        is slurp($write_file), 'foobar';
+    };
+
+    subtest 'OOish printf' => sub {
+        my $fh = newfh();
+        ok $fh->open(w => $write_file);
+        ok $fh->printf('%02d', 1);
+        ok $fh->seek(0, 2);
+        is $fh->tell, 2;
+        ok $fh->close;
+        is slurp($write_file), '01';
+    };
+
+    subtest 'OOish say' => sub {
+        my $fh = newfh();
+        ok $fh->open(w => $write_file);
+        ok $fh->say(qw/foo bar/);
+        ok $fh->seek(0, 2);
+        is $fh->tell, 8;
+        ok $fh->close;
+        is slurp($write_file), "foobar\r\n";
+    };
+
+    subtest 'OOish say (binmode)' => sub {
+        my $fh = newfh();
+        ok $fh->open(w => $write_file);
+        ok $fh->binmode(1);
+        ok $fh->say(qw/foo bar/);
+        ok $fh->seek(0, 2);
+        is $fh->tell, 7;
+        ok $fh->close;
+        is slurp($write_file), "foobar\n";
+    };
 };
 
-subtest tie => sub {
-    ok open $wfile, '>', $write_file;
-    ok binmode $wfile, ':utf8';
-    ok print $wfile '0123456789';
-    ok seek($wfile, 0, 2);
-    is tell $wfile, 10;
-    ok close $wfile;
-    
-    done_testing;
+{
+    subtest 'tie basic' => sub {
+        my $fh = newfh();
+        ok open $fh, '>', $write_file;
+        ok binmode $fh, ':utf8';
+        ok print $fh '0123456789', 'ABCDEF';
+        ok seek($fh, 0, 2);
+        is tell $fh, 16;
+        ok close $fh;
+        is slurp($write_file), '0123456789ABCDEF';
+    };
+
+    subtest 'tie printf' => sub {
+        my $fh = newfh();
+        ok open $fh, '>', $write_file;
+        ok printf $fh '%02d', '1';
+        ok seek($fh, 0, 2);
+        is tell $fh, 2;
+        ok close $fh;
+        is slurp($write_file), '01';
+    };
+
+    subtest 'tie say' => sub {
+        my $fh = newfh();
+        ok open $fh, '>', $write_file;
+        ok say $fh qw/foo bar/;
+        ok seek($fh, 0, 2);
+        is tell $fh, 8;
+        ok close $fh;
+        is slurp($write_file), "foobar\r\n";
+    };
+
+    subtest 'tie say (binmode)' => sub {
+        my $fh = newfh();
+        ok open $fh, '>', $write_file;
+        ok binmode $fh;
+        ok say $fh qw/foo bar/;
+        ok seek($fh, 0, 2);
+        is tell $fh, 7;
+        ok close $fh;
+        is slurp($write_file), "foobar\n";
+    };
+
+    subtest 'tie say (use feature)' => sub {
+        use if $^V >= 5.0100, feature => 'say';
+        my $fh = newfh();
+        ok open $fh, '>', $write_file;
+        ok say $fh qw/foo bar/;
+        ok seek($fh, 0, 2);
+        is tell $fh, 8;
+        ok close $fh;
+        is slurp($write_file), "foobar\r\n";
+    };
+
+    subtest 'tie say (use feature / binmode)' => sub {
+        use if $^V >= 5.0100, feature => 'say';
+        my $fh = newfh();
+        ok open $fh, '>', $write_file;
+        ok binmode $fh;
+        ok say $fh qw/foo bar/;
+        ok seek($fh, 0, 2);
+        is tell $fh, 7;
+        ok close $fh;
+        is slurp($write_file), "foobar\n";
+    };
 };
 
 Win32::Unicode::Dir::rmtreeW($dir);

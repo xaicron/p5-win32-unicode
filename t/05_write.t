@@ -6,17 +6,18 @@ use Test::Flatten;
 use Win32::Unicode;
 use File::Temp qw/tempdir tempfile/;
 
-my $str = 'ぁぃぅぇぉ';
+my @stuff = ('ぁぃぅぇぉ', "\n");
+my $expects = join '', @stuff;
 
 subtest print => sub {
     my ($fh, $filename) = tempfile("tempXXXX", DIR => tempdir(CLEANUP => 1)) or die "$!";
     binmode $fh, ":utf8";
-    ok printW $fh, $str;
+    ok printW $fh, @stuff;
     close $fh;
     
     open $fh, "<:utf8", $filename or die "$!";
     my $buff = do { local $/; <$fh> };
-    is $buff, $str;
+    is $buff, $expects;
     close $fh;
     
     done_testing;
@@ -25,12 +26,12 @@ subtest print => sub {
 subtest printf => sub {
     my ($fh, $filename) = tempfile("tempXXXX", DIR => tempdir(CLEANUP => 1)) or die "$!";
     binmode $fh, ":utf8";
-    ok printfW $fh, $str;
+    ok printW $fh, @stuff;
     close $fh;
     
     open $fh, "<:utf8", $filename or die "$!";
     my $buff = do { local $/; <$fh> };
-    is $buff, $str;
+    is $buff, $expects;
     close $fh;
     
     done_testing;
@@ -39,12 +40,12 @@ subtest printf => sub {
 subtest say => sub {
     my ($fh, $filename) = tempfile("tempXXXX", DIR => tempdir(CLEANUP => 1)) or die "$!";
     binmode $fh, ":utf8";
-    ok sayW $fh, $str;
+    ok sayW $fh, @stuff;
     close $fh;
     
     open $fh, "<:utf8", $filename or die "$!";
     my $buff = do { local $/; <$fh> };
-    is $buff, "$str\n";
+    is $buff, "$expects\n";
     close $fh;
     
     done_testing;
