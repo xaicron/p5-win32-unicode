@@ -44,6 +44,17 @@ sub slurp {
         is slurp($write_file), 'foobar';
     };
 
+    subtest 'OOish print (local $,)' => sub {
+        my $fh = newfh();
+        ok $fh->open(w => $write_file);
+        local $, = '<>';
+        ok $fh->print(qw/foo bar/);
+        ok $fh->seek(0, 2);
+        is $fh->tell, 8;
+        ok $fh->close;
+        is slurp($write_file), 'foo<>bar';
+    };
+
     subtest 'OOish printf' => sub {
         my $fh = newfh();
         ok $fh->open(w => $write_file);
@@ -62,6 +73,17 @@ sub slurp {
         is $fh->tell, 8;
         ok $fh->close;
         is slurp($write_file), "foobar\r\n";
+    };
+
+    subtest 'OOish say (local $,)' => sub {
+        my $fh = newfh();
+        ok $fh->open(w => $write_file);
+        local $, = '<>';
+        ok $fh->say(qw/foo bar/);
+        ok $fh->seek(0, 2);
+        is $fh->tell, 10;
+        ok $fh->close;
+        is slurp($write_file), "foo<>bar\r\n";
     };
 
     subtest 'OOish say (binmode)' => sub {
@@ -88,6 +110,17 @@ sub slurp {
         is slurp($write_file), '0123456789ABCDEF';
     };
 
+    subtest 'tie print (local $,)' => sub {
+        my $fh = newfh();
+        ok open $fh, '>', $write_file;
+        local $, = '<>';
+        ok print $fh '0123456789', 'ABCDEF';
+        ok seek($fh, 0, 2);
+        is tell $fh, 18;
+        ok close $fh;
+        is slurp($write_file), '0123456789<>ABCDEF';
+    };
+
     subtest 'tie printf' => sub {
         my $fh = newfh();
         ok open $fh, '>', $write_file;
@@ -106,6 +139,17 @@ sub slurp {
         is tell $fh, 8;
         ok close $fh;
         is slurp($write_file), "foobar\r\n";
+    };
+
+    subtest 'tie say (local $,)' => sub {
+        my $fh = newfh();
+        ok open $fh, '>', $write_file;
+        local $, = '<>';
+        ok say $fh qw/foo bar/;
+        ok seek($fh, 0, 2);
+        is tell $fh, 10;
+        ok close $fh;
+        is slurp($write_file), "foo<>bar\r\n";
     };
 
     subtest 'tie say (binmode)' => sub {
@@ -128,6 +172,19 @@ sub slurp {
         is tell $fh, 8;
         ok close $fh;
         is slurp($write_file), "foobar\r\n";
+    };
+
+    subtest 'tie say (use feature / local $,)' => sub {
+        plan skip_all => '$^V < 5.1000' if $^V < 5.0100;
+        use if $^V >= 5.0100, feature => 'say';
+        my $fh = newfh();
+        ok open $fh, '>', $write_file;
+        local $, = '<>';
+        ok say $fh qw/foo bar/;
+        ok seek($fh, 0, 2);
+        is tell $fh, 10;
+        ok close $fh;
+        is slurp($write_file), "foo<>bar\r\n";
     };
 
     subtest 'tie say (use feature / binmode)' => sub {

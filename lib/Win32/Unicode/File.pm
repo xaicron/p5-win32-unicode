@@ -218,13 +218,15 @@ sub readline {
 # no fearture 'say' or $wfh->say(@_);
 sub say {
     my $self = shift;
-    $self->write(join '', @_, "\n");
+    local $\ = "\n";
+    $self->print(@_);
 }
 
 sub print {
     my $self = shift;
-    push @_, $\ if $\; # maybe use feature 'say'
-    $self->write(join '', @_);
+    my $buff = join defined $, ? $, : '', @_;
+    $buff .= $\ if defined $\; # maybe use feature 'say'
+    $self->write($buff);
 }
 
 sub printf {
