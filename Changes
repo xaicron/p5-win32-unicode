@@ -1,5 +1,15 @@
 Revision history for Perl extension Win32::Unicode
 
+0.32    Sun Oct 30 22:33:48 2011
+        [BUG FIXES]
+        - Win32::Unicode::File
+            - fixed a problem that not accept more than one arguments
+                (reported by Yukio Sadamatsu)
+
+        [NEW FEATURES]
+        - Win32::Unicode::File
+            - support say $wfh @args
+
 0.31    Fri Sep 23 19:20:19 2011
         - oops! packing miss!
 
