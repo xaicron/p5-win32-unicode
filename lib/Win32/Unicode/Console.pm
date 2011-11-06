@@ -3,7 +3,6 @@ package Win32::Unicode::Console;
 use strict;
 use warnings;
 use 5.008003;
-use utf8;
 use Carp ();
 use Exporter 'import';
 
@@ -141,6 +140,7 @@ sub dieW {
 }
 
 sub _shortmess {
+    require Encode;
     CYGWIN ? Encode::decode_utf8(Carp::shortmess('')) : Encode::decode(cp932 => Carp::shortmess(''));
 }
 

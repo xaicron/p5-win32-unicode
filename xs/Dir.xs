@@ -11,6 +11,14 @@ MODULE = Win32::Unicode::Dir    PACKAGE  = Win32::Unicode::Dir
 
 PROTOTYPES: DISABLE
 
+int
+create_directory(SV* dir)
+    CODE:
+        const WCHAR* dir_name = SvPV_nolen(dir);
+        RETVAL = CreateDirectoryW(dir_name, NULL);
+    OUTPUT:
+        RETVAL
+
 SV*
 get_current_directory()
     CODE:

@@ -3,23 +3,24 @@ package Win32::Unicode::Util;
 use strict;
 use warnings;
 use 5.008003;
-use Encode ();
 use File::Basename qw/fileparse/;
+use File::Spec;
 use File::Spec::Win32;
 use File::Spec::Cygwin;
 use Exporter 'import';
 
 use Win32::Unicode::Constant qw/CYGWIN _32INT _S32INT/;
+use Win32::Unicode::XS;
 
 File::Basename::fileparse_set_fstype('MSWIN32');
 
 # export subs
-our @EXPORT = qw/utf16_to_utf8 utf8_to_utf16 cygpathw to64int is64int catfile splitdir rel2abs/;
+our @EXPORT = qw/utf16_to_utf8 utf8_to_utf16 cygpathw to64int is64int catfile splitdir rel2abs close_handle/;
 
-# Unicode decoder
-my $utf16 = Encode::find_encoding 'utf16-le';
-
+my $utf16;
 sub utf16_to_utf8 {
+    require Encode;
+    $utf16 ||= Encode::find_encoding('utf16-le');
     my $str = shift;
     return unless defined $str;
     $str = $utf16->decode($str);
@@ -28,6 +29,8 @@ sub utf16_to_utf8 {
 }
 
 sub utf8_to_utf16 {
+    require Encode;
+    $utf16 ||= Encode::find_encoding('utf16-le');
     my $str = shift;
     return unless defined $str;
     return $utf16->encode($str);

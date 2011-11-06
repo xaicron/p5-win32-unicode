@@ -3,7 +3,6 @@ package Win32::Unicode::Process;
 use strict;
 use warnings;
 use 5.008003;
-use Win32API::File ();
 use Carp ();
 use Exporter 'import';
 
@@ -26,19 +25,19 @@ my $SHELL = do {
 
 sub systemW {
     my $pi = _create_process(@_) or return 1;
-    Win32API::File::CloseHandle($pi->{thread_handle});
+    close_handle($pi->{thread_handle});
     wait_for_input_idle($pi->{process_handle});
     wait_for_single_object($pi->{process_handle});
     my $exit_code = get_exit_code($pi->{process_handle});
-    Win32API::File::CloseHandle($pi->{process_handle});
+    close_handle($pi->{process_handle});
     
     return defined $exit_code ? $exit_code : 1;
 }
 
 sub execW {
     my $pi = _create_process(@_) or return 1;
-    Win32API::File::CloseHandle($pi->{thread_handle});
-    Win32API::File::CloseHandle($pi->{process_handle});
+    close_handle($pi->{thread_handle});
+    close_handle($pi->{process_handle});
     
     return 0;
 }

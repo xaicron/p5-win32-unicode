@@ -25,6 +25,65 @@ MODULE = Win32::Unicode::File   PACKAGE = Win32::Unicode::File
 PROTOTYPES: DISABLE
 
 long
+create_file(SV* file, long amode, long smode, long opt, long attr)
+    CODE:
+        const WCHAR* file_name = SvPV_nolen(file);
+        RETVAL = CreateFileW(
+            file_name,
+            amode,
+            smode,
+            NULL,
+            opt,
+            attr,
+            NULL
+        );
+    OUTPUT:
+        RETVAL
+
+void
+win32_read_file(long handle, long count)
+    CODE:
+        char buff[count];
+        long len;
+        if (!ReadFile(handle, buff, count, &len, NULL)) {
+            if (GetLastError() != NO_ERROR) {
+                len = -1;
+            }
+            else {
+                len = 0;
+            }
+        }
+        buff[len] = NULL;
+        
+        ST(0) = newSViv(len);
+        ST(1) = newSVpv(buff, 0);
+        XSRETURN(2);
+
+void
+win32_write_file(long handle, char* buff, long size)
+    CODE:
+        long len;
+        if (!WriteFile(handle, buff, size, &len, NULL)) {
+            if (GetLastError() != NO_ERROR) {
+                len = -1;
+            }
+            else {
+                len = 0;
+            }
+        }
+        
+        ST(0) = newSViv(len);
+        XSRETURN(1);
+
+int
+delete_file(SV* file)
+    CODE:
+        const WCHAR* file_name = SvPV_nolen(file);
+        RETVAL = DeleteFileW(file_name);
+    OUTPUT:
+        RETVAL
+
+long
 get_file_attributes(SV* file)
     CODE:
         const WCHAR* file_name = SvPV_nolen(file);

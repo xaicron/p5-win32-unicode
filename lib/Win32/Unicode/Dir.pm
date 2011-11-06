@@ -3,7 +3,6 @@ package Win32::Unicode::Dir;
 use strict;
 use warnings;
 use 5.008003;
-use Win32 ();
 use Carp ();
 use File::Basename qw/basename dirname/;
 use Exporter 'import';
@@ -115,7 +114,8 @@ sub chdirW {
 sub mkdirW {
     my $dir = defined $_[0] ? $_[0] : $_;
     $dir = cygpathw($dir) or return if CYGWIN;
-    return Win32::CreateDirectory(catfile $dir) ? 1 : Win32::Unicode::Error::_set_errno;
+    $dir = utf8_to_utf16(catfile $dir) . NULL;
+    return create_directory($dir) ? 1 : Win32::Unicode::Error::_set_errno;
 }
 
 # like CORE::rmdir
@@ -725,10 +725,6 @@ get directories from $dir
 Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
 
 =head1 SEE ALSO
-
-L<Win32>
-
-L<Win32API::File>
 
 L<Win32::Unicode>
 

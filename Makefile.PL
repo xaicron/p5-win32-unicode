@@ -9,8 +9,6 @@ use_ppport 3.19;
 cc_warnings;
 cc_src_paths 'xs';
 
-requires 'Win32API::File' => 0.1101;
-
 tests 't/*.t';
 author_tests 'xt';
 

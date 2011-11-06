@@ -2,7 +2,7 @@ package Win32::Unicode::Constant;
 
 use strict;
 use warnings;
-use Carp ();
+use 5.008003;
 use Exporter 'import';
 
 our $VERSION = '0.32';

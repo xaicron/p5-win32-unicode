@@ -2,14 +2,11 @@ package Win32::Unicode::File;
 
 use strict;
 use warnings;
-use utf8;
 use 5.008003;
-use Win32API::File ();
 use Carp ();
 use File::Basename qw/basename/;
 use Scalar::Util qw/blessed/;
 use Exporter 'import';
-use base qw/IO::Handle/;
 
 use Win32::Unicode::Util;
 use Win32::Unicode::Error;
@@ -120,21 +117,19 @@ sub _create_file {
     my $type = shift;
     my $disp = shift;
     
-    return Win32API::File::CreateFileW(
+    return create_file(
         $file,
         $type,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
-        NULLP,
         $disp,
         FILE_ATTRIBUTE_NORMAL,
-        NULLP,
     );
 }
 
 sub close {
     my $self = shift;
     if (exists *$self->{_handle}) {
-        Win32API::File::CloseHandle(*$self->{_handle}) or return Win32::Unicode::Error::_set_errno;
+        close_handle(*$self->{_handle}) or return Win32::Unicode::Error::_set_errno;
         delete *$self->{_handle};
     }
     return 1;
@@ -157,17 +152,12 @@ sub read {
     my $len = shift;
 #    my $offset = shift;
     
-    Win32API::File::ReadFile(
-        *$self->{_handle},
-        my $data,
-        $len,
-        my $bytes_read_num,
-        NULLP,
-    ) or return Win32::Unicode::Error::_set_errno;
+    my ($bytes_read_num, $data) = win32_read_file(*$self->{_handle}, $len);
+    return Win32::Unicode::Error::_set_errno if $bytes_read_num == -1;
     
     $$into = $data if defined $data;
     
-    if (*$self->{_encode}) {
+    if (*$self->{_encode} && $$into) {
         $$into = *$self->{_encode}->decode($$into);
     }
     
@@ -243,13 +233,8 @@ sub write {
     $buff = *$self->{_encode}->encode($buff) if *$self->{_encode};
     
     use bytes;
-    Win32API::File::WriteFile(
-        *$self->{_handle},
-        $buff,
-        length($buff),
-        my $write_size,
-        NULLP,
-    ) or return Win32::Unicode::Error::_set_errno;
+    my $write_size = win32_write_file(*$self->{_handle}, $buff, length($buff));
+    return Win32::Unicode::Error::_set_errno if $write_size == -1;
     
     return $write_size;
 }
@@ -391,14 +376,12 @@ sub statW {
             $handle = $wdir->{handle};
         }
         else {
-            $handle = Win32API::File::CreateFileW(
+            $handle = create_file(
                 utf8_to_utf16($file) . NULL,
                 GENERIC_READ,
                 FILE_SHARE_READ,
-                NULLP,
                 OPEN_EXISTING,
                 FILE_ATTRIBUTE_NORMAL,
-                NULLP,
             );
         }
         return Win32::Unicode::Error::_set_errno if $handle == INVALID_VALUE;
@@ -408,7 +391,7 @@ sub statW {
             $wdir->close or return Win32::Unicode::Error::_set_errno;
         }
         else {
-            Win32API::File::CloseHandle($handle) or return Win32::Unicode::Error::_set_errno;
+            close_handle($handle) or return Win32::Unicode::Error::_set_errno;
         }
     }
     
@@ -495,19 +478,17 @@ sub file_size {
     
     return unless file_type(f => $file);
     
-    my $handle = Win32API::File::CreateFileW(
+    my $handle = create_file(
         utf8_to_utf16($file) . NULL,
         GENERIC_READ,
         FILE_SHARE_READ,
-        NULLP,
         OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL,
-        NULLP,
     );
     return Win32::Unicode::Error::_set_errno if $handle == INVALID_VALUE;
     
     my $st = get_file_size($handle) or return Win32::Unicode::Error::_set_errno;
-    Win32API::File::CloseHandle($handle) or return Win32::Unicode::Error::_set_errno;
+    close_handle($handle) or return Win32::Unicode::Error::_set_errno;
     
     return $st->{high} ? to64int($st->{high}, $st->{low}) : $st->{low};
 }
@@ -532,7 +513,7 @@ sub unlinkW {
     for my $file (@files) {
         $file = cygpathw($file) or return if CYGWIN;
         $file = utf8_to_utf16(catfile $file) . NULL;
-        $count += Win32API::File::DeleteFileW($file) ? 1 : 0;
+        $count += delete_file($file) ? 1 : 0;
     }
     Win32::Unicode::Error::_set_errno unless $count;
     return $count;
@@ -587,15 +568,15 @@ sub _file_name_validete {
 }
 
 my %win32_taboo = (
-    '\\' => '￥',
-    '/'  => '／',
-    ':'  => '：',
-    '*'  => '＊',
-    '?'  => '？',
-    '"'  => '″',
-    '<'  => '＜',
-    '>'  => '＞',
-    '|'  => '｜',
+    '\\' => "\x{ffe5}", # ￥
+    '/'  => "\x{ff0f}", # ／
+    ':'  => "\x{ff1a}", # ：
+    '*'  => "\x{ff0a}", # ＊
+    '?'  => "\x{ff1f}", # ？
+    '"'  => "\x{2033}", # ″
+    '<'  => "\x{ff1c}", # ＜
+    '>'  => "\x{ff1e}", # ＞
+    '|'  => "\x{ff5c}", # ｜
 );
 
 sub filename_normalize {
@@ -948,10 +929,6 @@ Normalize the characters are not allowed in the file name. not export.
 Yuji Shimada E<lt>xaicron@cpan.orgE<gt>
 
 =head1 SEE ALSO
-
-L<Win32>
-
-L<Win32API::File>
 
 L<Win32::Unicode>
 
