@@ -27,6 +27,7 @@ BEGIN {
         my $argv = utf16_to_utf8 shift @args;
         unless ($flag) {
             if ($script eq '-e') {
+                use bytes;
                 next if $argv =~ /^-[ImMCD]/;
                 next if $argv =~ /^-d:/;
                 if ($argv =~ /^-.*[eE]$/) {
