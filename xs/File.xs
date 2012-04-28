@@ -58,7 +58,7 @@ win32_read_file(HANDLE handle, unsigned long count)
         buff[len] = '\0';
         
         ST(0) = newSViv(has_error ? -1 : len);
-        ST(1) = newSVpv(buff, 0);
+        ST(1) = newSVpv(buff, len);
         XSRETURN(2);
 
 void
