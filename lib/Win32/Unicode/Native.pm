@@ -27,13 +27,15 @@ BEGIN {
         my $argv = utf16_to_utf8 shift @args;
         unless ($flag) {
             if ($script eq '-e') {
-                if ($argv =~ /^\-[a-z0-9]*e$/i) {
+                next if $argv =~ /^-[ImMCD]/;
+                next if $argv =~ /^-d:/;
+                if ($argv =~ /^-.*[eE]$/) {
                     $flag++;
-                    shift @args; # skip next -e
+                    shift @args; # next argument is program
                 }
             }
-            elsif ($script eq '-') {
-                $flag++ if $argv eq '-';
+            elsif ($script eq '-' && $argv eq '-') {
+                $flag++;
             }
             elsif (rel2abs($script) eq rel2abs($argv)) {
                 $0 = $script;
