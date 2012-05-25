@@ -20,17 +20,16 @@ our $VERSION = '0.34';
 # default std handle
 my $STD_HANDLE = {
     STD_OUTPUT_HANDLE, get_std_handle(STD_OUTPUT_HANDLE),
-    STD_ERROR_HANDLE,  get_std_handle(STD_ERROR_HANDLE)
+    STD_ERROR_HANDLE,  get_std_handle(STD_ERROR_HANDLE),
 };
 
 # ConsoleOut
 sub _ConsoleOut {
     my $out_handle = shift;
     my $handle = $STD_HANDLE->{$out_handle};
-    my $console_handle = shift;
     @_ = ($_) unless @_;
-    
-    unless ($console_handle->{$handle}) {
+
+    unless (is_console($handle)) {
         return warn @_ if $handle == $STD_HANDLE->{&STD_ERROR_HANDLE};
         if (ref tied *STDOUT eq 'Win32::Unicode::Console::Tie') {
             no warnings 'untie';
@@ -71,7 +70,7 @@ sub printW {
         _syntax_error() unless scalar @_;
     }
     
-    _ConsoleOut(STD_OUTPUT_HANDLE, CONSOLE_OUTPUT_HANDLE, @_);
+    _ConsoleOut(STD_OUTPUT_HANDLE, @_);
     
     return 1;
 }
@@ -145,7 +144,7 @@ sub _shortmess {
 }
 
 sub _row_warn {
-    _ConsoleOut(STD_ERROR_HANDLE, CONSOLE_ERROR_HANDLE, @_);
+    _ConsoleOut(STD_ERROR_HANDLE, @_);
 }
 
 # Handle OO calls
