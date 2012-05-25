@@ -23,7 +23,7 @@ parse_argv()
         
         sv_setsv(sv, newRV_noinc((SV*)av));
         for (i = 0; i < argc; i++) {
-            av_push(av, newSVpv(args[i], wcslen(args[i]) * 2));
+            av_push(av, newSVpv(args[i], wcslen(args[i]) * sizeof(wchar_t)));
         }
         LocalFree(args);
         

@@ -11,8 +11,8 @@ MODULE = Win32::Unicode::Util   PACKAGE = Win32::Unicode::Util
 
 PROTOTYPES: DISABLE
 
-int
-close_handle(long handle)
+bool
+close_handle(HANDLE handle)
     CODE:
         RETVAL = CloseHandle(handle);
     OUTPUT:

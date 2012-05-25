@@ -12,14 +12,14 @@ MODULE = Win32::Unicode::Process  PACKAGE = Win32::Unicode::Process
 PROTOTYPES: DISABLE
 
 long
-wait_for_single_object(long handle)
+wait_for_single_object(HANDLE handle)
     CODE:
         RETVAL = WaitForSingleObject(handle, INFINITE);
     OUTPUT:
         RETVAL
 
 long
-wait_for_input_idle(long handle)
+wait_for_input_idle(HANDLE handle)
     CODE:
         RETVAL = WaitForInputIdle(handle, INFINITE);
     OUTPUT:
@@ -28,8 +28,8 @@ wait_for_input_idle(long handle)
 void
 create_process(SV* shell, SV* cmd)
     CODE:
-        const WCHAR*        cshell = SvPV_nolen(shell);
-        WCHAR*              ccmd = SvPV_nolen(cmd);
+        const wchar_t *     cshell = (wchar_t *)SvPV_nolen(shell);
+        wchar_t *           ccmd   = (wchar_t *)SvPV_nolen(cmd);
         STARTUPINFOW        si;
         PROCESS_INFORMATION pi;
         SV* sv = sv_2mortal(newSV(0));
@@ -60,8 +60,8 @@ create_process(SV* shell, SV* cmd)
         ST(0) = sv;
         XSRETURN(1);
 
-long
-get_exit_code(long handle)
+bool
+get_exit_code(HANDLE handle)
     CODE:
         DWORD exit_code;
         if (GetExitCodeProcess(handle, &exit_code) == 0) {

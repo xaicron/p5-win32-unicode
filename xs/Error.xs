@@ -30,7 +30,7 @@ set_last_error(long error_code)
 SV*
 foramt_message()
     CODE:
-        WCHAR* buff[BUFF_SIZE];
+        wchar_t buff[BUFF_SIZE];
         
         FormatMessageW(
             FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -42,6 +42,6 @@ foramt_message()
             NULL
         );
         
-        RETVAL = newSVpv(buff, wcslen(buff) * sizeof(WCHAR));
+        RETVAL = newSVpv(buff, wcslen(buff) * sizeof(wchar_t));
      OUTPUT:
         RETVAL
