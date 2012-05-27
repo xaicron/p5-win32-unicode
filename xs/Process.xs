@@ -26,21 +26,19 @@ wait_for_input_idle(HANDLE handle)
         RETVAL
 
 void
-create_process(SV* shell, SV* cmd)
+create_process(WCHAR *shell, WCHAR* cmd)
     CODE:
-        const wchar_t *     cshell = (wchar_t *)SvPV_nolen(shell);
-        wchar_t *           ccmd   = (wchar_t *)SvPV_nolen(cmd);
         STARTUPINFOW        si;
         PROCESS_INFORMATION pi;
-        SV* sv = sv_2mortal(newSV(0));
-        HV* hv = sv_2mortal(newHV());
-        
+        HV* hv    = newHV();
+        SV* hvref = sv_2mortal(newRV_noinc((SV *)hv));
+
         ZeroMemory(&si,sizeof(si));
         si.cb=sizeof(si);
-        
+
         if (CreateProcessW(
-            cshell,
-            ccmd,
+            shell,
+            cmd,
             NULL,
             NULL,
             FALSE,
@@ -52,12 +50,11 @@ create_process(SV* shell, SV* cmd)
         ) == 0) {
             XSRETURN_EMPTY;
         }
-        
-        sv_setsv(sv, newRV_noinc((SV*)hv));
-        hv_stores(hv, "thread_handle", newSViv(pi.hThread));
-        hv_stores(hv, "process_handle", newSViv(pi.hProcess));
-        
-        ST(0) = sv;
+
+        hv_stores(hv, "thread_handle", newSViv((long)pi.hThread));
+        hv_stores(hv, "process_handle", newSViv((long)pi.hProcess));
+
+        ST(0) = hvref;
         XSRETURN(1);
 
 bool

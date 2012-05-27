@@ -17,15 +17,14 @@ parse_argv()
     CODE:
         int argc;
         int i;
-        LPWSTR* args = CommandLineToArgvW(GetCommandLineW(), &argc);
-        SV* sv = sv_2mortal(newSV(0));
-        AV* av = sv_2mortal(newAV());
-        
-        sv_setsv(sv, newRV_noinc((SV*)av));
+        LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+        AV* av    = newAV();
+        SV* avref = sv_2mortal(newRV_noinc((SV *)av));
+
         for (i = 0; i < argc; i++) {
-            av_push(av, newSVpv(args[i], wcslen(args[i]) * sizeof(wchar_t)));
+            av_push(av, newSVpvn((char *)argv[i], wcslen(argv[i]) * sizeof(WCHAR)));
         }
-        LocalFree(args);
-        
-        ST(0) = sv;
+        LocalFree(argv);
+
+        ST(0) = avref;
         XSRETURN(1);

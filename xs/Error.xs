@@ -12,14 +12,14 @@ MODULE = Win32::Unicode::Error  PACKAGE = Win32::Unicode::Error
 
 PROTOTYPES: DISABLE
 
-long
+DWORD
 get_last_error()
     CODE:
         RETVAL = GetLastError();
     OUTPUT:
         RETVAL
 
-long
+DWORD
 set_last_error(long error_code)
     CODE:
         SetLastError(error_code);
@@ -30,8 +30,8 @@ set_last_error(long error_code)
 SV*
 foramt_message()
     CODE:
-        wchar_t buff[BUFF_SIZE];
-        
+        WCHAR buff[BUFF_SIZE];
+
         FormatMessageW(
             FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
             NULL,
@@ -41,7 +41,7 @@ foramt_message()
             BUFF_SIZE,
             NULL
         );
-        
-        RETVAL = newSVpv(buff, wcslen(buff) * sizeof(wchar_t));
+
+        RETVAL = newSVpvn(buff, wcslen(buff) * sizeof(WCHAR));
      OUTPUT:
         RETVAL
