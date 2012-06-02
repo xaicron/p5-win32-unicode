@@ -42,9 +42,12 @@ create_file(WCHAR *filename, long amode, long smode, long opt, long attr)
 void
 win32_read_file(HANDLE handle, DWORD count)
     CODE:
-        char buff[count];
-        bool has_error = 0;
-        DWORD len;
+        char  *ptr, *buff;
+        bool  has_error = 0;
+        DWORD len       = 0;
+
+        Newxz(ptr, count + 1, char);
+        buff = ptr;
         if (!ReadFile(handle, buff, count, &len, NULL)) {
             if (GetLastError() != NO_ERROR) {
                 has_error = 1;
@@ -54,12 +57,13 @@ win32_read_file(HANDLE handle, DWORD count)
             }
         }
         buff[len] = '\0';
+        Safefree(ptr);
 
-        ST(0) = has_error ? newSViv(-1) : newSVuv(len);
-        ST(1) = newSVpvn(buff, len);
+        ST(0) = has_error ? sv_2mortal(newSViv(-1)) : sv_2mortal(newSVuv(len));
+        ST(1) = sv_2mortal(newSVpvn(buff, len));
         XSRETURN(2);
 
-void
+SV *
 win32_write_file(HANDLE handle, char *buff, DWORD size)
     CODE:
         bool has_error = 0;
@@ -73,8 +77,9 @@ win32_write_file(HANDLE handle, char *buff, DWORD size)
             }
         }
 
-        ST(0) = has_error ? newSViv(-1) : newSVuv(len);
-        XSRETURN(1);
+        RETVAL = has_error ? newSViv(-1) : newSVuv(len);
+    OUTPUT:
+        RETVAL
 
 bool
 delete_file(WCHAR *filename)
