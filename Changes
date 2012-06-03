@@ -1,5 +1,14 @@
 Revision history for Perl extension Win32::Unicode
 
+0.35    Mon Jun  4 01:27:16 2012
+        [BUG FIXES]
+        - fixed may fail to determine the console.
+        - fixed cannot read binary file on read file.
+        - fixed memory leak on read file.
+        - fixed parse arguments logic on Win32::Unicode::Native.
+        [NEW FEATURES]
+        - support offset on read().
+
 0.34    Mon Nov  7 02:00:06 2011
         [BUG FIXES]
         - fixed broken touchW()
@@ -107,7 +116,7 @@ Revision history for Perl extension Win32::Unicode
             - Changed this object to IO::Scalar like.
               But api do not change.
         
-        [NEW FEATUERS]
+        [NEW FEATURES]
         - Win32::Unicode::File
             - Added flock function. But alpha level.
 
