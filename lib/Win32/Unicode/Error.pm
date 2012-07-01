@@ -16,8 +16,6 @@ our @EXPORT    = qw/errorW/;
 our @EXPORT_OK = qw/error/;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
-my %ERROR_TABLE = ();
-
 sub errorW {
     my $buff = foramt_message();
     $buff = utf16_to_utf8($buff);
@@ -25,15 +23,16 @@ sub errorW {
     return $buff;
 }
 
+my $ERROR_TABLE;
 sub _set_errno {
-    unless ($INC{'Errno.pm'}) {
+    unless ($ERROR_TABLE) {
         require Errno;
-        %ERROR_TABLE = (
-            &Errno::ERROR_FILE_EXISTS => Errno::EEXIST(),
-        );
+        $ERROR_TABLE = {
+            ERROR_FILE_EXISTS, => Errno::EEXIST(),
+        };
     }
     my $errno = $_[0] ? set_last_error($_[0]) : get_last_error();
-    $! = $ERROR_TABLE{$errno} || $errno;
+    $! = $ERROR_TABLE->{$errno} || $errno;
     return;
 }
 
