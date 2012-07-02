@@ -19,7 +19,7 @@ our @EXPORT    = qw/file_type file_size mkdirW rmdirW getcwdW chdirW findW findd
 our @EXPORT_OK = qw//;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
-our $VERSION = '0.35';
+our $VERSION = '0.36';
 
 # global vars
 our $cwd;

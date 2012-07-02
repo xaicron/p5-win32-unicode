@@ -1,5 +1,10 @@
 Revision history for Perl extension Win32::Unicode
 
+0.36    Tue Jul  3 01:44:48 2012
+        [BUG FIXES]
+        - fixed Win32::Unicode::Error::_set_errno problem that
+          Errno::ERROR_FILE_EXISTS is not defined on ActivePerl. (reported by Yutaka SAITO)
+
 0.35    Mon Jun  4 01:27:16 2012
         [BUG FIXES]
         - fixed may fail to determine the console.
