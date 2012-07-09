@@ -30,13 +30,22 @@ sub _ConsoleOut {
     @_ = ($_) unless @_;
 
     unless (is_console($handle)) {
-        return warn @_ if $handle == $STD_HANDLE->{&STD_ERROR_HANDLE};
-        if (ref tied *STDOUT eq 'Win32::Unicode::Console::Tie') {
+        if ($handle == $STD_HANDLE->{&STD_ERROR_HANDLE}) {
+            if (ref tied *STDERR eq 'Win32::Unicode::Console::Tie') {
+                no warnings 'untie';
+                untie *STDERR;
+                my $ret = print STDERR @_;
+                tie *STDERR, 'Win32::Unicode::Console::Tie';
+                return $ret;
+            }
+            return print STDERR @_;
+        }
+        elsif (ref tied *STDOUT eq 'Win32::Unicode::Console::Tie') {
             no warnings 'untie';
             untie *STDOUT;
-            print @_;
+            my $ret = print @_;
             tie *STDOUT, 'Win32::Unicode::Console::Tie';
-            return 1;
+            return $ret;
         }
         return print @_;
     }
@@ -119,7 +128,6 @@ sub warnW {
     }
     
     _row_warn($str);
-    return 1;
 }
 
 # die Unicode to Console
@@ -135,7 +143,6 @@ sub dieW {
     $str =~ s/\n$//;
     _row_warn($str);
     CORE::die("\n");
-    return;
 }
 
 sub _shortmess {
