@@ -3,7 +3,7 @@ package Win32::Unicode::File;
 use strict;
 use warnings;
 use 5.008003;
-use Carp ();
+use Carp qw(croak);
 use File::Basename qw/basename/;
 use Scalar::Util qw/blessed/;
 use Exporter 'import';
@@ -173,6 +173,7 @@ sub read {
     
     return $bytes_read_num;
 }
+*sysread = *read;
 
 sub _readline {
     my $self = shift;
@@ -236,14 +237,30 @@ sub printf {
 }
 
 sub write {
-    my ($self, $buff, $length, $offset) = @_;
-    $offset = 0 unless defined $offset;
+    @_ = ($_[0], $_[1]);
+    goto &syswrite;
+}
+
+sub syswrite {
+    return 0 if @_ > 2 && !$_[2];
+    my ($self, $buff, $len, $offset) = @_;
     
     $buff =~ s/\r?\n/\r\n/g unless *$self->{_binmode};
     $buff = *$self->{_encode}->encode($buff) if *$self->{_encode};
     
     use bytes;
-    my $write_size = win32_write_file(*$self->{_handle}, $buff, length($buff));
+    
+    $buff = substr $buff, $offset if $offset;
+    unless (defined $len) {
+        $len = length $buff;
+    }
+    elsif ((my $buff_len = length $buff) < $len) {
+        $len = $buff_len;
+    }
+    
+    croak('got negative length on syswrite()') if $len < 0;
+    
+    my $write_size = win32_write_file(*$self->{_handle}, $buff, $len);
     return Win32::Unicode::Error::_set_errno if $write_size == -1;
     
     if (*$self->{_autoflush}) {
@@ -279,6 +296,7 @@ sub seek {
         return $st->{high} ? to64int($st->{high}, $st->{low}) : $st->{low};
     }
 }
+*sysseek = *seek;
 
 sub tell {
     $_[0]->seek(0, 1);
