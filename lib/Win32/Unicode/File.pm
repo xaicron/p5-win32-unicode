@@ -326,8 +326,8 @@ sub unlock {
 sub slurp {
     my $self = shift;
     
-    if (!ref $self && file_type(f => $self)) {
-        my $fh = __PACKAGE__->new(r => $self) or die "Can't read $self";
+    if (!ref $self) {
+        my $fh = __PACKAGE__->new(r => $self) or croak("Can't read '$self': $!");
         return $fh->slurp;
     }
     

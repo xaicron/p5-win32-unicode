@@ -35,8 +35,6 @@ subtest OO => sub {
         is length($data), file_size($wfile);
     }
     ok $wfile->close;
-    
-    done_testing;
 };
 
 subtest tie => sub {
@@ -57,8 +55,13 @@ subtest tie => sub {
         is length($data), file_size($wfile);
     }
     ok close $wfile;
-    
-    done_testing;
+};
+
+subtest 'slurp exception' => sub {
+    dies_ok {
+        Win32::Unicode::File::slurp('unkownfile');
+    };
+    like $@, qr/Can't read 'unkownfile'/;
 };
 
 done_testing;
