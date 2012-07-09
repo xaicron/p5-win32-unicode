@@ -840,13 +840,13 @@ Currently available now is only the layer below.
   :utf8
   :encoding(foo)
 
-=item B<flock>
+=item B<flock()>
 
 Like CORE::flock
 
   $fh->flock(2);
 
-=item B<unlock>
+=item B<unlock()>
 
 equals to
 
@@ -857,6 +857,30 @@ equals to
 get error message.
 
   $fh->error;
+
+=item B<flush>
+
+flush buffers.
+
+  $fh->flush;
+
+=item B<autoflush()>
+
+enable or dsabile autoflush.
+
+  $fh->autoflush;    # enable
+  $fh->autoflush(0); # disable
+  $fh->autoflush(1); # enable
+
+=item B<printflush()>
+
+write after flush.
+
+  $fh->printflush('foobar');
+
+same as
+
+  $fh->print('foobar') && $fh->flush;
 
 =back
 
