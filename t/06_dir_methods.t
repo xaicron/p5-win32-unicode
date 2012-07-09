@@ -3,7 +3,6 @@ use warnings;
 use utf8;
 use Test::More;
 use Test::Exception;
-use Test::Flatten;
 
 use File::Temp qw/tempdir tempfile/;
 use File::Basename qw/fileparse/;

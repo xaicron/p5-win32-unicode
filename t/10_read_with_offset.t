@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Flatten;
 
 use Win32::Unicode::File;
 

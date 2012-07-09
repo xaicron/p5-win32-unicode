@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Exception;
-use Test::Flatten;
 
 use Win32::Unicode;
 use utf8;

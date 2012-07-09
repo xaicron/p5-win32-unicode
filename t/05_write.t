@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use utf8;
 use Test::More;
-use Test::Flatten;
 use Win32::Unicode;
 use File::Temp qw/tempdir tempfile/;
 

@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use utf8;
 use Test::More;
-use Test::Flatten;
 use Encode;
 use Win32::Unicode::Util;
 use Win32::Unicode::Constant qw/CYGWIN/;
