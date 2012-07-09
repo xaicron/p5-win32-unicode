@@ -108,6 +108,7 @@ sub open {
     
     require Win32::Unicode::Dir;
     *$self->{_file_path} = File::Spec->rel2abs($file, Win32::Unicode::Dir::getcwdW());
+    *$self->{_authflush} = 0;
     
     return $self;
 }
@@ -244,6 +245,10 @@ sub write {
     use bytes;
     my $write_size = win32_write_file(*$self->{_handle}, $buff, length($buff));
     return Win32::Unicode::Error::_set_errno if $write_size == -1;
+    
+    if (*$self->{_autoflush}) {
+        $self->flush or return;
+    }
     
     return $write_size;
 }
@@ -639,6 +644,28 @@ sub TELL     { shift->tell        }
 sub EOF      { shift->eof         }
 sub FILENO   { shift->fileno      }
 sub DESTROY  { shift->close       }
+
+# IO::File compatibles
+sub flush {
+    my $self = shift;
+    win32_flush_file_buffers(*$self->{_handle});
+}
+
+sub sync {
+    _croakW('sync not implemented');
+}
+
+sub autoflush {
+    my $self = shift;
+    my $prev = *$self->{_autoflush};
+    *$self->{_autoflush} = @_ > 0 ? $_[0] : 1;
+    return $prev;
+}
+
+sub printflush {
+    my $self = shift;
+    $self->print(@_) && $self->flush;
+}
 
 1;
 __END__

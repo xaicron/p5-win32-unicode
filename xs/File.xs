@@ -83,6 +83,13 @@ win32_write_file(HANDLE handle, char *buff, DWORD size)
         RETVAL
 
 bool
+win32_flush_file_buffers(HANDLE handle)
+    CODE:
+        RETVAL = FlushFileBuffers(handle);
+    OUTPUT:
+        RETVAL
+
+bool
 delete_file(WCHAR *filename)
     CODE:
         RETVAL = DeleteFileW(filename);
