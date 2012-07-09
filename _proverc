@@ -1,0 +1,5 @@
+--exec "perl -Ilib -It/lib -MTest::Flatten -MTest::Name::FromLine -Mblib"
+--color
+--merge
+--timer
+-w
