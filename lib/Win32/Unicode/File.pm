@@ -46,11 +46,8 @@ sub new {
 }
 
 sub open {
-    my $self =shift;
-    croak("Usage: $self->open('attrebute', 'filename')") unless @_ == 2;
-    
-    my $attr = shift;
-    my $file = shift;
+    my ($self, $attr, $file) = @_;
+    croak('Usage: $wfh->open($attrebute, $filename)') unless defined $attr && defined $file;
     
     $file = cygpathw($file) or return if CYGWIN;
     my $utf16_file = utf8_to_utf16(catfile $file) . NULL;
