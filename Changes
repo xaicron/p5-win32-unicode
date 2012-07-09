@@ -1,5 +1,10 @@
 Revision history for Perl extension Win32::Unicode
 
+0.37    Tue Jul 9 02:37:07 2012
+        [BUG FIXES]
+        - fixed Win32::Unicode::File::read methods was crashing (reported by Thomas Eckardt)
+        - added Win32::Unicode::File::flush method (suggested by Thomas Eckardt)
+
 0.36    Tue Jul  3 01:44:48 2012
         [BUG FIXES]
         - fixed Win32::Unicode::Error::_set_errno problem that
@@ -93,12 +98,12 @@ Revision history for Perl extension Win32::Unicode
         [CHANGES]
         - Win32::Unicode::Util
             - Removed use bigint (thanks gfx)
-        - Win32::Unicide::Dir
+        - Win32::Unicode::Dir
             - cptreeW and mvtreeW changed behavior.
         
         [NEW FEATURES]
         - Win32::Unicode::Dir
-            - Added $Win32::Unicide::Dir::dir global valiable.
+            - Added $Win32::Unicode::Dir::dir global valiable.
             - findW supported `bydepth`, `no_chdir`, `preprocess` and `postprocess` options.
         - Win32::Unicode::File
             - Implemented statW.
