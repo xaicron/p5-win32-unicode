@@ -47,7 +47,7 @@ sub new {
 
 sub open {
     my $self =shift;
-    _croakW("Usage: $self->open('attrebute', 'filename')") unless @_ == 2;
+    croak("Usage: $self->open('attrebute', 'filename')") unless @_ == 2;
     
     my $attr = shift;
     my $file = shift;
@@ -96,7 +96,7 @@ sub open {
             OPEN_ALWAYS,
         ) :
         
-        _croakW("'$attr' is unkown attribute")
+        croak("'$attr' is unkown attribute")
     or return Win32::Unicode::Error::_set_errno;
     
     return Win32::Unicode::Error::_set_errno if $handle == INVALID_VALUE;
@@ -160,7 +160,7 @@ sub read {
         substr($$into, $offset) = $data if length($$into) >= $offset;
     }
     elsif ($offset < 0) {
-        _croakW('Offset outside string') if length($$into) + $offset < 0;
+        croak('Offset outside string') if length($$into) + $offset < 0;
         substr($$into, $offset) = $data;
     }
     else {
@@ -307,7 +307,7 @@ sub flock {
     $self = tied(*$self);
     my $ope = shift;
     
-    _croakW('Usage: flock $fh, $operation') unless defined $ope;
+    croak('Usage: flock $fh, $operation') unless defined $ope;
     
     return unlock_file(*$self->{_handle}) if $ope == 8;
     
@@ -359,7 +359,7 @@ sub binmode {
             *$self->{_encode} = Encode::find_encoding($1);
         }
         
-        _croakW("Unknown layer $layer") unless *$self->{_binmode} or *$self->{_encode}
+        croak("Unknown layer $layer") unless *$self->{_binmode} or *$self->{_encode}
     }
     
     return 1;
@@ -383,7 +383,7 @@ sub file_path {
 
 sub statW {
     my $file = shift;
-    _croakW('Usage: statW(filename)') unless defined $file;
+    croak('Usage: statW(filename)') unless defined $file;
     my $wantarray = wantarray;
     my $blessed = blessed $file;
 
@@ -468,7 +468,7 @@ sub utimeW {
 }
 
 sub file_type {
-    _croakW('Usage: type(attribute, file_or_dir_name)') unless @_ == 2;
+    croak('Usage: type(attribute, file_or_dir_name)') unless @_ == 2;
     my $attr = shift;
     my $file = shift;
     $file = cygpathw($file) or return if CYGWIN;
@@ -497,7 +497,7 @@ sub file_type {
 
 sub file_size {
     my $file = shift;
-    _croakW('Usage: file_size(filename)') unless defined $file;
+    croak('Usage: file_size(filename)') unless defined $file;
     
     if (ref $file eq __PACKAGE__) {
         my $self = "$file" =~ /GLOB/ ? tied *$file : $file;
@@ -555,7 +555,7 @@ sub unlinkW {
 
 # like File::Copy::copy
 sub copyW {
-    _croakW('Usage: copyW(from, to [, over])') if @_ < 2;
+    croak('Usage: copyW(from, to [, over])') if @_ < 2;
     my ($from, $to) = _file_name_validete(shift, shift);
     my $over = shift || 0;
     
@@ -570,7 +570,7 @@ sub copyW {
 
 # move file
 sub moveW {
-    _croakW('Usage: moveW(from, to [, over])') if @_ < 2;
+    croak('Usage: moveW(from, to [, over])') if @_ < 2;
     my ($from, $to) = _file_name_validete(shift, shift);
     my $over = shift || 0;
     
@@ -587,8 +587,8 @@ my $back_to_dir = qr/^\.\.$/;
 my $in_dir      = qr#[\\/]$#;
 
 sub _file_name_validete {
-    _croakW('from is a undefined values') unless defined $_[0];
-    _croakW('to is a undefined values')   unless defined $_[1];
+    croak('from is a undefined values') unless defined $_[0];
+    croak('to is a undefined values')   unless defined $_[1];
     
     my $from = catfile shift;
     my $to = shift;
@@ -615,7 +615,7 @@ my %win32_taboo = (
 
 sub filename_normalize {
     my $file_name = shift;
-    _croakW('Usage: filename_nomalize($file_name)') unless defined $file_name;
+    croak('Usage: filename_nomalize($file_name)') unless defined $file_name;
     $file_name =~ s#([\\\/\:\*\?\"\<\>|])#$win32_taboo{$1}#ge;
     return $file_name;
 }
@@ -632,16 +632,6 @@ sub _get_file_type {
         return Win32::Unicode::Error::_set_errno;
     }
     return $result;
-}
-
-sub _croakW {
-    Win32::Unicode::Console::_row_warn(@_);
-    die Carp::shortmess();
-}
-
-sub _carpW {
-    Win32::Unicode::Console::_row_warn(@_);
-    warn Carp::shortmess();
 }
 
 # Tie Handle
