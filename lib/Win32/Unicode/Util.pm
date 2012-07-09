@@ -38,7 +38,7 @@ sub utf8_to_utf16 {
 
 sub to64int {
     my ($high, $low) = @_;
-    
+
     require Math::BigInt;
     return ((Math::BigInt->new($high) << 32) + $low);
 }
@@ -49,22 +49,22 @@ sub is64int {
 
 sub cygpathw {
     require Win32::Unicode::Dir;
-    
+
     my $path = shift;
     my ($name, $dir) = fileparse $path;
-    
+
     $dir =~ s/^([A-Z]:)\./$1/i; # C:.\ => C:\
-    
+
     my $current = Win32::Unicode::Dir::getcwdW() or return;
     CORE::chdir $dir or return;
     $dir = Win32::Unicode::Dir::getcwdW() or return;
     CORE::chdir $current or return;
-    
+
     if (defined $name) {
         return catfile($dir, $name) if defined $dir;
         return $name;
     }
-    
+
     return $dir;
 }
 

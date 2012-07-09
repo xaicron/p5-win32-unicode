@@ -42,7 +42,7 @@ our %EXPORT_TAGS = (
 sub import {
     my $class = shift;
     my $caller = caller(0);
-    
+
     my @args;
     for my $arg (@_) {
         if ($arg eq '-native') {
@@ -56,7 +56,7 @@ sub import {
             push @args, $arg;
         }
     }
-    
+
     local $Exporter::ExportLevel = 1;
     Exporter::import($class, @args);
 }
@@ -71,10 +71,10 @@ Win32::Unicode - perl unicode-friendly wrapper for win32api.
 
   use utf8;
   use Win32::Unicode;
-  
+
   # unicode console out
   printW "I \x{2665} Perl";
-  
+
   # unicode file util
   unlinkW $file or die $!;
   copyW $from, $to or die $!;
@@ -83,7 +83,7 @@ Win32::Unicode - perl unicode-friendly wrapper for win32api.
   my $size = file_size $file;
   touchW $new_file;
   my @stat = statW $file;
-  
+
   # unicode directory util
   mkdirW $dir or die $!;
   rmdirW $dir or die $!;
@@ -98,13 +98,13 @@ Win32::Unicode - perl unicode-friendly wrapper for win32api.
   my $dir_size = dir_size $dir;
   my @file_list = file_list $dir;
   my @dir_list = dir_list $dir;
-  
+
   # opendir
   my $wdir = Win32::Unicode::Dir->new;
   $wdir->open($dir) or die $!;
   for ($wdir->fetch) {
       next if /^\.{1,2}$/;
-      
+
       my $full_path = "$dir/$_";
       if (file_type('f', $full_path)) {
           # $_ is file

@@ -30,7 +30,7 @@ sub systemW {
     wait_for_single_object($pi->{process_handle});
     my $exit_code = get_exit_code($pi->{process_handle});
     close_handle($pi->{process_handle});
-    
+
     return defined $exit_code ? $exit_code : 1;
 }
 
@@ -38,7 +38,7 @@ sub execW {
     my $pi = _create_process(@_) or return 1;
     close_handle($pi->{thread_handle});
     close_handle($pi->{process_handle});
-    
+
     return 0;
 }
 
@@ -51,9 +51,9 @@ sub _create_process {
         $arg =~ s/"/\"/g;       # escape qquote
         push @args, qq{"$arg"};
     }
-    
+
     $cmd = utf8_to_utf16("/x /c $cmd " . join q{ }, @args) . NULL; # mybe security hole :-(
-    
+
     return create_process($SHELL, $cmd);
 }
 
@@ -67,10 +67,10 @@ Win32::Unicode::Process - manipulate processes.
 =head1 SYNOPSIS
 
   use Win32::Unicode::Process;
-  
+
   systemW "echo $flagged_utf8_string";
   systemW 'perl', '-e', 'print "ok"';
-  
+
   execW "echo $flagged_utf8_string";
   execW 'perl', '-e', 'print "ok"';
 

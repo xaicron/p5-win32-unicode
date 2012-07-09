@@ -48,7 +48,7 @@ Win32::Unicode::Error - return error message.
 =head1 SYNOPSIS
 
   use Win32::Unicode;
-  
+
   mkdirW($exists_dir) or dieW errorW
 
 =head1 DESCRIPTION

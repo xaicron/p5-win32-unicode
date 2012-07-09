@@ -49,9 +49,9 @@ sub _ConsoleOut {
         }
         return print @_;
     }
-    
+
     local $Carp::CarpLevel = $Carp::CarpLevel + 1;
-    
+
     my $separator = defined $\ ? $\ : '';
     for my $stuff (@_, $separator) {
         Carp::carp 'Use of uninitialized value in print', next unless defined $stuff;
@@ -59,7 +59,7 @@ sub _ConsoleOut {
         while (length $str) {
             my $tmp_str = substr($str, 0, MAX_BUFFER_SIZE);
             substr($str, 0, MAX_BUFFER_SIZE) = '';
-            
+
             my $buff = 0;
             write_console($handle, utf8_to_utf16($tmp_str) . NULL);
         }
@@ -78,9 +78,9 @@ sub printW {
         shift;
         _syntax_error() unless scalar @_;
     }
-    
+
     _ConsoleOut(STD_OUTPUT_HANDLE, @_);
-    
+
     return 1;
 }
 
@@ -96,7 +96,7 @@ sub printfW {
         shift;
         _syntax_error() unless scalar @_;
     }
-    
+
     printW(sprintf shift, @_);
 }
 
@@ -122,11 +122,11 @@ sub sayW {
 sub warnW {
     my $str = join q{}, @_;
     $str .= $str =~ s/\n$// ? "\n" : _shortmess();
-    
+
     if (ref $SIG{__WARN__} eq 'CODE') {
         return $SIG{__WARN__}->($str);
     }
-    
+
     _row_warn($str);
 }
 
@@ -134,12 +134,12 @@ sub warnW {
 sub dieW {
     my $str = join q{}, @_;
     $str .= $str =~ s/\n$// ? "\n" : _shortmess();
-    
+
     if (ref $SIG{__DIE__} eq 'CODE') {
         $SIG{__DIE__}->($str);
     }
     local $SIG{__DIE__};
-    
+
     $str =~ s/\n$//;
     _row_warn($str);
     CORE::die("\n");
@@ -193,15 +193,15 @@ Win32::Unicode::Console - Unicode string to console out
 =head1 SYNOPSIS
 
   use Win32::Unicode::Console;
-  
+
   my $flaged_utf8_str = "I \x{2665} Perl";
-  
+
   printW $flaged_utf8_str;
   printfW "[ %s ] :P", $flaged_utf8_str;
   sayW $flaged_utf8_str;
   warnW $flaged_utf8_str;
   dieW $flaged_utf8_str;
-  
+
   # write file
   printW $fh, $str;
   printfW $fh, $str;
