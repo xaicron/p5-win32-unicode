@@ -8,8 +8,6 @@ use File::Temp qw/tempdir tempfile/;
 use Win32::Unicode::File;
 use Win32::Unicode::Dir;
 
-$ENV{SUBTEST_FILTER} = "tie say";
-
 my $dir = tempdir() or die $!;
 my $write_file = File::Spec->catfile("$dir/森鷗外.txt");
 
