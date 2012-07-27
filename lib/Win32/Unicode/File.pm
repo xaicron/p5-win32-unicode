@@ -196,7 +196,8 @@ sub _readline {
     }
     
     return $line eq '' ? () : $line;
-};
+}
+*getline = *_readline;
 
 sub readline {
     my $self = shift;
