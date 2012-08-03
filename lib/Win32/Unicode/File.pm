@@ -666,6 +666,36 @@ sub printflush {
     $self->print(@_) && $self->flush;
 }
 
+sub getline  {
+    croak('Usage: $fh->getline()') unless @_ == 1;
+    scalar shift->readline;
+}
+
+sub getlines {
+    croak('Usage: $fh->getlines()') unless @_ == 1;
+    croak(q|Can't call $fh->getlines in a scalar context, use $fh->getline|)
+        unless wantarray;
+    shift->readline;
+}
+
+sub getpos {
+    croak('Usage: $fh->getpos()') unless @_ == 1;
+    my $pos = shift->tell;
+    return $pos == -1 ? undef : $pos; ## no critic
+}
+
+sub setpos {
+    croak('Usage: $fh->setpos($pos)') unless @_ == 2;
+    my ($self, $pos) = @_;
+    $self->seek($pos, 0);
+    return $pos == -1 ? undef : $pos; ## no critic
+}
+
+sub opened {
+    my $self = shift;
+    return exists *$self->{_handle} ? 1 : 0;
+}
+
 1;
 __END__
 =head1 NAME
@@ -834,7 +864,7 @@ Currently available now is only the layer below.
   :utf8
   :encoding(foo)
 
-=item B<flock()>
+=item B<flock($operation)>
 
 Like CORE::flock
 
@@ -875,6 +905,36 @@ write after flush.
 same as
 
   $fh->print('foobar') && $fh->flush;
+
+=item B<getline()>
+
+Like C<< IO::File::getline >>.
+
+  my $line = $fh->getline;
+
+=item B<getlines()>
+
+Like C<< IO::File::getlines >>.
+
+  my @$lines = $fh->getlines;
+
+=item B<getpos()>
+
+Like C<< IO::File::getpos >>.
+
+  my $pos = $fh->getpos;
+
+=item B<setpos($pos)>
+
+Like C<< IO::File::setpos >>.
+
+  my $pos = $fh->setpos(10);
+
+=item B<opened()>
+
+Returns true if the object is currentry opened file, false otherwise.
+
+  say $fh->opened ? 1 : 0;
 
 =back
 

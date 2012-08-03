@@ -58,4 +58,11 @@ subtest 'getops / setpos' => sub {
     }
 };
 
+subtest opened => sub {
+    safe_dir {
+        ok !Win32::Unicode::File->new->opened;
+        ok new_read_fh->opened;
+    };
+};
+
 done_testing;
