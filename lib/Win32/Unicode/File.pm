@@ -4,8 +4,8 @@ use strict;
 use warnings;
 use 5.008003;
 use Carp qw(croak);
-use File::Basename qw/basename/;
-use Scalar::Util qw/blessed/;
+use File::Basename qw(basename);
+use Scalar::Util qw(blessed);
 use Exporter 'import';
 
 use Win32::Unicode::Util;
@@ -651,7 +651,7 @@ sub flush {
 }
 
 sub sync {
-    _croakW('sync not implemented');
+    croak('sync not implemented');
 }
 
 sub autoflush {
