@@ -25,9 +25,8 @@ sub safe_dir(&) {
     my $code = shift;
     my $cwd = Cwd::getcwd;
     my $tmpdir = tempdir CLEANUP => 1;
-    
+
     chdir $tmpdir;
-    local $@;
     eval { $code->($tmpdir) };
     chdir $cwd;
     croak $@ if $@;
