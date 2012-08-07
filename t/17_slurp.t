@@ -18,6 +18,11 @@ sub rfh {
     my $fh = Win32::Unicode::File->new(r => "$dir/\x{26c4}.txt");
 };
 
+subtest 'no args' => sub {
+    eval { Win32::Unicode::File::slurp() };
+    ok $@;
+};
+
 subtest default => sub {
     my $text = rfh->slurp();
     is $text, join "\n", qw/ほげ ふが ぴよ/;

@@ -320,6 +320,8 @@ sub unlock {
 
 sub slurp {
     my $self = shift;
+    croak 'Usage: slurp(filename) or $fh->slurp()' unless defined $self;
+
     my $opts = ref $_[0] eq 'HASH' ? shift : { @_ };
     my $wantarray = wantarray;
 
