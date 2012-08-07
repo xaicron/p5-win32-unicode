@@ -13,6 +13,7 @@ use Win32::Unicode::Error;
 use Win32::Unicode::Constant;
 use Win32::Unicode::Console;
 use Win32::Unicode::XS;
+use Fcntl qw(:seek);
 
 our @EXPORT = qw/file_type file_size copyW moveW unlinkW touchW renameW statW utimeW/;
 our @EXPORT_OK = qw/filename_normalize slurp/;
@@ -139,9 +140,9 @@ sub getc {
 }
 
 sub read {
-    my $self = shift;
-    my $into = \$_[0]; shift;
-    my $len = shift;
+    my $self   = shift;
+    my $into   = \$_[0]; shift;
+    my $len    = shift;
     my $offset = shift || 0;
 
     my ($bytes_read_num, $data) = win32_read_file(*$self->{_handle}, $len);
@@ -158,7 +159,7 @@ sub read {
         $$into = $data;
     }
 
-    if (*$self->{_encode} && $$into) {
+    if (*$self->{_encode} && length $$into) {
         $$into = *$self->{_encode}->decode($$into);
     }
 
@@ -182,7 +183,7 @@ sub _readline {
         $line .= $char;
     }
 
-    $line =~ s/\r\n/\n/ unless *$self->{_binmode};
+    $line =~ s/\015\012/\n/ unless *$self->{_binmode};
 
     if ($encoder) {
         $line = $encoder->decode($line);
@@ -290,7 +291,7 @@ sub seek {
 *sysseek = *seek;
 
 sub tell {
-    $_[0]->seek(0, 1);
+    $_[0]->seek(0, SEEK_CUR);
 }
 
 sub flock {
@@ -319,17 +320,76 @@ sub unlock {
 
 sub slurp {
     my $self = shift;
+    my $opts = ref $_[0] eq 'HASH' ? shift : { @_ };
+    my $wantarray = wantarray;
 
-    if (!ref $self) {
-        my $fh = __PACKAGE__->new(r => $self) or croak("Can't read '$self': $!");
-        return $fh->slurp;
+    unless (ref $self) {
+        my $fh = __PACKAGE__->new(r => $self) or croak "Can't read '$self': $!";
+        return $fh->slurp($opts);
     }
 
-    $self = tied(*$self);
+    my $org_data = {
+        pos     => $self->tell,
+        binmode => *$self->{_binmode},
+        encode  => *$self->{_encode},
+    };
 
-    $self->seek(0, 0);
-    $self->read(my $buff, $self->file_size);
-    return $buff;
+    if (exists $opts->{binmode}) {
+        $self->binmode($opts->{binmode});
+    }
+
+    my $buf_ref = $opts->{buf_ref} || \my $buf;
+    $$buf_ref   = '';
+
+    my $file_size = $self->file_size;
+    unless ($file_size) {
+        return
+            $opts->{scalar_ref} ? $buf_ref :
+            $opts->{array_ref}  ? []       :
+            $wantarray          ? ()       : '';
+    }
+
+    $self->seek(0, SEEK_SET);
+    my $blk_size  = $opts->{blk_size} || 1024 * 1024;
+    if ($file_size <= $blk_size) {
+        $self->read($$buf_ref, $blk_size);
+    }
+    else {
+        1 while $self->read($$buf_ref, $blk_size, length $$buf_ref);
+    }
+    $self->seek($org_data->{pos}, SEEK_SET);
+
+    $$buf_ref =~ s/\015\012/\n/g unless *$self->{_binmode};
+
+    *$self->{_binmode} = $org_data->{binmode};
+    *$self->{_encode}  = $org_data->{encode};
+
+    if ($wantarray || $opts->{array_ref}) {
+        my $sep = $/;
+        $sep = '\n\n+' if defined $sep && $sep eq '';
+
+        my @lines = length $$buf_ref ? $$buf_ref =~ /(.*?$sep|.+)/sg : ();
+        chomp @lines if $opts->{chomp};
+
+        return \@lines if $opts->{array_ref};
+        return @lines;
+    }
+
+    return $buf_ref if $opts->{scalar_ref};
+    return $$buf_ref if defined $wantarray;
+    return;
+}
+*readfile = *slurp;
+
+sub write_file {
+    my $self = shift;
+
+    if (!ref $self) {
+        my $fh = __PACKAGE__->new(w => $self) or croak("$self: $!");
+        return $fh->print(@_);
+    }
+
+    return $self->print(@_);
 }
 
 sub binmode {
