@@ -19,7 +19,7 @@ our @EXPORT = qw/file_type file_size copyW moveW unlinkW touchW renameW statW ut
 our @EXPORT_OK = qw/filename_normalize slurp/;
 our %EXPORT_TAGS = ('all' => [@EXPORT, @EXPORT_OK]);
 
-our $VERSION = '0.37';
+our $VERSION = '0.38';
 
 my %FILE_TYPE_ATTRIBUTES = (
     s => FILE_ATTRIBUTE_SYSTEM,

@@ -1,5 +1,12 @@
 Revision history for Perl extension Win32::Unicode
 
+0.38    Wed Aug  8 01:31:58 2012
+        [NEW FEATURES]
+        - added same IO::Handle like methods (suggested by bokutin++)
+
+        [CHANGES]
+        - Win32::Unicode::File::slurp more like File::Slurp::slurp.
+
 0.37    Tue Jul 9 02:37:07 2012
         [BUG FIXES]
         - fixed Win32::Unicode::File::read methods was crashing (reported by Thomas Eckardt)
@@ -16,6 +23,7 @@ Revision history for Perl extension Win32::Unicode
         - fixed cannot read binary file on read file.
         - fixed memory leak on read file.
         - fixed parse arguments logic on Win32::Unicode::Native.
+
         [NEW FEATURES]
         - support offset on read().
 
