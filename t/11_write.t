@@ -19,7 +19,7 @@ sub newfh {
 }
 
 sub slurp {
-    Win32::Unicode::File->new(r => shift)->slurp;
+    Win32::Unicode::File->new(r => shift)->slurp(binmode => 1);
 }
 
 {

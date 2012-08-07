@@ -6,8 +6,6 @@ use Test::More;
 use Test::Exception;
 use Test::Win32::Unicode::Util;
 
-use File::Temp qw/tempdir tempfile/;
-use File::Spec;
 use Win32::Unicode qw/:all/;
 
 subtest file_type => sub {
