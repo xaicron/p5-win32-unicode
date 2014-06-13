@@ -177,7 +177,7 @@ sub _readline {
     }
 
     my $line = '';
-    while (index($line, $/) == $[ -1) {
+    while (index($line, $/) == -1) {
         my $char = $self->getc;
         last if not defined $char or $char eq '';
         $line .= $char;
