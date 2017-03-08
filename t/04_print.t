@@ -7,6 +7,11 @@ use Test::Output;
 use Win32::Unicode;
 use File::Spec;
 
+BEGIN {
+    binmode STDOUT, ':encoding(utf8)';
+    binmode STDERR, ':encoding(utf8)';
+}
+
 open STDERR, '>', File::Spec->devnull or die $!;
 
 my $str = " I \x{2665} Perl";
