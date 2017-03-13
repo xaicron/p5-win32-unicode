@@ -36,6 +36,9 @@ create_file(WCHAR *filename, long amode, long smode, long opt, long attr)
             attr,
             NULL
         );
+        if (RETVAL == INVALID_HANDLE_VALUE) {
+            XSRETURN_IV(-1);
+        }
     OUTPUT:
         RETVAL
 
