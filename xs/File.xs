@@ -17,8 +17,46 @@
     #define _UTIME(file, st) _wutime(file, st)
 #endif
 
+#ifndef PERL_STATIC_INLINE
+    #define PERL_STATIC_INLINE static inline
+#endif
+
+#ifndef Zero
+    #define Zero(d,n,t) memset((void *)(d), 0, (n) * sizeof(t))
+#endif
+
 WINBASEAPI BOOL WINAPI GetFileSizeEx(HANDLE,PLARGE_INTEGER);
 
+#if (PERL_VERSION > 33) || ((PERL_VERSION == 33) && (PERL_SUBVERSION >= 5))
+PERL_STATIC_INLINE time_t translate_ft_to_time_t(FILETIME ft) {
+    SYSTEMTIME st;
+    struct tm pt;
+    time_t retval;
+    dTHX;
+
+    if (! FileTimeToSystemTime(&ft, &st)) {
+        return -1;
+    }
+
+    Zero(&pt, 1, struct tm);
+    pt.tm_year = st.wYear - 1900;
+    pt.tm_mon = st.wMonth - 1;
+    pt.tm_mday = st.wDay;
+    pt.tm_hour = st.wHour;
+    pt.tm_min = st.wMinute;
+    pt.tm_sec = st.wSecond;
+
+#ifdef MKTIME_LOCK
+    MKTIME_LOCK;
+#endif
+    retval = _mkgmtime(&pt);
+#ifdef MKTIME_UNLOCK
+    MKTIME_UNLOCK;
+#endif
+
+    return retval;
+}
+#endif /* (PERL_VERSION > 33) || ((PERL_VERSION == 33) && (PERL_SUBVERSION >= 5)) */
 
 MODULE = Win32::Unicode::File   PACKAGE = Win32::Unicode::File
 
@@ -162,11 +200,138 @@ get_stat_data(WCHAR *filename, HANDLE handle, bool is_dir)
         BY_HANDLE_FILE_INFORMATION fi;
         HV* hv    = newHV();
         SV* hvref = sv_2mortal(newRV_noinc((SV *)hv));
+#if (PERL_VERSION > 33) || ((PERL_VERSION == 33) && (PERL_SUBVERSION >= 5))
+        Stat_t St;
+        HANDLE dirhandle;
+        DWORD type;
+        BOOL isstdhandle;
+#endif
 
         if (_STAT(filename, &st) != 0) {
             XSRETURN_EMPTY;
         }
+#if (PERL_VERSION > 33) || ((PERL_VERSION == 33) && (PERL_SUBVERSION >= 5))
+        Zero(&St, 1, Stat_t);
+        /* Semantic of perl's stat changed in 5.33.5 */
+        /* C.f. https://github.com/Perl/perl5/commit/e935ef333b3eab54a766de93fad1369f76ddea49 */
+        /* In addition st.ino is on 64bits */
+        if (is_dir) {
+            dirhandle = CreateFileW(filename, FILE_READ_ATTRIBUTES, FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+            if (dirhandle == INVALID_HANDLE_VALUE) {
+                XSRETURN_EMPTY;
+            }
+            type = GetFileType(dirhandle);
+            type &= ~FILE_TYPE_REMOTE;
+            if ((type == FILE_TYPE_DISK) && (GetFileInformationByHandle(dirhandle, &fi) == 0)) {
+                CloseHandle(dirhandle);
+                XSRETURN_EMPTY;
+            }
+            isstdhandle = 0;
+            CloseHandle(dirhandle);
+        } else {
+            type = GetFileType(handle);
+            type &= ~FILE_TYPE_REMOTE;
+            if ((type == FILE_TYPE_DISK) && (GetFileInformationByHandle(handle, &fi) == 0)) {
+                XSRETURN_EMPTY;
+            }
+            isstdhandle = (handle == GetStdHandle(STD_INPUT_HANDLE) || handle == GetStdHandle(STD_OUTPUT_HANDLE) || handle == GetStdHandle(STD_ERROR_HANDLE)) ? 1 : 0;
+        }
 
+        switch (type) {
+        case FILE_TYPE_DISK:
+            St.st_dev = fi.dwVolumeSerialNumber;
+            St.st_ino = fi.nFileIndexHigh;
+            St.st_ino <<= 32;
+            St.st_ino |= fi.nFileIndexLow;
+            if (fi.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+                St.st_mode = _S_IFDIR | _S_IREAD | _S_IEXEC;
+                /* duplicate the logic from the end of the old win32_stat() */
+                if (!(fi.dwFileAttributes & FILE_ATTRIBUTE_READONLY)) {
+                    St.st_mode |= S_IWRITE;
+                }
+            }
+            else {
+                size_t len = wcslen(filename);
+                St.st_mode = _S_IFREG;
+                if (len > 4 &&
+                    (_wcsicmp(filename + len - 4, L".exe") == 0 ||
+                     _wcsicmp(filename + len - 4, L".bat") == 0 ||
+                     _wcsicmp(filename + len - 4, L".cmd") == 0 ||
+                     _wcsicmp(filename + len - 4, L".com") == 0)) {
+                    St.st_mode |= _S_IEXEC;
+                }
+                if (!(fi.dwFileAttributes & FILE_ATTRIBUTE_READONLY)) {
+                    St.st_mode |= _S_IWRITE;
+                }
+                St.st_mode |= _S_IREAD;
+            }
+            /* owner == user == group */
+            St.st_mode |= (St.st_mode & 0700) >> 3;
+            St.st_mode |= (St.st_mode & 0700) >> 6;
+            St.st_nlink = fi.nNumberOfLinks;
+            St.st_uid = 0;
+            St.st_gid = 0;
+            St.st_rdev = 0;
+            St.st_atime = translate_ft_to_time_t(fi.ftLastAccessTime);
+            St.st_mtime = translate_ft_to_time_t(fi.ftLastWriteTime);
+            St.st_ctime = translate_ft_to_time_t(fi.ftCreationTime);
+#ifdef __CYGWIN__
+            St.st_blksize = st.st_blksize;
+            St.st_blocks = st.st_blocks;
+#endif
+            hv_stores(hv, "dev", newSViv(St.st_dev));
+            hv_stores(hv, "ino_high", newSViv(fi.nFileIndexHigh));
+            hv_stores(hv, "ino_low", newSViv(fi.nFileIndexLow));
+            hv_stores(hv, "mode", newSViv(St.st_mode));
+            hv_stores(hv, "nlink", newSViv(St.st_nlink));
+            hv_stores(hv, "uid", newSViv(St.st_uid));
+            hv_stores(hv, "gid", newSViv(St.st_gid));
+            hv_stores(hv, "rdev", newSViv(St.st_rdev));
+            hv_stores(hv, "atime", newSViv(St.st_atime));
+            hv_stores(hv, "mtime", newSViv(St.st_mtime));
+            hv_stores(hv, "ctime", newSViv(St.st_ctime));
+#ifdef __CYGWIN__
+            hv_stores(hv, "blksize", newSViv(St.st_blksize));
+            hv_stores(hv, "blocks", newSViv(St.st_blocks));
+#endif
+            if (is_dir) {
+                hv_stores(hv, "size_high", newSViv(0));
+                hv_stores(hv, "size_low", newSViv(0));
+            }
+            else {
+                hv_stores(hv, "size_high", newSViv(fi.nFileSizeHigh));
+                hv_stores(hv, "size_low", newSViv(fi.nFileSizeLow));
+            }
+            break;
+
+        case FILE_TYPE_CHAR:
+        case FILE_TYPE_PIPE:
+            St.st_mode = (type == FILE_TYPE_CHAR) ? _S_IFCHR : _S_IFIFO;
+            if (isstdhandle) {
+                St.st_mode |= _S_IWRITE | _S_IREAD;
+            }
+            hv_stores(hv, "dev", newSViv(0));
+            hv_stores(hv, "ino", newSViv(0));
+            hv_stores(hv, "mode", newSViv(St.st_mode));
+            hv_stores(hv, "nlink", newSViv(0));
+            hv_stores(hv, "uid", newSViv(0));
+            hv_stores(hv, "gid", newSViv(0));
+            hv_stores(hv, "rdev", newSViv(0));
+            hv_stores(hv, "atime", newSViv(0));
+            hv_stores(hv, "mtime", newSViv(0));
+            hv_stores(hv, "ctime", newSViv(0));
+#ifdef __CYGWIN__
+            hv_stores(hv, "blksize", newSViv(0));
+            hv_stores(hv, "blocks", newSViv(0));
+#endif
+            hv_stores(hv, "size_high", newSViv(0));
+            hv_stores(hv, "size_low", newSViv(0));
+            break;
+
+        default:
+            XSRETURN_EMPTY;
+        }
+#else /* (PERL_VERSION > 33) || ((PERL_VERSION == 33) && (PERL_SUBVERSION >= 5)) */
         if (!is_dir) {
             if (GetFileInformationByHandle(handle, &fi) == 0) {
                 XSRETURN_EMPTY;
@@ -195,6 +360,7 @@ get_stat_data(WCHAR *filename, HANDLE handle, bool is_dir)
             hv_stores(hv, "size_high", newSViv(fi.nFileSizeHigh));
             hv_stores(hv, "size_low", newSViv(fi.nFileSizeLow));
         }
+#endif /* (PERL_VERSION > 33) || ((PERL_VERSION == 33) && (PERL_SUBVERSION >= 5)) */
 
         ST(0) = hvref;
         XSRETURN(1);
