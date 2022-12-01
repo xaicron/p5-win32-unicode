@@ -279,28 +279,28 @@ get_stat_data(WCHAR *filename, HANDLE handle, bool is_dir)
             St.st_blksize = st.st_blksize;
             St.st_blocks = st.st_blocks;
 #endif
-            hv_stores(hv, "dev", newSViv(St.st_dev));
-            hv_stores(hv, "ino_high", newSViv(fi.nFileIndexHigh));
-            hv_stores(hv, "ino_low", newSViv(fi.nFileIndexLow));
-            hv_stores(hv, "mode", newSViv(St.st_mode));
-            hv_stores(hv, "nlink", newSViv(St.st_nlink));
-            hv_stores(hv, "uid", newSViv(St.st_uid));
-            hv_stores(hv, "gid", newSViv(St.st_gid));
-            hv_stores(hv, "rdev", newSViv(St.st_rdev));
-            hv_stores(hv, "atime", newSViv(St.st_atime));
-            hv_stores(hv, "mtime", newSViv(St.st_mtime));
-            hv_stores(hv, "ctime", newSViv(St.st_ctime));
+            hv_stores(hv, "dev", newSVuv(St.st_dev));
+            hv_stores(hv, "ino_high", newSVuv(fi.nFileIndexHigh));
+            hv_stores(hv, "ino_low", newSVuv(fi.nFileIndexLow));
+            hv_stores(hv, "mode", newSVuv(St.st_mode));
+            hv_stores(hv, "nlink", newSVuv(St.st_nlink));
+            hv_stores(hv, "uid", newSVuv(St.st_uid));
+            hv_stores(hv, "gid", newSVuv(St.st_gid));
+            hv_stores(hv, "rdev", newSVuv(St.st_rdev));
+            hv_stores(hv, "atime", newSVuv(St.st_atime));
+            hv_stores(hv, "mtime", newSVuv(St.st_mtime));
+            hv_stores(hv, "ctime", newSVuv(St.st_ctime));
 #ifdef __CYGWIN__
-            hv_stores(hv, "blksize", newSViv(St.st_blksize));
-            hv_stores(hv, "blocks", newSViv(St.st_blocks));
+            hv_stores(hv, "blksize", newSVuv(St.st_blksize));
+            hv_stores(hv, "blocks", newSVuv(St.st_blocks));
 #endif
             if (is_dir) {
-                hv_stores(hv, "size_high", newSViv(0));
-                hv_stores(hv, "size_low", newSViv(0));
+                hv_stores(hv, "size_high", newSVuv(0));
+                hv_stores(hv, "size_low", newSVuv(0));
             }
             else {
-                hv_stores(hv, "size_high", newSViv(fi.nFileSizeHigh));
-                hv_stores(hv, "size_low", newSViv(fi.nFileSizeLow));
+                hv_stores(hv, "size_high", newSVuv(fi.nFileSizeHigh));
+                hv_stores(hv, "size_low", newSVuv(fi.nFileSizeLow));
             }
             break;
 
@@ -310,22 +310,22 @@ get_stat_data(WCHAR *filename, HANDLE handle, bool is_dir)
             if (isstdhandle) {
                 St.st_mode |= _S_IWRITE | _S_IREAD;
             }
-            hv_stores(hv, "dev", newSViv(0));
-            hv_stores(hv, "ino", newSViv(0));
-            hv_stores(hv, "mode", newSViv(St.st_mode));
-            hv_stores(hv, "nlink", newSViv(0));
-            hv_stores(hv, "uid", newSViv(0));
-            hv_stores(hv, "gid", newSViv(0));
-            hv_stores(hv, "rdev", newSViv(0));
-            hv_stores(hv, "atime", newSViv(0));
-            hv_stores(hv, "mtime", newSViv(0));
-            hv_stores(hv, "ctime", newSViv(0));
+            hv_stores(hv, "dev", newSVuv(0));
+            hv_stores(hv, "ino", newSVuv(0));
+            hv_stores(hv, "mode", newSVuv(St.st_mode));
+            hv_stores(hv, "nlink", newSVuv(0));
+            hv_stores(hv, "uid", newSVuv(0));
+            hv_stores(hv, "gid", newSVuv(0));
+            hv_stores(hv, "rdev", newSVuv(0));
+            hv_stores(hv, "atime", newSVuv(0));
+            hv_stores(hv, "mtime", newSVuv(0));
+            hv_stores(hv, "ctime", newSVuv(0));
 #ifdef __CYGWIN__
-            hv_stores(hv, "blksize", newSViv(0));
-            hv_stores(hv, "blocks", newSViv(0));
+            hv_stores(hv, "blksize", newSVuv(0));
+            hv_stores(hv, "blocks", newSVuv(0));
 #endif
-            hv_stores(hv, "size_high", newSViv(0));
-            hv_stores(hv, "size_low", newSViv(0));
+            hv_stores(hv, "size_high", newSVuv(0));
+            hv_stores(hv, "size_low", newSVuv(0));
             break;
 
         default:
