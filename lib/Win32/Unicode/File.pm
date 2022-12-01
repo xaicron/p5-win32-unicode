@@ -486,6 +486,12 @@ sub statW {
         $result->{blocks}  = '';
     }
     $result->{size} = $fi->{size_high} ? to64int($fi->{size_high}, $fi->{size_low}) : $fi->{size_low};
+    if (exists($result->{ino_high})) {
+        $result->{ino} = to64int($fi->{ino_high}, $fi->{ino_low} // 0);
+        delete $result->{ino_high};
+        delete $result->{ino_low};
+    }
+
     delete $result->{size_high};
     delete $result->{size_low};
 
